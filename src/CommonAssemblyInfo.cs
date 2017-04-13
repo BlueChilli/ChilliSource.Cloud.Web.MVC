@@ -8,6 +8,6 @@ using System.Reflection;
 [assembly: AssemblyProduct("ChilliSource Cloud Web.MVC")]
 [assembly: AssemblyVersion("1.0.0")]
 [assembly: AssemblyFileVersion("1.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0+2.Branch.master.Sha.ae9ffe09891b635fc8aba86039f0fbf42f672c33")]
+[assembly: AssemblyInformationalVersion("1.0.0-alpha.3+Branch.develop.Sha.a6aed8c592271810ef9c2a616db3ea41ecd0cacb")]
 [assembly: AssemblyCopyright("Copyright Blue Chilli Technology Pty Ltd 2017")]
 
