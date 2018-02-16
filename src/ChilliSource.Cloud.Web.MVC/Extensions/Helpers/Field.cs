@@ -9,7 +9,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
 using ChilliSource.Cloud.Web;
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -86,7 +86,7 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             string template = @"<div class=""control-group"">{0}<div class=""controls"">{1}</div></div>";
 
-            if (!String.IsNullOrEmpty(label)) label = @"<label class=""control-label"" for=""{0}"">{1}</label>".FormatWith(name, label);
+            if (!String.IsNullOrEmpty(label)) label = $@"<label class=""control-label"" for=""{name}"">{label}</label>";
 
             var attributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
             attributes.Add("id", name);
@@ -123,7 +123,7 @@ namespace ChilliSource.Cloud.Web.MVC
                     return html.ImgEmbedded(value as byte[], label, htmlAttributes);
             }
 
-            return MvcHtmlString.Create(template.FormatWith(label, tag.ToString(tagMode)));
+            return MvcHtmlString.Create(String.Format(template, label, tag.ToString(tagMode)));
         }
 
         private static MvcHtmlString FieldOuterForBegin(this HtmlHelper html)

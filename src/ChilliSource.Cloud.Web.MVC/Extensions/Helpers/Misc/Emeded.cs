@@ -1,5 +1,5 @@
 ﻿
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
 using System.ComponentModel;

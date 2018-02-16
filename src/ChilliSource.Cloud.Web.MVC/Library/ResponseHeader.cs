@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.IO;
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -25,7 +25,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An instance of the System.Web.Mvc.FileContentResult class by using the specified file contents and csv content type.</returns>
         public static FileContentResult WriteCsvResponseHeader(HttpResponseBase response, string filename, string content)
         {
-            response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", filename.ToFileName()));
+            response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", filename.ToFilename()));
             return new FileContentResult(content.ToByteArray(), "text/comma-separated-values");
         }
 
@@ -39,7 +39,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An instance of the System.Web.Mvc.FileContentResult class by using the specified file contents and pdf content type.</returns>
         public static FileContentResult WritePdfResponseHeader(HttpResponseBase response, string filename, byte[] pdf)
         {
-            response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", filename.ToFileName()));
+            response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", filename.ToFilename()));
             return new FileContentResult(pdf, "application/pdf");
         }
 
@@ -53,7 +53,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An instance of the System.Web.Mvc.FileStreamResult class by using the specified file stream contents and pdf content type.</returns>
         public static FileStreamResult WritePdfResponseHeader(HttpResponseBase response, string filename, Stream fileStream)
         {
-            response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", filename.ToFileName()));
+            response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", filename.ToFilename()));
             return new FileStreamResult(fileStream, "application/pdf");
         }
 
@@ -66,7 +66,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>FileContentResult - which should also be the returning value of your action method.</returns>
         public static FileContentResult WriteResponseHeader(HttpResponseBase response, string filename, byte[] content)
         {
-            response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", filename.ToFileName()));
+            response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", filename.ToFilename()));
             return new FileContentResult(content, MimeMapping.GetMimeMapping(filename));
         }
 
@@ -79,7 +79,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>FileStreamResult - which should also be the returning value of your action method.</returns>
         public static FileStreamResult WriteResponseHeader(HttpResponseBase response, string filename, Stream stream)
         {
-            response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", filename.ToFileName()));
+            response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", filename.ToFilename()));
             return new FileStreamResult(stream, MimeMapping.GetMimeMapping(filename));
         }
     }

@@ -6,7 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using ChilliSource.Cloud.Web;
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 
 namespace ChilliSource.Cloud.Web.MVC
 {

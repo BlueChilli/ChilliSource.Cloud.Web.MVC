@@ -1,4 +1,4 @@
-﻿using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;

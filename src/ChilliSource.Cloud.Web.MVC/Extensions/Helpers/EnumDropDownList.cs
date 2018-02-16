@@ -1,4 +1,4 @@
-﻿using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -134,7 +134,7 @@ namespace ChilliSource.Cloud.Web.MVC
                     {
                         options.Append(@"</optgroup>");
                     }
-                    options.Append(@"<optgroup label=""{0}"">".FormatWith(item.Group.Name));
+                    options.Append($@"<optgroup label=""{item.Group.Name}"">");
                 }
 
                 var option = new TagBuilder("option");

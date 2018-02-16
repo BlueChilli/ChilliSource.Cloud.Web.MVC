@@ -1,11 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.12
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChilliSource.Cloud.Web.MVC", "ChilliSource.Cloud.Web.MVC\ChilliSource.Cloud.Web.MVC.csproj", "{DE1BFC12-AFBD-42FF-B558-1F574515A7D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChilliSource.Cloud.Web.MVC.Tests", "ChilliSource.Cloud.Web.MVC.Tests\ChilliSource.Cloud.Web.MVC.Tests.csproj", "{F0846D92-C753-431D-AD0D-C83BE4F48494}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChilliSource.Cloud.Web.MVC.Tests", "ChilliSource.Cloud.Web.MVC.Tests\ChilliSource.Cloud.Web.MVC.Tests.csproj", "{F0846D92-C753-431D-AD0D-C83BE4F48494}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChilliSource.Core.Extensions", "..\..\ChilliSource.Core.Extensions\src\ChilliSource.Core.Extensions\ChilliSource.Core.Extensions.csproj", "{0D08BE61-5C58-4563-8AA7-2E45E3490A36}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChilliSource.Cloud.Web", "..\..\ChilliSource.Cloud.Web\src\ChilliSource.Cloud.Web\ChilliSource.Cloud.Web.csproj", "{440420B0-96BF-4C49-92C7-1276A2A24E97}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChilliSource.Cloud.Azure", "..\..\ChilliSource.Cloud.Azure\src\ChilliSource.Cloud.Azure\ChilliSource.Cloud.Azure.csproj", "{48B5398C-6716-45C5-A0E8-8711645611D1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChilliSource.Cloud.AWS", "..\..\ChilliSource.Cloud.AWS\src\ChilliSource.Cloud.AWS\ChilliSource.Cloud.AWS.csproj", "{720CA178-C2B9-498D-9484-6DCD1B2E1590}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChilliSource.Cloud.Core", "..\..\ChilliSource.Cloud.Core\src\ChilliSource.Cloud.Core\ChilliSource.Cloud.Core.csproj", "{C64EAC06-006C-4151-86EB-E8BE2FC0B9B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,11 +31,32 @@ Global
 		{F0846D92-C753-431D-AD0D-C83BE4F48494}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0846D92-C753-431D-AD0D-C83BE4F48494}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0846D92-C753-431D-AD0D-C83BE4F48494}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D08BE61-5C58-4563-8AA7-2E45E3490A36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D08BE61-5C58-4563-8AA7-2E45E3490A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D08BE61-5C58-4563-8AA7-2E45E3490A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D08BE61-5C58-4563-8AA7-2E45E3490A36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{440420B0-96BF-4C49-92C7-1276A2A24E97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{440420B0-96BF-4C49-92C7-1276A2A24E97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{440420B0-96BF-4C49-92C7-1276A2A24E97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{440420B0-96BF-4C49-92C7-1276A2A24E97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48B5398C-6716-45C5-A0E8-8711645611D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48B5398C-6716-45C5-A0E8-8711645611D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48B5398C-6716-45C5-A0E8-8711645611D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48B5398C-6716-45C5-A0E8-8711645611D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{720CA178-C2B9-498D-9484-6DCD1B2E1590}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{720CA178-C2B9-498D-9484-6DCD1B2E1590}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{720CA178-C2B9-498D-9484-6DCD1B2E1590}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{720CA178-C2B9-498D-9484-6DCD1B2E1590}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C64EAC06-006C-4151-86EB-E8BE2FC0B9B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C64EAC06-006C-4151-86EB-E8BE2FC0B9B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C64EAC06-006C-4151-86EB-E8BE2FC0B9B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C64EAC06-006C-4151-86EB-E8BE2FC0B9B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {71A6D1BF-E302-45BE-842E-F6B2AB726E40}
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8;packages\EnterpriseLibrary.TransientFaultHandling.Data.6.0.1304.1\lib\NET45
 	EndGlobalSection
 EndGlobal

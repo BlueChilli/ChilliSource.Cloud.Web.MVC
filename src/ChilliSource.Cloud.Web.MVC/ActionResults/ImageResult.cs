@@ -1,5 +1,5 @@
 ﻿
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -43,8 +43,8 @@ namespace ChilliSource.Cloud.Web.MVC
             context.HttpContext.Response.Clear();
 
             if (!String.IsNullOrEmpty(_fileName))
-            {
-                context.HttpContext.Response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", _fileName.ToFileName()));
+            {                                
+                context.HttpContext.Response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", _fileName.ToFilename()));
             }
             context.HttpContext.Response.ContentType = MimeMapping.GetMimeMapping(_format.FileExtension());
             _image.Save(context.HttpContext.Response.OutputStream, _format);

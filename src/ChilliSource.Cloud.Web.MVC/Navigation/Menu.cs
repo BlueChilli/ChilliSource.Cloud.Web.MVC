@@ -1,4 +1,4 @@
-﻿using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
 using System.Collections.Generic;
@@ -510,7 +510,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>Returns formatted icon name.</returns>
         private string ResolveIcon(string iconClasses)
         {
-            if (iconClasses.Equals("icon-white") && !String.IsNullOrEmpty(Icon)) return "{0} {1}".FormatWith(Icon, iconClasses);
+            if (iconClasses.Equals("icon-white") && !String.IsNullOrEmpty(Icon)) return $"{Icon} {iconClasses}";
             return iconClasses.DefaultTo(Icon);
         }
 
@@ -789,8 +789,8 @@ namespace ChilliSource.Cloud.Web.MVC
                 var format = "$('.{0}').unbind('click').bind('click', function () {{ window.location.href = '{1}?' + {2}; }});";
                 // http://stackoverflow.com/questions/8648892/convert-url-parameters-to-a-javascript-object/13366851#13366851
                 var currentParams = string.IsNullOrWhiteSpace(uri.Query) ? "{}" :
-                        @"JSON.parse('{{""' + decodeURI({0}).replace(/""/g, '\\""').replace(/&/g, '"",""').replace(/=/g,'"":""') + '""}}')".FormatWith(uri.Query);
-                var query = "$.param($.extend($(this).data(), {0}, {1}))".FormatWith(currentParams, pageDataFunction);
+                        $@"JSON.parse('{{""' + decodeURI({uri.Query}).replace(/""/g, '\\""').replace(/&/g, '"",""').replace(/=/g,'"":""') + '""}}')";
+                var query = $"$.param($.extend($(this).data(), {currentParams}, {pageDataFunction}))";
 
                 return MvcHtmlString.Create(String.Format(format, selector, uri.AbsolutePath, query));
             }

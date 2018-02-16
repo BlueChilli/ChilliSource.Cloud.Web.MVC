@@ -1,4 +1,5 @@
-﻿using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,7 +34,7 @@ namespace ChilliSource.Cloud.Web.MVC.Extensions
         /// </summary>
         public static async Task<FileStreamResult> WriteAttachmentContentAsync(this IFileStorage fileStorage, HttpResponse response, string filename, string attachmentFilename = "", StorageEncryptionKeys encryptionKeys = null)
         {
-            attachmentFilename = attachmentFilename.DefaultTo(filename).ToFileName();
+            attachmentFilename = attachmentFilename.DefaultTo(filename).ToFilename();
             if (!Path.HasExtension(attachmentFilename)) attachmentFilename = attachmentFilename + Path.GetExtension(filename);
             response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", attachmentFilename));
 

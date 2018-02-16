@@ -181,7 +181,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             returnUrl = filterContext.RequestContext.TransformUrl(returnUrl);
 
-            redirectTo = UriExtensions.Parse(redirectTo, new { ReturnUrl = returnUrl }).AbsoluteUri;
+            redirectTo = UriExtensions.Parse(redirectTo).AddQuery(new { ReturnUrl = returnUrl }).AbsoluteUri;
             if (filterContext.HttpContext.Request.IsAjaxRequest())
             {
                 filterContext.HttpContext.Response.Headers["X-Ajax-Redirect"] = redirectTo;

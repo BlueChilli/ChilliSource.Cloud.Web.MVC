@@ -10,7 +10,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using ChilliSource.Cloud.Web;
 using ChilliSource.Cloud.Core.Phone;
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 
 namespace ChilliSource.Cloud.Web.MVC
 {

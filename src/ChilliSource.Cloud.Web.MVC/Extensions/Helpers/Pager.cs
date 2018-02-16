@@ -1,4 +1,4 @@
-﻿using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
 using System.Collections.Generic;
@@ -51,15 +51,15 @@ namespace ChilliSource.Cloud.Web.MVC
                 : @"<li{0}><a href=""javascript:void(0);"" data-page=""{1}"" data-control=""{2}""{3}>{4}</a></li>";
 
             if (start != 1)
-                list.Append(listItemFormat.FormatWith(@" class=""previous""", start - 1, metadata.PropertyName, pagerId, pagerOptions.PreviousHtml.DefaultTo("«")));
+                list.Append(String.Format(listItemFormat, @" class=""previous""", start - 1, metadata.PropertyName, pagerId, pagerOptions.PreviousHtml.DefaultTo("«")));
 
             for (int i = start; i <= finish; i++)
             {
-                list.Append(listItemFormat.FormatWith(i == currentPage ? @" class=""active""" : "", i, metadata.PropertyName, pagerId, i));
+                list.Append(String.Format(listItemFormat, i == currentPage ? @" class=""active""" : "", i, metadata.PropertyName, pagerId, i));
             }
 
             if (finish != pageCount)
-                list.Append(listItemFormat.FormatWith(@" class=""next""", finish + 1, metadata.PropertyName, pagerId, pagerOptions.NextHtml.DefaultTo("»")));
+                list.Append(String.Format(listItemFormat, @" class=""next""", finish + 1, metadata.PropertyName, pagerId, pagerOptions.NextHtml.DefaultTo("»")));
 
             list.Append("</ul>");
 

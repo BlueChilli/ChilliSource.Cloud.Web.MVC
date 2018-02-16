@@ -1,4 +1,4 @@
-﻿using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,7 +76,7 @@ namespace ChilliSource.Cloud.Web.MVC
             for (var i = 0; i < list.Count(); i++)
             {
                 var item = list.ElementAt(i);
-                var onclick = "$('#{0}').val($(this).val()).change();".FormatWith(properyId);
+                var onclick = $"$('#{properyId}').val($(this).val()).change();";
                 var format = @"<button class=""btn{0}"" name=""{1}"" value=""{2}"" data-toggle=""button"" type=""button"" onclick=""{3}"">{4}</button>";
                 sb.AppendFormat(format, metaData.Model != null && metaData.Model.ToString() == item.Value ? " active" : "", propertyName, item.Value, onclick, item.Text);
             }

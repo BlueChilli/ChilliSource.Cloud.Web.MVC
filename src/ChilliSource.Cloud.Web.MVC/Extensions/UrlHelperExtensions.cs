@@ -1,4 +1,4 @@
-﻿using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (httpContext == null)
             {
-                var request = new HttpRequest("/", ProjectConfigurationSection.GetConfig().BaseUrl, "");                
+                var request = new HttpRequest("/", GlobalWebConfiguration.Instance.BaseUrl, "");                
                 var response = new HttpResponse(new StringWriter());
                 httpContext = new HttpContext(request, response);
             }
@@ -178,14 +178,14 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (String.IsNullOrEmpty(routeName))
             {
-                routeValuesDictionary["area"] = StringExtensions.DefaultTo(routeValuesDictionary["area"], areaName);
+                routeValuesDictionary["area"] = StringExtensions.DefaultTo((string)routeValuesDictionary["area"], areaName);
             }
             else
             {
-                var routeAction = StringExtensions.DefaultTo(routeValuesDictionary["action"], actionName);
+                var routeAction = StringExtensions.DefaultTo((string)routeValuesDictionary["action"], actionName);
                 if (!String.IsNullOrEmpty(routeAction)) routeValuesDictionary["action"] = routeAction;
 
-                var routeController = StringExtensions.DefaultTo(routeValuesDictionary["controller"], controllerName);
+                var routeController = StringExtensions.DefaultTo((string)routeValuesDictionary["controller"], controllerName);
                 if (!String.IsNullOrEmpty(routeController)) routeValuesDictionary["controller"] = routeController;
             }
 
@@ -231,7 +231,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (url.StartsWith("~"))
             {
                 var httpContext = urlHelper.RequestContext.HttpContext;
-                var appPath = httpContext.Request.ApplicationPath ?? new Uri(ProjectConfigurationSection.GetConfig().BaseUrl).PathAndQuery;
+                var appPath = httpContext.Request.ApplicationPath ?? new Uri(GlobalWebConfiguration.Instance.BaseUrl).PathAndQuery;
                 url = VirtualPathUtility.ToAbsolute(url, appPath);
             }
             url = urlHelper.RequestContext.HttpContext.Request.Url.GetLeftPart(UriPartial.Authority) + url;

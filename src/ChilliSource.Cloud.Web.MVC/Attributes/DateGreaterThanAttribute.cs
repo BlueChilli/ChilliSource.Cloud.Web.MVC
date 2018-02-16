@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
 using System.ComponentModel;
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
