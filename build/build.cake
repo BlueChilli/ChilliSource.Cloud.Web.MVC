@@ -475,9 +475,14 @@ Task("Default")
 });
 
 // Used to test Setup / Teardown
+// Used to test Setup / Teardown
 Task("None")
 	.Does(() => {
-
+		Information("local: " + local); 
+		Information("isPullRequest: " + isPullRequest); 
+		Information("isRepository: " + isRepository); 
+		Information("productName: " + productName); 
+		Information("projectName: " + projectName); 
 	});
 
 //////////////////////////////////////////////////////////////////////
