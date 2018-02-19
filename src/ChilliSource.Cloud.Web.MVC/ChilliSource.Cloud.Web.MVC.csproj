@@ -28,19 +28,16 @@
 
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
-    <!--<PackageReference Include="ChilliSource.Cloud.Web" Version="1.0.0-alpha0005" />-->
+    <PackageReference Include="ChilliSource.Cloud.Web" Version="1.0.0-alpha0006" />
+    <PackageReference Include="ChilliSource.Core.Extensions" Version="2.0.1-alpha0006" />
+    <PackageReference Include="ChilliSource.Cloud.Core" Version="1.0.1-alpha0012" />
+    
     <PackageReference Include="ImageResizer" Version="3.4.3" />
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.3" />
     <PackageReference Include="Microsoft.AspNet.Razor" Version="3.2.3" />
     <PackageReference Include="Microsoft.AspNet.WebPages" Version="3.2.3" />
     <PackageReference Include="Microsoft.Web.Infrastructure" Version="1.0.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\ChilliSource.Cloud.Core\src\ChilliSource.Cloud.Core\ChilliSource.Cloud.Core.csproj" />
-    <ProjectReference Include="..\..\..\ChilliSource.Cloud.Web\src\ChilliSource.Cloud.Web\ChilliSource.Cloud.Web.csproj" />
-    <ProjectReference Include="..\..\..\ChilliSource.Core.Extensions\src\ChilliSource.Core.Extensions\ChilliSource.Core.Extensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

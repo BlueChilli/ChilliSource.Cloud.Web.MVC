@@ -23,7 +23,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="altText">Optional alt text.</param>
         /// <param name="htmlAttributes">Optional attribute to include in the img tag.</param>
         /// <returns>An image tag with image encoded as base64.</returns>
-        public static MvcHtmlString ImgEmbedded(byte[] data, string altText = null, object htmlAttributes = null)
+        public static MvcHtmlString ImgEmbedded(this HtmlHelper html, byte[] data, string altText = null, object htmlAttributes = null)
         {
             TagBuilder builder = new TagBuilder("img");
 
@@ -70,8 +70,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         /// <summary>
         /// Returns HTML string for the image element.
-        /// </summary>
-        /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
+        /// </summary>        
         /// <param name="filename">The name of image file.</param>
         /// <param name="width">The width of the image.</param>
         /// <param name="height">The height of the image.</param>
@@ -87,7 +86,6 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Returns HTML string for the image element.
         /// </summary>
-        /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="filename">The name of image file.</param>
         /// <param name="cmd">The BlueChilli.Web.ImageResizerCommand for the width and height of the image.</param>
         /// <param name="altText">The alternate text of the image.</param>
@@ -109,7 +107,6 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Returns the fully qualified URL for the specified image file.
         /// </summary>
-        /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="filename">The file name of the image.</param>
         /// <returns>A fully qualified URL for the specified image file.</returns>
         public string ImageUrl(string filename)
@@ -147,7 +144,6 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Returns HTML string for the cloud image element (Image stored in the Cloud - s3 or azure).
         /// </summary>
-        /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="filename">The name of image file.</param>
         /// <param name="cmd">The BlueChilli.Web.ImageResizerCommand for the width and height of the image.</param>
         /// <param name="altText">The alternate text of the image.</param>
@@ -181,7 +177,6 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Returns CSS background property with S3 image stored in Amazon S3 storage.
         /// </summary>
-        /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="filename">The name of image file.</param>
         /// <param name="width">The width of the image.</param>
         /// <param name="height">The height of the image.</param>
@@ -196,7 +191,6 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Returns CSS background property with S3 image stored in Amazon S3 storage.
         /// </summary>
-        /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="filename">The name of image file.</param>
         /// <param name="cmd">The BlueChilli.Web.ImageResizerCommand for the width and height of the image.</param>
         /// <param name="norepeat">True to set "no-repeat" value in CSS property, otherwise not.</param>
@@ -212,7 +206,6 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         ///     Returns the url the Azure image (Image stored in Azure storage).
         /// </summary>
-        /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="filename">The name of image file.</param>
         /// <param name="cmd">The BlueChilli.Web.ImageResizerCommand for the width and height of the image.</param>
         /// <param name="protocol">The protocol of the URL ("http" or "https").</param>
