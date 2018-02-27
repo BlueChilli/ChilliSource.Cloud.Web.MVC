@@ -62,7 +62,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
     }
 
     /// <summary>
-    /// Enumeration values for BlueChilli.Web.Misc.QRCodeErrorCorrectionLevel.
+    /// Enumeration values for Misc.QRCodeErrorCorrectionLevel.
     /// </summary>
     public enum QRCodeErrorCorrectionLevel
     {

@@ -22,8 +22,8 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="allowFullScreen">True to allow full screen mode, otherwise not.</param>
         /// <param name="showRelatedVideos">True to display related videos, otherwise not.</param>
         /// <param name="showYouTubeBranding">True to display YouTube branding, otherwise not.</param>
-        /// <param name="windowMode">The window mode defined by BlueChilli.Web.Misc.YouTubeWindowMode.</param>
-        /// <param name="theme">The theme defined by BlueChilli.Web.Misc.YouTubeTheme.</param>
+        /// <param name="windowMode">The window mode defined by Misc.YouTubeWindowMode.</param>
+        /// <param name="theme">The theme defined by Misc.YouTubeTheme.</param>
         /// <returns>An HTML and script element for YoutTube.</returns>
         /// <remarks>https://developers.google.com/youtube/player_parameters</remarks>
         public static MvcHtmlString YouTubeEmbed(this HtmlHelper helper, string videoId, int width, int? height = null, object htmlAttributes = null, bool allowFullScreen = true, bool showRelatedVideos = false, bool showYouTubeBranding = true, YouTubeWindowMode windowMode = YouTubeWindowMode.None, YouTubeTheme theme = YouTubeTheme.Dark, bool autoPlay = false)
@@ -42,7 +42,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
     }
 
     /// <summary>
-    /// Enumeration values for BlueChilli.Web.Misc.YouTubeWindowMode.
+    /// Enumeration values for Misc.YouTubeWindowMode.
     /// </summary>
     public enum YouTubeWindowMode
     {
@@ -61,7 +61,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
     }
 
     /// <summary>
-    /// Enumeration values for BlueChilli.Web.Misc.YouTubeTheme.
+    /// Enumeration values for Misc.YouTubeTheme.
     /// </summary>
     public enum YouTubeTheme
     {

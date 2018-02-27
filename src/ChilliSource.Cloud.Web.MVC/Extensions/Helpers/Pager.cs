@@ -23,7 +23,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="currentPage">The page number for current page.</param>
         /// <param name="pageCount">Specifies how many items on one page.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
-        /// <param name="pagerOptions">Page options defined by BlueChilli.Web.Helpers.PagerOptions.</param>
+        /// <param name="pagerOptions">Page options defined by Helpers.PagerOptions.</param>
         /// <returns>An HTML string for pager.</returns>
         public static MvcHtmlString PagerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, int currentPage, int pageCount, object htmlAttributes = null, PagerOptions pagerOptions = null)
         {
@@ -107,7 +107,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="currentPage">The page number for current page.</param>
         /// <param name="pageCount">Specifies how many items on one page.</param>
-        /// <param name="pagerOptions">Page options defined by BlueChilli.Web.Helpers.PagerOptions.</param>
+        /// <param name="pagerOptions">Page options defined by Helpers.PagerOptions.</param>
         /// <returns>An HTML string for pager previous link.</returns>
         public static MvcHtmlString PagerLoopPrevious(this HtmlHelper html, int currentPage, int pageCount, PagerOptions pagerOptions = null)
         {
@@ -126,7 +126,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="currentPage">The page number for current page.</param>
         /// <param name="pageCount">Specifies how many items on one page.</param>
-        /// <param name="pagerOptions">Page options defined by BlueChilli.Web.Helpers.PagerOptions.</param>
+        /// <param name="pagerOptions">Page options defined by Helpers.PagerOptions.</param>
         /// <returns>An HTML string for pager next link.</returns>
         public static MvcHtmlString PagerLoopNext(this HtmlHelper html, int currentPage, int pageCount, PagerOptions pagerOptions = null)
         {
@@ -149,7 +149,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="currentPage">The page number for current page.</param>
         /// <param name="pageCount">Specifies how many items on one page.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
-        /// <param name="pagerOptions">Page options defined by BlueChilli.Web.Helpers.PagerOptions.</param>
+        /// <param name="pagerOptions">Page options defined by Helpers.PagerOptions.</param>
         /// <returns>An HTML string for pager with next and back links.</returns>
         public static MvcHtmlString PagerNextBackFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, int currentPage, int pageCount, object htmlAttributes = null, PagerOptions pagerOptions = null)
         {

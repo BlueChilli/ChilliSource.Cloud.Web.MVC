@@ -26,9 +26,9 @@ namespace ChilliSource.Cloud.Web.MVC
         }
 
         /// <summary>
-        /// Get directory path from configuration file based on the BlueChilli.Lib.Configuration.DirectoryType.
+        /// Get directory path from configuration file based on the DirectoryType.
         /// </summary>
-        /// <param name="type">A BlueChilli.Lib.Configuration.DirectoryType enum that represents directory type.</param>
+        /// <param name="type">A DirectoryType enum that represents directory type.</param>
         /// <returns>The directory path from configuration file.</returns>
         internal string GetDirectory(DirectoryType type)
         {

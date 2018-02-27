@@ -87,7 +87,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Returns HTML string for the image element.
         /// </summary>
         /// <param name="filename">The name of image file.</param>
-        /// <param name="cmd">The BlueChilli.Web.ImageResizerCommand for the width and height of the image.</param>
+        /// <param name="cmd">The ImageResizerCommand for the width and height of the image.</param>
         /// <param name="altText">The alternate text of the image.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes to set for the image element.</param>
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
@@ -145,7 +145,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Returns HTML string for the cloud image element (Image stored in the Cloud - s3 or azure).
         /// </summary>
         /// <param name="filename">The name of image file.</param>
-        /// <param name="cmd">The BlueChilli.Web.ImageResizerCommand for the width and height of the image.</param>
+        /// <param name="cmd">The ImageResizerCommand for the width and height of the image.</param>
         /// <param name="altText">The alternate text of the image.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes to set for the image element.</param>
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
@@ -192,7 +192,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Returns CSS background property with S3 image stored in Amazon S3 storage.
         /// </summary>
         /// <param name="filename">The name of image file.</param>
-        /// <param name="cmd">The BlueChilli.Web.ImageResizerCommand for the width and height of the image.</param>
+        /// <param name="cmd">The ImageResizerCommand for the width and height of the image.</param>
         /// <param name="norepeat">True to set "no-repeat" value in CSS property, otherwise not.</param>
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
         /// <returns>An HTML-encoded string for CSS background property.</returns>
@@ -207,7 +207,7 @@ namespace ChilliSource.Cloud.Web.MVC
         ///     Returns the url the Azure image (Image stored in Azure storage).
         /// </summary>
         /// <param name="filename">The name of image file.</param>
-        /// <param name="cmd">The BlueChilli.Web.ImageResizerCommand for the width and height of the image.</param>
+        /// <param name="cmd">The ImageResizerCommand for the width and height of the image.</param>
         /// <param name="protocol">The protocol of the URL ("http" or "https").</param>
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
         /// <returns>The Azure image url</returns>
@@ -222,7 +222,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Returns a fully qualified URL with image resize query parameters for the image file stored in Azure.
         /// </summary>
         /// <param name="filename">The name of the image file.</param>
-        /// <param name="cmd">The BlueChilli.Web.ImageResizerCommand.</param>
+        /// <param name="cmd">The ImageResizerCommand.</param>
         /// <param name="protocol">The protocol of the URL ("http" or "https").</param>
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
         /// <returns>A fully qualified URL with image resize query parameters for the image file in the remote storage.</returns>
@@ -251,7 +251,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Appends image resize query parameters to the image file name.
         /// </summary>
         /// <param name="filename">The name of the image file.</param>
-        /// <param name="cmd">The BlueChilli.Web.ImageResizerCommand.</param>
+        /// <param name="cmd">The ImageResizerCommand.</param>
         /// <returns>An image file name with image resize query parameters appended.</returns>
         public string ImageResizerQuery(string filename, ImageResizerCommand cmd)
         {
@@ -284,7 +284,7 @@ namespace ChilliSource.Cloud.Web.MVC
     public class ImageResizerCommand
     {
         /// <summary>
-        /// Initialize a new instance of BlueChilli.Web.ImageResizerCommand with "AutoRotate" property set to True.
+        /// Initialize a new instance of ImageResizerCommand with "AutoRotate" property set to True.
         /// </summary>
         public ImageResizerCommand()
         {
@@ -379,7 +379,7 @@ namespace ChilliSource.Cloud.Web.MVC
     }
 
     /// <summary>
-    /// The enumeration values for BlueChilli.Web.ImageResizerMode. How to handle aspect-ratio conflicts between the image and width+height.
+    /// The enumeration values for ImageResizerMode. How to handle aspect-ratio conflicts between the image and width+height.
     /// </summary>
     public enum ImageResizerMode
     {
@@ -407,12 +407,12 @@ namespace ChilliSource.Cloud.Web.MVC
     }
 
     /// <summary>
-    /// Enumeration values for BlueChilli.Web.ImageResizerAnchor. How to anchor the image when padding or cropping.
+    /// Enumeration values for ImageResizerAnchor. How to anchor the image when padding or cropping.
     /// </summary>
     public enum ImageResizerAnchor
     {
         /// <summary>
-        /// Do not specify options for BlueChilli.Web.ImageResizerAnchor.
+        /// Do not specify options for ImageResizerAnchor.
         /// </summary>
         None,
         /// <summary>
@@ -454,12 +454,12 @@ namespace ChilliSource.Cloud.Web.MVC
     }
 
     /// <summary>
-    /// Enumeration values for BlueChilli.Web.ImageResizerScale. By default, images are not enlarged - the image stays its original size if you request a larger size.
+    /// Enumeration values for ImageResizerScale. By default, images are not enlarged - the image stays its original size if you request a larger size.
     /// </summary>
     public enum ImageResizerScale
     {
         /// <summary>
-        /// Do not specify options for BlueChilli.Web.ImageResizerScale.
+        /// Do not specify options for ImageResizerScale.
         /// </summary>
         None,
         /// <summary>
@@ -477,12 +477,12 @@ namespace ChilliSource.Cloud.Web.MVC
     }
 
     /// <summary>
-    /// Enumeration values for BlueChilli.Web.ImageResizerFormat. The output format to use.
+    /// Enumeration values for ImageResizerFormat. The output format to use.
     /// </summary>
     public enum ImageResizerFormat
     {
         /// <summary>
-        /// Do not specify options for BlueChilli.Web.ImageResizerFormat, keep the original format.
+        /// Do not specify options for ImageResizerFormat, keep the original format.
         /// </summary>
         Original,
         /// <summary>
@@ -500,12 +500,12 @@ namespace ChilliSource.Cloud.Web.MVC
     }
 
     /// <summary>
-    /// Enumeration values for BlueChilli.Web.ImageRetinaScale. Returns larger image and use CSS to constrain image to actual size. Retina screens will make use of the extra pixels.
+    /// Enumeration values for ImageRetinaScale. Returns larger image and use CSS to constrain image to actual size. Retina screens will make use of the extra pixels.
     /// </summary>
     public enum ImageRetinaScale
     {
         /// <summary>
-        /// Do not specify options for BlueChilli.Web.ImageRetinaScale
+        /// Do not specify options for ImageRetinaScale
         /// </summary>
         None,
         /// <summary>

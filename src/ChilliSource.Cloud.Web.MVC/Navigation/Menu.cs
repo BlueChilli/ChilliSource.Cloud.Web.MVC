@@ -1303,7 +1303,7 @@ namespace ChilliSource.Cloud.Web.MVC
     public class HtmlLinkFieldOptions : HtmlDefaultFieldOptions
     {
         /// <summary>
-        /// Initialises a new instance of BlueChilli.Web.HtmlLinkFieldOptions class.
+        /// Initialises a new instance of HtmlLinkFieldOptions class.
         /// </summary>
         public HtmlLinkFieldOptions()
         {
@@ -1363,7 +1363,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Checks whether the menu item is visible or not.
         /// </summary>
-        /// <param name="Menu">The BlueChilli.Web.MenuNode.</param>
+        /// <param name="Menu">The MenuNode.</param>
         /// <returns>True if menu item is visible, otherwise false.</returns>
         bool IsVisible(MenuNode Menu);
     }
@@ -1376,7 +1376,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Checks whether the menu item is active or not
         /// </summary>
-        /// <param name="menu">The BlueChilli.Web.MenuNode.</param>
+        /// <param name="menu">The MenuNode.</param>
         /// <param name="routeValues"></param>
         /// <returns>True if menu item is active, otherwise false</returns>
         bool IsActive(MenuNode menu, object routeValues = null);

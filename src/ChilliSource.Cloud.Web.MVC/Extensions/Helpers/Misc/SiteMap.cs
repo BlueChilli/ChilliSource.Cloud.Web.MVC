@@ -18,7 +18,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
     public class SitemapItem : ISitemapItem
     {
         /// <summary>
-        /// Initialize a new instance of BlueChilli.Web.Misc.SitemapItem with specified URL.
+        /// Initialize a new instance of Misc.SitemapItem with specified URL.
         /// </summary>
         /// <param name="url"></param>
         public SitemapItem(string url)
@@ -120,7 +120,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
     }
 
     /// <summary>
-    /// Enumeration values for BlueChilli.Web.Misc.SiteMapChangeFrequency.
+    /// Enumeration values for Misc.SiteMapChangeFrequency.
     /// </summary>
     public enum SiteMapChangeFrequency
     {

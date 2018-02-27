@@ -90,7 +90,7 @@
 //        /// <param name="url">The URL for Facebook comments box.</param>
 //        /// <param name="numberPostsToShow">Number of posts to display.</param>
 //        /// <param name="controlWidth">The width of the control.</param>
-//        /// <param name="theme">The Facebook color theme defined by BlueChilli.Web.Misc.FacebookTheme.</param>
+//        /// <param name="theme">The Facebook color theme defined by Misc.FacebookTheme.</param>
 //        /// <param name="responsive">True to render for mobile, otherwise not.</param>
 //        /// <returns>An HTML element for Facebook comments box.</returns>
 //        /// <remarks>http://developers.facebook.com/docs/reference/plugins/comments/</remarks>
@@ -106,10 +106,10 @@
 //        /// </summary>
 //        /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
 //        /// <param name="url">The URL for Facebook like button.</param>
-//        /// <param name="facebookLikeStyle">The style defined by BlueChilli.Web.Misc.FacebookLikeStyle.</param>
+//        /// <param name="facebookLikeStyle">The style defined by Misc.FacebookLikeStyle.</param>
 //        /// <param name="includeSend">True to include send button, otherwise not.</param>
-//        /// <param name="text">The text defined by BlueChilli.Web.Misc.FacebookLikeText.</param>
-//        /// <param name="theme">The Facebook color theme defined by BlueChilli.Web.Misc.FacebookTheme.</param>
+//        /// <param name="text">The text defined by Misc.FacebookLikeText.</param>
+//        /// <param name="theme">The Facebook color theme defined by Misc.FacebookTheme.</param>
 //        /// <returns>An HTML element for Facebook comments like button.</returns>
 //        /// <remarks>http://developers.facebook.com/docs/reference/plugins/like/</remarks>
 //        public static MvcHtmlString FacebookLike(this HtmlHelper html, string url = "", FacebookLikeStyle facebookLikeStyle = FacebookLikeStyle.ButtonCount, bool includeSend = false, FacebookLikeText text = FacebookLikeText.Like, FacebookTheme theme = FacebookTheme.Light)

@@ -30,11 +30,11 @@ namespace ChilliSource.Cloud.Web.MVC
         }
 
         /// <summary>
-        /// Adds error in BlueChilli.Model.ServiceResult&lt;T&gt; to the specified model state.
+        /// Adds error in ServiceResult&lt;T&gt; to the specified model state.
         /// </summary>
-        /// <typeparam name="T">The type of object in BlueChilli.Model.ServiceResult.</typeparam>
+        /// <typeparam name="T">The type of object in ServiceResult.</typeparam>
         /// <param name="modelState">The specified model state.</param>
-        /// <param name="serviceResult">The specified BlueChilli.Model.ServiceResult&lt;T&gt;.</param>
+        /// <param name="serviceResult">The specified ServiceResult&lt;T&gt;.</param>
         public static void AddResult<T>(this ModelStateDictionary modelState, ServiceResult<T> serviceResult)
         {
             if (serviceResult != null && !String.IsNullOrEmpty(serviceResult.Error))

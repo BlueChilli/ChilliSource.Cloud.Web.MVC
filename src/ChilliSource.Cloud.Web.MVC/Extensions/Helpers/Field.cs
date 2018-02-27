@@ -75,7 +75,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="name">The name of the input field.</param>
-        /// <param name="inputType">The type of the input field defined by BlueChilli.Models.FieldInputType.</param>
+        /// <param name="inputType">The type of the input field defined by FieldInputType.</param>
         /// <param name="label">The label text of the input field.</param>
         /// <param name="value">The value of the input field.</param>
         /// <param name="helpText">The value of the input field. (not used)</param>

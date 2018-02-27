@@ -9,17 +9,17 @@ using System.Web.Mvc;
 namespace ChilliSource.Cloud.Web.MVC
 {
     /// <summary>
-    /// Extension methods for BlueChilli.Model.ServiceResult&lt;T&gt;.
+    /// Extension methods for ServiceResult&lt;T&gt;.
     /// </summary>
     public static class ServiceResultExtensions
     {
         /// <summary>
-        /// Adds the specified BlueChilli.Model.ServiceResult&lt;T&gt; to controller.
+        /// Adds the specified ServiceResult&lt;T&gt; to controller.
         /// </summary>
-        /// <typeparam name="T">The type of object in BlueChilli.Model.ServiceResult.</typeparam>
-        /// <param name="svcResult">The specified BlueChilli.Model.ServiceResult&lt;T&gt;.</param>
+        /// <typeparam name="T">The type of object in ServiceResult.</typeparam>
+        /// <param name="svcResult">The specified ServiceResult&lt;T&gt;.</param>
         /// <param name="controller">The specified controller.</param>
-        /// <returns>A BlueChilli.Model.ServiceResult&lt;T&gt;.</returns>
+        /// <returns>A ServiceResult&lt;T&gt;.</returns>
         public static ServiceResult<T> AddToModelState<T>(this ServiceResult<T> svcResult, Controller controller)
         {
             if (!svcResult.Success)
