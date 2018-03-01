@@ -18,7 +18,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public string StylesDirectory { get; set; } = "~/Styles/";
         public string ImagesDirectory { get; set; } = "~/Images/";
         public string ScriptsDirectory { get; set; } = "~/Scripts/";
-        public string DefaultFieldCSS { get; internal set; }
+        public string DefaultFieldCSS { get; set; }
 
         internal string GetPath(DirectoryType type, string filename)
         {
