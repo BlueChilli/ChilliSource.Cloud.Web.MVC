@@ -92,7 +92,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="htmlAttributes">An object that contains the HTML attributes to set for the image element.</param>
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
         /// <returns>An HTML-encoded string for the image element.</returns>
-        public MvcHtmlString Image(string filename, ImageResizerCommand cmd, string altText = null, object htmlAttributes = null, string alternativeImage = "")
+        public MvcHtmlString ImageLocal(string filename, ImageResizerCommand cmd, string altText = null, object htmlAttributes = null, string alternativeImage = "")
         {
             TagBuilder builder = new TagBuilder("img");
 
