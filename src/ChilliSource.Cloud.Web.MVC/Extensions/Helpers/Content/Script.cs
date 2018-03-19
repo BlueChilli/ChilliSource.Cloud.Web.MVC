@@ -6,29 +6,6 @@ namespace ChilliSource.Cloud.Web.MVC
 {
     public static partial class HtmlHelperExtensions
     {
-        /// <summary>
-        /// Returns HTML string for the script element.
-        /// </summary>
-        /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
-        /// <param name="filename">The JavaScript file name.</param>
-        /// <returns>An HTML string for the script element.</returns>
-        public static MvcHtmlString Script(this HtmlHelper html, string filename)
-        {
-            string format = @"<script src=""{0}"" type=""text/javascript""></script>";
-
-            return new MvcHtmlString(String.Format(format, ResolveFilenameToUrl(html, DirectoryType.Scripts, filename)));
-        }
-
-        private static MvcHtmlString ScriptOnJqueryReadyStart(this HtmlHelper html)
-        {
-            return MvcHtmlString.Create(html.ViewContext.RequestContext.HttpContext.Request.IsAjaxRequest() ? "" : "$(function () {");
-        }
-
-        private static MvcHtmlString ScriptOnJqueryReadyEnd(this HtmlHelper html)
-        {
-            return MvcHtmlString.Create(html.ViewContext.RequestContext.HttpContext.Request.IsAjaxRequest() ? "" : "});");
-        }
-
         ///// <summary>
         ///// Returns HTML string for the script element of Google map API with key and library parameters from ChilliSource web project configuration file.
         ///// </summary>

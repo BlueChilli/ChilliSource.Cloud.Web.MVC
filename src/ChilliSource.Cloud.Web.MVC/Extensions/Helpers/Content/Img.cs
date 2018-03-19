@@ -96,7 +96,7 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             TagBuilder builder = new TagBuilder("img");
 
-            builder.Attributes.Add("src", ImageResizerQuery(ResolveFilenameToUrl(DirectoryType.Images, filename, alternativeImage), cmd));
+            builder.Attributes.Add("src", ImageResizerQuery(ResolveFilenameToUrl(filename, alternativeImage), cmd));
             if (!String.IsNullOrEmpty(altText)) builder.Attributes.Add("alt", altText);
             if (cmd.Width.HasValue) builder.Attributes.Add("width", cmd.Width.Value.ToString());
             if (cmd.Height.HasValue) builder.Attributes.Add("height", cmd.Height.Value.ToString());
@@ -111,10 +111,10 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>A fully qualified URL for the specified image file.</returns>
         public string ImageUrl(string filename)
         {
-            return ResolveFilenameToUrl(DirectoryType.Images, filename);
+            return ResolveFilenameToUrl(filename);
         }
 
-        private string ResolveFilenameToUrl(DirectoryType directoryType, string filename, string alternativeImage = "")
+        private string ResolveFilenameToUrl(string filename, string alternativeImage = "")
         {
             string url = "";
             filename = StringExtensions.DefaultTo(filename, alternativeImage);
@@ -130,10 +130,15 @@ namespace ChilliSource.Cloud.Web.MVC
             }
             else
             {
-                url = GlobalMVCConfiguration.Instance.GetPath(directoryType, filename);
+                url = GetLocalImagePath(filename);
             }
 
             return urlHelper.Value.Content(url);
+        }
+
+        private static string GetLocalImagePath(string filename)
+        {
+            return "~/Images/" + filename;
         }
 
         private string ResolveProtocol(string url, string protocol)

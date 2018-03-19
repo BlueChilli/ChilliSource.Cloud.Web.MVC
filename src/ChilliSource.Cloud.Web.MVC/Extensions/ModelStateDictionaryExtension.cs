@@ -49,7 +49,12 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="expression">A lambda expression to get model name.</param>
         public static void RemoveFor<TModel>(this ModelStateDictionary modelState, Expression<Func<TModel, object>> expression)
         {
-            string expressionText = ExpressionHelper.GetExpressionText(expression);
+            var lambdaExpression = (LambdaExpression)expression;
+            if (lambdaExpression.Body.NodeType == ExpressionType.Convert || lambdaExpression.Body.NodeType == ExpressionType.ConvertChecked)
+            {
+                lambdaExpression = Expression.Lambda(((UnaryExpression)lambdaExpression.Body).Operand, lambdaExpression.Parameters);
+            }
+            string expressionText = ExpressionHelper.GetExpressionText(lambdaExpression);
 
             foreach (var msCopy in modelState.ToArray())
             {

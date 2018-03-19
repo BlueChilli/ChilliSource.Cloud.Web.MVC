@@ -185,8 +185,8 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An object of MenuNode.</returns>
         public static MenuNode GetReferredMenu()
         {
-            var routeData = RouteHelper.GetRouteDataByUrl(HttpContext.Current.Request.UrlReferrer).Values;
-            return GetMenuFromRouteDate(routeData);
+            var routeData = RouteHelper.GetRouteDataByUrl(HttpContext.Current.Request.UrlReferrer);
+            return GetMenuFromRouteData(routeData);
         }
 
         /// <summary>
@@ -198,10 +198,17 @@ namespace ChilliSource.Cloud.Web.MVC
             var returnUrl = Authentication.GetReturnUrl();
             if (Authentication.IsValidReturnUrl(returnUrl))
             {
-                var routeData = RouteHelper.GetRouteDataByUrl(returnUrl).Values;
-                return GetMenuFromRouteDate(routeData);
+                var routeData = RouteHelper.GetRouteDataByUrl(returnUrl);
+                return GetMenuFromRouteData(routeData);
             }
             return null;
+        }
+
+        public static MenuNode GetMenuFromRouteData(RouteData routeData)
+        {
+            if (routeData.DataTokens.ContainsKey(RouteHelper.KeyArea)) routeData.Values.AddOrSkipIfExists(RouteHelper.KeyArea, routeData.DataTokens[RouteHelper.KeyArea]);
+
+            return GetMenuFromRouteData(routeData.Values);
         }
 
         /// <summary>
@@ -209,7 +216,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         /// <param name="routeData">A System.Web.Routing.RouteValueDictionary.</param>
         /// <returns>An object of MenuNode.</returns>
-        public static MenuNode GetMenuFromRouteDate(RouteValueDictionary routeData)
+        public static MenuNode GetMenuFromRouteData(RouteValueDictionary routeData)
         {
             var area = RouteHelper.CurrentArea(routeData) ?? "";
             var controller = RouteHelper.CurrentController(routeData) ?? "";
@@ -531,10 +538,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="routeValues">The route values.</param>
         /// <param name="protocol">The protocol name.</param>
         /// <param name="hostName">The host name.</param>
+        /// <param name="fragment">A URL fragment identifier (#).</param>
         /// <returns>Menu link.</returns>
-        public string Url(int id, object routeValues = null, string protocol = "", string hostName = "")
+        public string Url(int id, object routeValues = null, string protocol = "", string hostName = "", string fragment = "")
         {
-            return Url(id.ToString(), routeValues, protocol, hostName);
+            return Url(id.ToString(), routeValues, protocol, hostName, fragment);
         }
 
         /// <summary>
@@ -544,13 +552,14 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="routeValues">The route values.</param>
         /// <param name="protocol">The protocol name.</param>
         /// <param name="hostName">The host name.</param>
+        /// <param name="fragment">A URL fragment identifier (#).</param>
         /// <returns>Menu link.</returns>
-        public string Url(string id = "", object routeValues = null, string protocol = "", string hostName = "")
+        public string Url(string id = "", object routeValues = null, string protocol = "", string hostName = "", string fragment = "")
         {
             MenuNode menuNode = this.ReturnMe();
 
             var url = UrlHelperExtensions.Create();
-            return url.DefaultAction(menuNode.Action, menuNode.Controller, menuNode.Area, menuNode.RouteName, id, routeValues, protocol, hostName);
+            return url.DefaultAction(menuNode.Action, menuNode.Controller, menuNode.Area, menuNode.RouteName, id, routeValues, protocol, hostName, fragment);
         }
 
         /// <summary>
@@ -685,7 +694,7 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
             var menu = ReturnMe();
-            return HtmlHelperExtensions.Link(url, menu.Action, menu.Controller, menu.Area, menu.RouteName, options.Id, options.RouteValues, options.Title == String.Empty ? menu.Title : options.Title, options.LinkClasses, this.ResolveIcon(options.IconClasses), options.HtmlAttributes, options.HostName);
+            return HtmlHelperExtensions.Link(url, menu.Action, menu.Controller, menu.Area, menu.RouteName, options.Id, options.RouteValues, options.Title == String.Empty ? menu.Title : options.Title, options.LinkClasses, this.ResolveIcon(options.IconClasses), options.HtmlAttributes, options.HostName, options.Fragment);
         }
 
         /// <summary>
@@ -1135,11 +1144,12 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="id">The value of ID in the route values.</param>
         /// <param name="routeValues">An object that contains the parameters for a route.</param>
         /// <param name="protocol">The protocol name.</param>
+        /// <param name="fragment">A URL fragment identifier (#).</param>
         /// <returns>An instance of the RedirectResult class.</returns>
-        public RedirectResult Redirect(string id = "", object routeValues = null, string protocol = "")
+        public RedirectResult Redirect(string id = "", object routeValues = null, string protocol = "", string fragment = "")
         {
             var httpContext = (HttpContext.Current == null) ? null : HttpContext.Current.Request.RequestContext.HttpContext;
-            var redirectTo = this.Url(id, routeValues, protocol);
+            var redirectTo = this.Url(id, routeValues, protocol, fragment: fragment);
 
             if (httpContext != null && httpContext.Request.IsAjaxRequest())
             {
@@ -1155,10 +1165,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="id">The value of ID in the route values.</param>
         /// <param name="routeValues">An object that contains the parameters for a route.</param>
         /// <param name="protocol">The protocol name.</param>
+        /// <param name="fragment">A URL fragment identifier (#).</param>
         /// <returns>An instance of the RedirectResult class.</returns>
-        public RedirectResult Redirect(int id, object routeValues = null, string protocol = "")
+        public RedirectResult Redirect(int id, object routeValues = null, string protocol = "", string fragment = "")
         {
-            return Redirect(id.ToString(), routeValues, protocol);
+            return Redirect(id.ToString(), routeValues, protocol, fragment);
         }
         #endregion
 
@@ -1335,6 +1346,10 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Gets or sets the host name of the link.
         /// </summary>
         public string HostName { get; set; }
+        /// <summary>
+        /// Gets or sets the fragment of the link.
+        /// </summary>
+        public string Fragment { get; set; }
     }
 
     /// <summary>

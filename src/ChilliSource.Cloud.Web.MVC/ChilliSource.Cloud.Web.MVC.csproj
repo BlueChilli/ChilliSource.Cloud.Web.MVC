@@ -30,7 +30,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
     <PackageReference Include="ChilliSource.Cloud.Web" Version="1.0.0-alpha0006" />
     <PackageReference Include="ChilliSource.Core.Extensions" Version="2.0.1-alpha0006" />
-    <PackageReference Include="ChilliSource.Cloud.Core" Version="1.0.1-alpha0012" />
+    <PackageReference Include="ChilliSource.Cloud.Core" Version="1.0.1-alpha0021" />
     
     <PackageReference Include="ImageResizer" Version="3.4.3" />
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.3" />

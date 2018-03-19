@@ -167,14 +167,16 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="routeValues">An object that contains the parameters for a route.</param>
         /// <param name="protocol">The protocol for the URL, such as "http" or "https".</param>
         /// <param name="hostName">The host name for the URL.</param>
+        /// <param name="fragment">A fragment identifier (%23).</param>
         /// <returns>The fully qualified URL to an action method.</returns>
-        public static string DefaultAction(this UrlHelper urlHelper, string actionName, string controllerName = "", string areaName = null, string routeName = "", string id = null, object routeValues = null, string protocol = "", string hostName = "")
+        public static string DefaultAction(this UrlHelper urlHelper, string actionName, string controllerName = "", string areaName = null, string routeName = "", string id = null, object routeValues = null, string protocol = "", string hostName = "", string fragment = "")
         {
             controllerName = controllerName.DefaultTo(urlHelper.CurrentController());
             areaName = (areaName == null) ? urlHelper.CurrentArea() : areaName; //String.Empty will remove area
 
             var routeValuesDictionary = routeValues as RouteValueDictionary;
             if (routeValuesDictionary == null) routeValuesDictionary = new RouteValueDictionary(routeValues);
+            routeValuesDictionary = FixEnumerableRouteDataValues(routeValuesDictionary);
 
             if (String.IsNullOrEmpty(routeName))
             {
@@ -198,9 +200,35 @@ namespace ChilliSource.Cloud.Web.MVC
             if (!String.IsNullOrEmpty(id)) routeValuesDictionary["id"] = id;
 
             string href = String.IsNullOrEmpty(routeName) ? urlHelper.Action(actionName, controllerName, routeValuesDictionary, protocol, hostName) : urlHelper.RouteUrl(routeName, routeValuesDictionary, protocol, hostName);
+            href = href + (String.IsNullOrEmpty(fragment) ? "" : $"#{fragment}");
 
             return href;
         }
+
+        private static RouteValueDictionary FixEnumerableRouteDataValues(RouteValueDictionary routes)
+        {
+            var result = new RouteValueDictionary();
+            foreach (var key in routes.Keys)
+            {
+                object value = routes[key];
+                if (value is System.Collections.IEnumerable && !(value is string))
+                {
+                    int index = 0;
+                    foreach (var val in (System.Collections.IEnumerable)value)
+                    {
+                        result.Add(string.Format("{0}[{1}]", key, index), val);
+                        index++;
+                    }
+                }
+                else
+                {
+                    result.Add(key, value);
+                }
+            }
+
+            return result;
+        }
+
 
         /// <summary>
         /// Generates a System.Uri for an action method by using the specified action name, controller name, route values and protocol or generates the System.Uri for the specified route values by using the specified route name and protocol.

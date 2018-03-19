@@ -42,6 +42,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 dateParts = new string[] { (string)valueProviderResult.RawValue };
             }
 
+            DateTime date;
             if (dateParts.Length == 1)
             {
                 var displayFormat = bindingContext.ModelMetadata.DisplayFormatString;
@@ -49,8 +50,6 @@ namespace ChilliSource.Cloud.Web.MVC
 
                 if (!String.IsNullOrWhiteSpace(displayFormat) && value != null && value.AttemptedValue != null)
                 {
-                    DateTime date;
-
                     if (DateTime.TryParseExact(value.AttemptedValue, displayFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
                         return date;
 
@@ -62,7 +61,15 @@ namespace ChilliSource.Cloud.Web.MVC
                     return null;
                 }
 
-                return DateTime.Parse(dateParts[0]);
+                if (DateTime.TryParse(dateParts[0], out date))
+                    return date;
+
+                bindingContext.ModelState.AddModelError(
+                    bindingContext.ModelName,
+                    string.Format("{0} is an invalid date format", dateParts[0])
+                    );
+
+                return null;
             }
 
             string day = "1", month = "-1", year = "-1", hour = "0", minute = "0";
