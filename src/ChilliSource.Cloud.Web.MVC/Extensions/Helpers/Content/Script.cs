@@ -6,6 +6,7 @@ namespace ChilliSource.Cloud.Web.MVC
 {
     public static partial class HtmlHelperExtensions
     {
+        //TODO consider replacing this with a template helper, so html code is not in the library.
         /// <summary>
         /// Returns HTML string for the script element of Google map API with key and library parameters from ChilliSource web project configuration file.
         /// </summary>
