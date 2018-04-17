@@ -42,7 +42,6 @@ namespace ChilliSource.Cloud.Web.MVC
         private IRemoteStorage _remoteStorage;
         private string _prefix;
         private HtmlHelper html;
-        private Lazy<UrlHelper> urlHelper;
 
         public HtmlHelperImageResizer(HtmlHelper html, IRemoteStorage remoteStorage, string prefix)
         {
@@ -62,14 +61,10 @@ namespace ChilliSource.Cloud.Web.MVC
             this._prefix = prefix;
 
             this.html = html;
-            this.urlHelper = new Lazy<UrlHelper>(() =>
-            {
-                return new UrlHelper(this.html.ViewContext.RequestContext);
-            });
         }
 
         /// <summary>
-        /// Returns HTML string for the image element.
+        /// Returns HTML string for the cloud image element (Image stored in the Cloud - s3 or azure).
         /// </summary>        
         /// <param name="filename">The name of image file.</param>
         /// <param name="width">The width of the image.</param>
@@ -80,70 +75,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML-encoded string for the image element.</returns>
         public MvcHtmlString Image(string filename, int? width = null, int? height = null, string altText = null, object htmlAttributes = null, string alternativeImage = "")
         {
-            return Image(filename, new ImageResizerCommand { Width = width, Height = height, AutoRotate = false }, altText, htmlAttributes, alternativeImage);
-        }
-
-        /// <summary>
-        /// Returns HTML string for the image element.
-        /// </summary>
-        /// <param name="filename">The name of image file.</param>
-        /// <param name="cmd">The ImageResizerCommand for the width and height of the image.</param>
-        /// <param name="altText">The alternate text of the image.</param>
-        /// <param name="htmlAttributes">An object that contains the HTML attributes to set for the image element.</param>
-        /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
-        /// <returns>An HTML-encoded string for the image element.</returns>
-        public MvcHtmlString ImageLocal(string filename, ImageResizerCommand cmd, string altText = null, object htmlAttributes = null, string alternativeImage = "")
-        {
-            TagBuilder builder = new TagBuilder("img");
-
-            builder.Attributes.Add("src", ImageResizerQuery(ResolveFilenameToUrl(filename, alternativeImage), cmd));
-            if (!String.IsNullOrEmpty(altText)) builder.Attributes.Add("alt", altText);
-            if (cmd.Width.HasValue) builder.Attributes.Add("width", cmd.Width.Value.ToString());
-            if (cmd.Height.HasValue) builder.Attributes.Add("height", cmd.Height.Value.ToString());
-            if (htmlAttributes != null) builder.MergeAttributes(HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes));
-            return MvcHtmlString.Create(builder.ToString(TagRenderMode.SelfClosing));
-        }
-
-        /// <summary>
-        /// Returns the fully qualified URL for the specified image file.
-        /// </summary>
-        /// <param name="filename">The file name of the image.</param>
-        /// <returns>A fully qualified URL for the specified image file.</returns>
-        public string ImageUrl(string filename)
-        {
-            return ResolveFilenameToUrl(filename);
-        }
-
-        private string ResolveFilenameToUrl(string filename, string alternativeImage = "")
-        {
-            string url = "";
-            filename = StringExtensions.DefaultTo(filename, alternativeImage);
-            if (String.IsNullOrEmpty(filename)) return "";
-
-            if (filename.StartsWith("~"))
-            {
-                url = urlHelper.Value.Content(filename);
-            }
-            else if (filename.StartsWith("http://") || filename.StartsWith("https://") || filename.StartsWith("//"))
-            {
-                url = filename;
-            }
-            else
-            {
-                url = GetLocalImagePath(filename);
-            }
-
-            return urlHelper.Value.Content(url);
-        }
-
-        private static string GetLocalImagePath(string filename)
-        {
-            return "~/Images/" + filename;
-        }
-
-        private string ResolveProtocol(string url, string protocol)
-        {
-            return String.IsNullOrEmpty(protocol) ? url : urlHelper.Value.GenerateExternalUrl(url, protocol);
+            return Image(filename, new ImageResizerCommand { Width = width, Height = height }, altText, htmlAttributes, alternativeImage);
         }
 
         /// <summary>
@@ -158,15 +90,25 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML-encoded string for image element.</returns>
         public MvcHtmlString Image(string filename, ImageResizerCommand cmd, string altText = null, object htmlAttributes = null, string alternativeImage = "", bool ensureSize = true)
         {
+            return ImageLocal(ImageUrl(filename), cmd, altText, htmlAttributes, alternativeImage, ensureSize);
+        }
+
+        /// <summary>
+        /// Returns HTML string for the image element.
+        /// </summary>
+        /// <param name="filename">The name of image file.</param>
+        /// <param name="cmd">The ImageResizerCommand for the width and height of the image.</param>
+        /// <param name="altText">The alternate text of the image.</param>
+        /// <param name="htmlAttributes">An object that contains the HTML attributes to set for the image element.</param>
+        /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
+        /// <returns>An HTML-encoded string for the image element.</returns>
+        public MvcHtmlString ImageLocal(string filename, ImageResizerCommand cmd, string altText = null, object htmlAttributes = null, string alternativeImage = "", bool ensureSize = true)
+        {
+            var url = ImageResizerQuery(ResolveFilenameToUrl(filename, alternativeImage, isLocal: true), cmd);
+
             if (cmd == null) cmd = new ImageResizerCommand();
-            if (String.IsNullOrEmpty(filename))
-                return Image(ImageResizerQuery(alternativeImage, cmd), cmd.Width, cmd.Height, altText, htmlAttributes);
 
             TagBuilder builder = new TagBuilder("img");
-
-            var path = StoragePath(filename, cmd, alternativeImage: alternativeImage);
-            var url = urlHelper.Value.Content(path);
-
             builder.Attributes.Add("src", url);
             if (ensureSize)
             {
@@ -177,7 +119,49 @@ namespace ChilliSource.Cloud.Web.MVC
             if (!String.IsNullOrEmpty(altText)) builder.Attributes.Add("alt", altText);
             if (htmlAttributes != null) builder.MergeAttributes(HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes));
             return MvcHtmlString.Create(builder.ToString(TagRenderMode.SelfClosing));
-        }    
+        }
+
+        /// <summary>
+        /// Returns the Root-Relative URL for the specified image file.
+        /// </summary>
+        /// <param name="filename">The file name of the image.</param>
+        /// <returns>A Root-Relative URL for the specified image file.</returns>
+        public string ImageUrl(string filename)
+        {
+            return ResolveFilenameToUrl(filename);
+        }
+
+        /// <summary>
+        /// Returns a Root-Relative URL with image resize query parameters for the image file stored in Azure.
+        /// </summary>
+        /// <param name="filename">The name of the image file.</param>
+        /// <param name="cmd">The ImageResizerCommand.</param>
+        /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
+        /// <returns>A Root-Relative URL with image resize query parameters for the image file in the remote storage.</returns>
+        public string ImageUrl(string filename, ImageResizerCommand cmd = null, string alternativeImage = null)
+        {
+            return ImageResizerQuery(ResolveFilenameToUrl(filename, alternativeImage), cmd);
+        }
+
+
+        private string ResolveFilenameToUrl(string filename, string alternativeImage = "", bool isLocal = false)
+        {
+            filename = StringExtensions.DefaultTo(filename, alternativeImage);
+            if (String.IsNullOrEmpty(filename)) return "";
+
+            if (filename.StartsWith("~"))
+            {
+                return UriExtensions.Parse(filename).AbsolutePath;
+            }
+            else if (filename.StartsWith("http://") || filename.StartsWith("https://") || filename.StartsWith("//"))
+            {
+                return filename;
+            }
+            else
+            {
+                return isLocal ? filename : UriExtensions.Parse($"{this._prefix}/{this._remoteStorage.GetPartialFilePath(filename)}").AbsolutePath;
+            }
+        }
 
         /// <summary>
         /// Returns CSS background property with S3 image stored in Amazon S3 storage.
@@ -203,54 +187,9 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML-encoded string for CSS background property.</returns>
         public MvcHtmlString BackgroundImage(string filename, ImageResizerCommand cmd, bool norepeat = true, string alternativeImage = null)
         {
-            var path = String.IsNullOrEmpty(filename) ? ImageUrl(ImageResizerQuery(alternativeImage, cmd)) : StoragePath(filename, cmd, alternativeImage: alternativeImage);
-            var url = urlHelper.Value.Content(path);
+            var url = ImageUrl(filename, cmd, alternativeImage);
             return MvcHtmlString.Empty.Format("background: url('{0}'){1}; height: {2}px; width: {3}px;", url, norepeat ? " no-repeat" : "", cmd.Height, cmd.Width);
         }        
-
-        /// <summary>
-        ///     Returns the url the Azure image (Image stored in Azure storage).
-        /// </summary>
-        /// <param name="filename">The name of image file.</param>
-        /// <param name="cmd">The ImageResizerCommand for the width and height of the image.</param>
-        /// <param name="protocol">The protocol of the URL ("http" or "https").</param>
-        /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
-        /// <returns>The Azure image url</returns>
-        public IHtmlString ImageUrl(string filename, ImageResizerCommand cmd, string protocol = "", string alternativeImage = "")
-        {
-            var path = StoragePath(filename, cmd, protocol, alternativeImage);
-            return html.Raw(ImageUrl(path));
-        }
-
-
-        /// <summary>
-        /// Returns a fully qualified URL with image resize query parameters for the image file stored in Azure.
-        /// </summary>
-        /// <param name="filename">The name of the image file.</param>
-        /// <param name="cmd">The ImageResizerCommand.</param>
-        /// <param name="protocol">The protocol of the URL ("http" or "https").</param>
-        /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
-        /// <returns>A fully qualified URL with image resize query parameters for the image file in the remote storage.</returns>
-        public string StoragePath(string filename, ImageResizerCommand cmd = null, string protocol = "", string alternativeImage = null)
-        {
-            if (String.IsNullOrEmpty(filename) && String.IsNullOrEmpty(alternativeImage))
-            {
-                return "";
-            }
-
-            var url = String.IsNullOrEmpty(filename) ? ResolveProtocol(alternativeImage, protocol)
-                        : ImagePathWithoutQuery(filename, protocol);
-
-            return ImageResizerQuery(url, cmd);
-        }
-
-        private string ImagePathWithoutQuery(string fileName, string protocol = "")
-        {
-            var path = _remoteStorage.GetPartialFilePath(fileName);
-            var url = ResolveProtocol(path, protocol);
-
-            return url;
-        }
 
         /// <summary>
         /// Appends image resize query parameters to the image file name.
