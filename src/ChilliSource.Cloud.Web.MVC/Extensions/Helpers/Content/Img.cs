@@ -37,13 +37,12 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 
-    public class HtmlHelperImageResizer
+    public class ImageResizerHelper
     {
         private IRemoteStorage _remoteStorage;
         private string _prefix;
-        private HtmlHelper html;
 
-        public HtmlHelperImageResizer(HtmlHelper html, IRemoteStorage remoteStorage, string prefix)
+        public ImageResizerHelper(IRemoteStorage remoteStorage, string prefix)
         {
             this._remoteStorage = remoteStorage;
 
@@ -59,8 +58,6 @@ namespace ChilliSource.Cloud.Web.MVC
 
             prefix = prefix.TrimEnd("/");
             this._prefix = prefix;
-
-            this.html = html;
         }
 
         /// <summary>
@@ -132,26 +129,27 @@ namespace ChilliSource.Cloud.Web.MVC
         }
 
         /// <summary>
-        /// Returns a Root-Relative URL with image resize query parameters for the image file stored in Azure.
+        /// Returns a Root-Relative URL with image resize query parameters for the image file stored in remote storage.
         /// </summary>
         /// <param name="filename">The name of the image file.</param>
         /// <param name="cmd">The ImageResizerCommand.</param>
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
+        /// <param name="fullPath">If true returns the absolute uri eg https://www.mysite.com using BaseUrl</param>
         /// <returns>A Root-Relative URL with image resize query parameters for the image file in the remote storage.</returns>
-        public string ImageUrl(string filename, ImageResizerCommand cmd = null, string alternativeImage = null)
+        public string ImageUrl(string filename, ImageResizerCommand cmd = null, string alternativeImage = null, bool fullPath = false)
         {
-            return ImageResizerQuery(ResolveFilenameToUrl(filename, alternativeImage), cmd);
+            return ImageResizerQuery(ResolveFilenameToUrl(filename, alternativeImage, fullPath: fullPath), cmd);
         }
 
 
-        private string ResolveFilenameToUrl(string filename, string alternativeImage = "", bool isLocal = false)
+        private string ResolveFilenameToUrl(string filename, string alternativeImage = "", bool isLocal = false, bool fullPath = false)
         {
             filename = StringExtensions.DefaultTo(filename, alternativeImage);
             if (String.IsNullOrEmpty(filename)) return "";
 
             if (filename.StartsWith("~"))
             {
-                return UriExtensions.Parse(filename).AbsolutePath;
+                return fullPath ? UriExtensions.Parse(filename).AbsoluteUri : UriExtensions.Parse(filename).AbsolutePath;
             }
             else if (filename.StartsWith("http://") || filename.StartsWith("https://") || filename.StartsWith("//"))
             {
