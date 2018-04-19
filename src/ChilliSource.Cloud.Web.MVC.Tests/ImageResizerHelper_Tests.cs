@@ -40,6 +40,9 @@ namespace ChilliSource.Cloud.Web.MVC.Tests
             url = helper.ImageUrl("~/Images/logo.png", fullPath: true);
             Assert.Equal("https://www.mysite.com/Images/logo.png", url);
 
+            url = helper.ImageUrl("Images/logo.png", fullPath: true);
+            Assert.Equal("https://www.mysite.com/storage/default/Images/logo.png", url);
+
         }
 
         [Fact]
