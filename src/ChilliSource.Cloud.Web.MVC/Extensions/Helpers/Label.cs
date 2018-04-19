@@ -15,7 +15,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="expression">An expression that identifies the model property.</param>
-        public static string GetLabelTextFor<TModel, TValue>(HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        public static string GetLabelTextFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
         {
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
             string labelText = (metadata.AdditionalValues.SingleOrDefault(m => m.Key == LabelAttribute.Key).Value as string);
