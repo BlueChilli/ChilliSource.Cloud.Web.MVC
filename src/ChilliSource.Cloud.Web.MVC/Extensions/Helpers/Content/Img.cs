@@ -157,8 +157,9 @@ namespace ChilliSource.Cloud.Web.MVC
             }
             else
             {
-                return isLocal ? filename : UriExtensions.Parse($"{this._prefix}/{this._remoteStorage.GetPartialFilePath(filename)}").AbsolutePath;
-            }
+                var uri = UriExtensions.Parse($"{this._prefix}/{this._remoteStorage.GetPartialFilePath(filename)}");
+                return isLocal ? filename : fullPath ? uri.AbsoluteUri : uri.AbsolutePath;
+            } 
         }
 
         /// <summary>
