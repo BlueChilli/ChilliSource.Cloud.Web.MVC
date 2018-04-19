@@ -25,6 +25,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="charactersLeftSelector">If the property has maxlength or stringlength attribute, optionally pass in a css selector to a number of characters remaining eg <span id="DescriptionLimit">@(80 - Model.Description.Length)</span></param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <returns>Returns an tag (eg H2) setup as an content editable field, with a hidden field that contains the value to be submitted</returns>
+        [Obsolete("No field template replacement at this point")]
         public static MvcHtmlString ContentEditableFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, string tag, string placeholder = "", string charactersLeftSelector = null, object htmlAttributes = null)
         {
             var member = expression.Body as MemberExpression;

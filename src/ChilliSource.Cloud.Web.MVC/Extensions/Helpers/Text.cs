@@ -13,6 +13,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="labelText">The text for the label.</param>
         /// <param name="textToDisplay">The text to display.</param>
         /// <returns>An HTML string for text displayed with a label.</returns>
+        [Obsolete("no field template replace as of yet")]
         public static MvcHtmlString Text<TModel>(this HtmlHelper<TModel> html, string labelText, string textToDisplay)
         {
             return new MvcHtmlString(

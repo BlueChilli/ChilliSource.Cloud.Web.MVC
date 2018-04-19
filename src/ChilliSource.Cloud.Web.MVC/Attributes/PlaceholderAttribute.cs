@@ -14,12 +14,14 @@ namespace ChilliSource.Cloud.Web.MVC
     /// </summary>
     public class PlaceholderAttribute : Attribute, IMetadataAware
     {
+        public const string Key = "Placeholder";
+
         /// <summary>
         /// Placeholder text description.
         /// </summary>
         public string Value { get; set; }
 
-        public PlaceholderAttribute(string value = "Placeholder")
+        public PlaceholderAttribute(string value = Key)
         {
             Value = value;
         }
@@ -29,18 +31,12 @@ namespace ChilliSource.Cloud.Web.MVC
             metadata.AdditionalValues["Placeholder"] = Value;
         }
 
-        public static string Resolve(ModelMetadata metadata, FieldOptions fieldOptions, RouteValueDictionary attributes)
+        public static string Resolve(ModelMetadata metadata, RouteValueDictionary attributes)
         {
-            var placeholderText = fieldOptions.LabelText;
-            if (fieldOptions.Label == FieldLabel.Placeholder)
+            if (metadata.AdditionalValues.ContainsKey(Key))
             {
-                attributes["placeholder"] = placeholderText;
-                return placeholderText;
-            }
-            else if (metadata.AdditionalValues.ContainsKey("Placeholder"))
-            {
-                var value = metadata.AdditionalValues["Placeholder"] as string;
-                placeholderText = value == "Placeholder" ? metadata.GetDisplayName() : value;
+                var value = metadata.AdditionalValues[Key] as string;
+                var placeholderText = value == Key ? metadata.GetDisplayName() : value;
                 attributes.AddOrSkipIfExists("placeholder", placeholderText);
                 return placeholderText;
             }
