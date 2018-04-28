@@ -22,7 +22,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns></returns>
         public static MvcHtmlString Template(this HtmlHelper html, TemplateType template, object model = null)
         {
-            return html.ContainerTemplateBegin(template.ToString(), model);
+            return ContainerTemplateBegin(html, template.ToString(), model);
         }
 
         #region Container Template
@@ -34,12 +34,12 @@ namespace ChilliSource.Cloud.Web.MVC
         public static IDisposable ContainerTemplate(this HtmlHelper html, string template, object model = null)
         {
             return new DisposableWrapper(
-                () => html.ViewContext.Writer.Write(html.ContainerTemplateBegin(template, model)),
-                () => html.ViewContext.Writer.Write(html.ContainerTemplateEnd(template, model))
+                () => html.ViewContext.Writer.Write(ContainerTemplateBegin(html, template, model)),
+                () => html.ViewContext.Writer.Write(ContainerTemplateBegin(html, template, model))
             );
         }
 
-        private static MvcHtmlString ContainerTemplateBegin(this HtmlHelper html, string template, object model, string folder = "Templates")
+        public static MvcHtmlString ContainerTemplateBegin(HtmlHelper html, string template, object model, string folder = "Templates")
         {
             var content = html.Partial($"{folder}/{template}", model).ToString();
 
@@ -51,7 +51,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return MvcHtmlString.Create(content);
         }
 
-        private static MvcHtmlString ContainerTemplateEnd(this HtmlHelper html, string template, object model, string folder = "Templates")
+        public static MvcHtmlString ContainerTemplateEnd(HtmlHelper html, string template, object model, string folder = "Templates")
         {
             var content = html.Partial($"{folder}/{template}", model).ToString();
 

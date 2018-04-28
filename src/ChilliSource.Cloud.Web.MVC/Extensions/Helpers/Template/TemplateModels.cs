@@ -51,12 +51,26 @@ namespace ChilliSource.Cloud.Web.MVC
     public class Template_PageMessage
     {
         public const string Success = "PageMessage_Success";
+        public const string Success_Static = "PageMessage_Success_Static";
         public const string Warning = "PageMessage_Warning";
+        public const string Warning_Static = "PageMessage_Warning_Static";
+        public const string Info = "PageMessage_Info";
+        public const string Info_Static = "PageMessage_Info_Static";
 
-        public static List<Template_PageMessage> MessageTypes = new List<Template_PageMessage> { new Template_PageMessage { Key = Success, MessageClass = "success" }, new Template_PageMessage { Key = Warning, MessageClass = "warning" } };
+        public static List<Template_PageMessage> MessageTypes = new List<Template_PageMessage>
+        {
+            new Template_PageMessage { Key = Success, MessageClass = "success" },
+            new Template_PageMessage { Key = Success_Static, MessageClass = "success", IsStatic = true },
+            new Template_PageMessage { Key = Warning, MessageClass = "warning" },
+            new Template_PageMessage { Key = Warning_Static, MessageClass = "warning", IsStatic = true },
+            new Template_PageMessage { Key = Info, MessageClass = "info" },
+            new Template_PageMessage { Key = Info_Static, MessageClass = "info", IsStatic = true }
+        };
 
         public string Key { get; set; }
 
         public string MessageClass { get; set; }
+
+        public bool IsStatic { get; set; }
     }
 }
