@@ -35,7 +35,7 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             return new DisposableWrapper(
                 () => html.ViewContext.Writer.Write(ContainerTemplateBegin(html, template, model)),
-                () => html.ViewContext.Writer.Write(ContainerTemplateBegin(html, template, model))
+                () => html.ViewContext.Writer.Write(ContainerTemplateEnd(html, template, model))
             );
         }
 
