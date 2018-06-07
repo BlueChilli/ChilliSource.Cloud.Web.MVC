@@ -93,7 +93,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (user == null)
                 return false;
 
-            return user.Identity?.IsAuthenticated == true && (authorizedRoles == null || authorizedRoles.Count == 0 || authorizedRoles.Any(r => user.IsInRole(r)));
+            return authorizedRoles == null || authorizedRoles.Count == 0 || (user.Identity?.IsAuthenticated == true && authorizedRoles.Any(r => user.IsInRole(r)));
         }
     }
 }
