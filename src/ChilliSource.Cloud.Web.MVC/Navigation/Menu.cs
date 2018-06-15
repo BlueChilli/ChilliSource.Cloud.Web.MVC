@@ -562,6 +562,11 @@ namespace ChilliSource.Cloud.Web.MVC
             return url.DefaultAction(menuNode.Action, menuNode.Controller, menuNode.Area, menuNode.RouteName, id, routeValues, protocol, hostName, fragment);
         }
 
+        public string Url(MenuUrlValues urlValues)
+        {
+            return urlValues == null ? Url() : Url(urlValues.Id, urlValues.RouteValues, urlValues.Protocol, urlValues.HostName, urlValues.Fragment);
+        }
+
         /// <summary>
         /// Get menu URI by id and route values.
         /// </summary>
@@ -1001,38 +1006,7 @@ namespace ChilliSource.Cloud.Web.MVC
         }
 
         #region Button
-        /// <summary>
-        /// Returns HTML string for the button element from title, id, routeValues, buttonClasses, iconClasses and buttonAttributes.
-        /// </summary>
-        /// <param name="id">The value of ID in the route values used to generate id of button element.</param>
-        /// <param name="title">The value of title in the route values.</param>
-        /// <param name="routeValues">An object that contains the parameters for a route used to generate the button element.</param>
-        /// <param name="buttonClasses">The CSS class for the button element.</param>
-        /// <param name="iconClasses">The CSS icon class for the button element.</param>
-        /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
-        /// <returns>HTML string for the button.</returns>
-
-        public MvcHtmlString Button(string title = "", string id = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
-        {
-            UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
-            return HtmlHelperExtensions.Button(url, this.Action, this.Controller, this.Area, this.RouteName, id, routeValues, title == String.Empty ? this.ActionTitle : title, buttonClasses, this.ResolveIcon(iconClasses), buttonAttributes);
-        }
-
-        /// <summary>
-        /// Returns HTML string for the button element from title, id, routeValues, buttonClasses, iconClasses and buttonAttributes.
-        /// </summary>
-        /// <param name="id">The value of ID in the route values used to generate id of button element.</param>
-        /// <param name="title">The value of title in the route values.</param>
-        /// <param name="routeValues">An object that contains the parameters for a route used to generate the button element.</param>
-        /// <param name="buttonClasses">The CSS class for the button element.</param>
-        /// <param name="iconClasses">The CSS icon class for the button element.</param>
-        /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
-        /// <returns>HTML string for the button.</returns>
-        public MvcHtmlString Button(int id, string title = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
-        {
-            return Button(title, id.ToString(), routeValues, buttonClasses, iconClasses, buttonAttributes);
-        }
-
+ 
         /// <summary>
         /// Returns HTML string for the button element to perform post action.
         /// </summary>
@@ -1064,21 +1038,6 @@ namespace ChilliSource.Cloud.Web.MVC
         public MvcHtmlString ButtonPost(int id, string title = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, string confirmFunction = "")
         {
             return ButtonPost(title, id.ToString(), routeValues, buttonClasses, iconClasses, buttonAttributes, confirmFunction);
-        }
-
-        /// <summary>
-        /// Returns HTML string for the button element to perform submit action.
-        /// </summary>
-        /// <param name="title">The value of title in the route values.</param>
-        /// <param name="routeValues">An object that contains the parameters for a route used to generate the button element.</param>
-        /// <param name="buttonClasses">The CSS class for the button element.</param>
-        /// <param name="iconClasses">The CSS icon class for the button element.</param>
-        /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
-        /// <returns>HTML string for the button.</returns>
-        public MvcHtmlString ButtonSubmit(string title = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
-        {
-            UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
-            return HtmlHelperExtensions.ButtonSubmit(url, title == String.Empty ? this.ActionTitle : title, buttonClasses, this.ResolveIcon(iconClasses), buttonAttributes);
         }
 
         /// <summary>
@@ -1395,6 +1354,23 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="routeValues"></param>
         /// <returns>True if menu item is active, otherwise false</returns>
         bool IsActive(MenuNode menu, object routeValues = null);
+    }
+
+    /// <summary>
+    /// Class for passing url parameters to various methods
+    /// </summary>
+    public class MenuUrlValues
+    {
+        public MenuUrlValues(long id)
+        {
+            Id = id.ToString();
+        }
+
+        public string Id { get; set; }
+        public object RouteValues { get; set; }
+        public string Protocol { get; set; }
+        public string Fragment { get; set; }
+        public string HostName { get; set; }
     }
     #endregion
 }
