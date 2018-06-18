@@ -660,20 +660,6 @@ namespace ChilliSource.Cloud.Web.MVC
         #endregion
 
         #region Link
-        /// <summary>
-        /// Returns HTML string for the link element from title, id, routeValues, linkClasses, iconClasses and linkAttributes.
-        /// </summary>
-        /// <param name="id">The value of ID in the route values used to generate URL of the link element.</param>
-        /// <param name="title">The value of title in the route values.</param>
-        /// <param name="routeValues">An object that contains the parameters for a route used to generate URL of the link element.</param>
-        /// <param name="linkClasses">The CSS class for the link element.</param>
-        /// <param name="iconClasses">The CSS icon class for the link element.</param>
-        /// <param name="linkAttributes">An object that contains the HTML attributes to set for the link element.</param>
-        /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString Link(int id, string title = "", object routeValues = null, string linkClasses = "", string iconClasses = "", object linkAttributes = null)
-        {
-            return Link(title, id.ToString(), routeValues, linkClasses, iconClasses, linkAttributes);
-        }
 
         /// <summary>
         /// Returns HTML string for the link element from title, id, routeValues, linkClasses, iconClasses and linkAttributes.
@@ -1132,28 +1118,6 @@ namespace ChilliSource.Cloud.Web.MVC
         }
         #endregion
 
-        #region Modal
-        /// <summary>
-        /// Returns HTML string for the modal element.
-        /// </summary>
-        /// <param name="actionTitle">The title of the link.</param>
-        /// <param name="routeValues">An object that contains the parameters for a route used to generate the modal.</param>
-        /// <param name="width">The modal width.</param>
-        /// <param name="height">The modal height.</param>
-        /// <param name="iconClasses">The CSS icon class for the modal element.</param>
-        /// <param name="htmlAttributes">The specified html attribute object.</param>
-        /// <param name="commandOnly">If false, add "onclick" attribute to modal.</param>
-        /// <param name="dynamicData">The data to submit for HTTP request in JSON format.</param>
-        /// <param name="BackgroundDrop">True to add CSS "backdrop: 'static'", otherwise not.</param>
-        /// <param name="EscapeKey">True to add CSS "keyboard: false".</param>
-        /// <returns>HTML string for the modal.</returns>
-        public MvcHtmlString ModalOpen(string actionTitle = "", object routeValues = null, int? width = null, int? height = null, string iconClasses = "", object htmlAttributes = null, bool commandOnly = false, string dynamicData = "", bool BackgroundDrop = true, bool EscapeKey = true)
-        {
-            return MvcHtmlString.Create(ModalHelper.ModalOpen(this.GetIdAs(MenuIdType.Modal), Url(routeValues: routeValues), actionTitle.DefaultTo(this.ActionTitle), width, height, this.ResolveIcon(iconClasses), htmlAttributes, commandOnly, dynamicData, BackgroundDrop, EscapeKey));
-        }
-
-        #endregion
-
         #region Misc Helpers
         /// <summary>
         /// Get menu node or its Alias.
@@ -1361,6 +1325,11 @@ namespace ChilliSource.Cloud.Web.MVC
     /// </summary>
     public class MenuUrlValues
     {
+        public MenuUrlValues()
+        {
+
+        }
+
         public MenuUrlValues(long id)
         {
             Id = id.ToString();

@@ -48,22 +48,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return String.Format(format, id, close, print, titleFormat);
         }
 
-        /// <summary>
-        /// Returns HTML string of the link to open modal window.
-        /// </summary>
-        /// <param name="helper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
-        /// <param name="id">The id of the link.</param>
-        /// <param name="url">The URL of the link.</param>
-        /// <param name="title">The title of the link.</param>
-        /// <param name="width">The width of the modal window.</param>
-        /// <param name="height">The height of the modal window.</param>
-        /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
-        /// <returns>An HTML string of the link to open modal window.</returns>
-        public static MvcHtmlString ModalOpen(this HtmlHelper helper, string id, string url, string title = "", int? width = null, int? height = null, object htmlAttributes = null)
-        {
-            return new MvcHtmlString(ModalOpen(id, url, title, width, height));
-        }
-
+ 
         private static string AppendJsonData(string source, string value)
         {
             if (!string.IsNullOrEmpty(source))
@@ -87,6 +72,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="BackgroundDrop">True to add CSS "backdrop: 'static'", otherwise not.</param>
         /// <param name="EscapeKey">True to add CSS "keyboard: false"</param>
         /// <returns>An HTML string of the link to open modal window.</returns>
+        [Obsolete]
         public static string ModalOpen(string id, string url, string title = "", int? width = null, int? height = null, string iconClasses = "", object htmlAttributes = null, bool commandOnly = false, string dynamicData = "", bool BackgroundDrop = true, bool EscapeKey = true)
         {
             string options = "";

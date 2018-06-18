@@ -29,6 +29,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="iconClasses">The CSS icon class for the link element.</param>
         /// <param name="linkAttributes">An object that contains the HTML attributes to set for the link element.</param>
         /// <returns>An HTML-encoded string for the link element.</returns>
+        [Obsolete] 
         public static MvcHtmlString Link<TModel>(this HtmlHelper<TModel> htmlHelper, string actionName, string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null)
         {
             var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
