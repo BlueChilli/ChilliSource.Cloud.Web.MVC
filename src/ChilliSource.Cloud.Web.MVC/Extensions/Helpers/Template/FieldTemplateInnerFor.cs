@@ -309,7 +309,18 @@ namespace ChilliSource.Cloud.Web.MVC
 
         private static void ProcessSelect<TValue>(Type baseType, ModelMetadata metadata, FieldInnerTemplateModel data)
         {
-            if (baseType == typeof(Enum))
+            if (data.Options.SelectList != null)
+            {
+                if (data.Options.SelectList.Any(o => o.Group != null))
+                    data.Options.SelectList = data.Options.SelectList.ToSelectList(v => v.Value, t => t.Text, g => g.Group.Name, data.Value);
+                else
+                    data.Options.SelectList = data.Options.SelectList.ToSelectList(v => v.Value, t => t.Text, data.Value);
+                if (metadata.ModelType.IsGenericType && metadata.ModelType.GetInterfaces().Contains(typeof(ICollection)))
+                {
+                    data.HtmlAttributes.Add("multiple", "multiple");
+                }
+            }
+            else if (baseType == typeof(Enum))
             {
                 Type enumType = Nullable.GetUnderlyingType(metadata.ModelType) ?? metadata.ModelType;
                 var values = EnumExtensions.GetValues(enumType).Cast<TValue>();
@@ -342,17 +353,6 @@ namespace ChilliSource.Cloud.Web.MVC
                         Selected = modelValues.Contains(v.Value)
                     };
                 data.HtmlAttributes.Add("multiple", "multiple");
-            }
-            else if (data.Options.SelectList != null)
-            {
-                if (data.Options.SelectList.Any(o => o.Group != null))
-                    data.Options.SelectList = data.Options.SelectList.ToSelectList(v => v.Value, t => t.Text, g => g.Group.Name, data.Value);
-                else
-                    data.Options.SelectList = data.Options.SelectList.ToSelectList(v => v.Value, t => t.Text, data.Value);
-                if (metadata.ModelType.IsGenericType && metadata.ModelType.GetInterfaces().Contains(typeof(ICollection)))
-                {
-                    data.HtmlAttributes.Add("multiple", "multiple");
-                }
             }
 
             data.Options.SelectList = EmptyItemAttribute.Resolve(metadata, data.Options.SelectList, SingleEmptyItem);
