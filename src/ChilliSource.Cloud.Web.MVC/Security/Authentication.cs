@@ -1,5 +1,6 @@
 ﻿
-using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,10 +91,10 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public static bool IsInAnyRole(IList<string> authorizedRoles, IPrincipal user)
         {
-            if (user == null)
+            if (user?.Identity?.IsAuthenticated != true) 
                 return false;
 
-            return authorizedRoles == null || authorizedRoles.Count == 0 || (user.Identity?.IsAuthenticated == true && authorizedRoles.Any(r => user.IsInRole(r)));
+            return authorizedRoles == null || authorizedRoles.Count == 0 || authorizedRoles.Any(r => user.IsInRole(r));
         }
     }
 }
