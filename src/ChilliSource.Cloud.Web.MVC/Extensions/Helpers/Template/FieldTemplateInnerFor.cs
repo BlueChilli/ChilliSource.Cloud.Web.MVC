@@ -311,13 +311,20 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             if (data.Options.SelectList != null)
             {
-                if (data.Options.SelectList.Any(o => o.Group != null))
-                    data.Options.SelectList = data.Options.SelectList.ToSelectList(v => v.Value, t => t.Text, g => g.Group.Name, data.Value);
-                else
-                    data.Options.SelectList = data.Options.SelectList.ToSelectList(v => v.Value, t => t.Text, data.Value);
-                if (metadata.ModelType.IsGenericType && metadata.ModelType.GetInterfaces().Contains(typeof(ICollection)))
+                if (metadata.ModelType.IsGenericType && metadata.ModelType.GetInterfaces().Contains(typeof(IEnumerable)))
                 {
                     data.HtmlAttributes.Add("multiple", "multiple");
+                    var values = new List<string>();
+                    var loop = (data.Value as IEnumerable).GetEnumerator();
+                    while (loop.MoveNext()) values.Add(loop.Current.ToString());
+                    data.Options.SelectList = data.Options.SelectList.ToSelectList(v => v.Value, t => t.Text, values);
+                }
+                else
+                {
+                    if (data.Options.SelectList.Any(o => o.Group != null))
+                        data.Options.SelectList = data.Options.SelectList.ToSelectList(v => v.Value, t => t.Text, g => g.Group.Name, data.Value);
+                    else
+                        data.Options.SelectList = data.Options.SelectList.ToSelectList(v => v.Value, t => t.Text, data.Value);
                 }
             }
             else if (baseType == typeof(Enum))
@@ -337,22 +344,6 @@ namespace ChilliSource.Cloud.Web.MVC
                     };
                 var flags = enumType.GetCustomAttribute<FlagsAttribute>();
                 if (flags != null && !data.HtmlAttributes.ContainsKey("multiple")) data.HtmlAttributes.Add("multiple", "multiple");
-            }
-            else if (metadata.ModelType.IsGenericType && metadata.ModelType.GetInterfaces().Contains(typeof(ICollection)))
-            {
-                IEnumerable<string> modelValues = new List<string>();
-                if (data.Value is string) modelValues = data.Value.ToString().Split(',');
-                else if (metadata.Model is IEnumerable) modelValues = ((IEnumerable)metadata.Model).Cast<object>().Select(v => v.ToString());
-
-                data.Options.SelectList =
-                    from v in data.Options.SelectList
-                    select new SelectListItem
-                    {
-                        Text = v.Text,
-                        Value = v.Value,
-                        Selected = modelValues.Contains(v.Value)
-                    };
-                data.HtmlAttributes.Add("multiple", "multiple");
             }
 
             data.Options.SelectList = EmptyItemAttribute.Resolve(metadata, data.Options.SelectList, SingleEmptyItem);
