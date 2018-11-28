@@ -335,10 +335,12 @@ namespace ChilliSource.Cloud.Web.MVC
             Controller = "";
             Action = "";
             Title = "";
-            Tag = "";
             Target = "";
             ReturnUrl = "";
             CssClass = "";
+
+            Tags = new List<string>();
+            NotTags = new List<string>();
 
             Children = new List<MenuNode>();
         }
