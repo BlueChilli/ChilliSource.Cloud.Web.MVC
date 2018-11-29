@@ -1154,7 +1154,10 @@ namespace ChilliSource.Cloud.Web.MVC
             // This value is checked in jquery.bluechilli-mvc.js
             if (!attributes.ContainsKey("data-submitted")) attributes["data-submitted"] = "false";
 
-            return htmlHelper.BeginForm(menuNode.Action, menuNode.Controller, FormMethod.Post, attributes);
+            var method = FormMethod.Post;
+            if (attributes.ContainsKey("method")) method = EnumExtensions.Parse<FormMethod>(attributes["method"].ToString());
+
+            return htmlHelper.BeginForm(menuNode.Action, menuNode.Controller, method, attributes);
         }
 
         /// <summary>
