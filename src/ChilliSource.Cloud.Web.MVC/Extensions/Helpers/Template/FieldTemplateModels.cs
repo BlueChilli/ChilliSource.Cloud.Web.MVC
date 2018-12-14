@@ -110,6 +110,7 @@ namespace ChilliSource.Cloud.Web.MVC
         Date,
         DatePicker,
         ClockPicker,
+        DateTimePicker,
         Checkbox,
         ReadOnly,
         Radio,
