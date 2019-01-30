@@ -22,6 +22,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         public bool SkipIfSingleItem { get; set; }
 
+        public EmptyItemAttribute()
+        {
+            Text = "";
+        }
+
         public EmptyItemAttribute(string text)
         {
             Text = text;
