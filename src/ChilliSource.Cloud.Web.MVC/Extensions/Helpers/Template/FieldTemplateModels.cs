@@ -60,6 +60,11 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             return MvcHtmlString.Create($"<span class=\"input-group-addon\">{text}</span>");
         }
+
+        public static MvcHtmlString ButtonAddOn(string text, string classes = "")
+        {
+            return MvcHtmlString.Create($"<span class=\"input-group-btn\"><button type=\"button\" class=\"btn {classes}\">{text}</button></span>");
+        }
     }
 
     public class FieldTemplateModel
