@@ -10,7 +10,9 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using ChilliSource.Cloud.Web;
 using ChilliSource.Cloud.Core.Phone;
+using ChilliSource.Core.Extensions;
 using ChilliSource.Cloud.Core;
+using PhoneNumbers;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -40,11 +42,14 @@ namespace ChilliSource.Cloud.Web.MVC
             }
         }
 
-        public PhoneNumberAttribute(string region, int maximumDigits = 10) : base(maximumDigits)
+        public PhoneNumberAttribute(string region, int maximumDigits = 10, params PhoneNumberType[] phoneTypesToCheck)
+            : base(maximumDigits)
         {
             this.MinimumLength = 10;
             this.MaximumDigits = maximumDigits;
             this.Region = region;
+            this.PhoneTypesToCheck = phoneTypesToCheck?.Length > 0 ? phoneTypesToCheck
+                                        : new PhoneNumberType[] { PhoneNumberType.FIXED_LINE_OR_MOBILE, PhoneNumberType.MOBILE, PhoneNumberType.FIXED_LINE };
         }
 
         IPropertyBinder IPropertyBinderProvider.CreateBinder()
@@ -55,9 +60,10 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Maximum number of digits. Defaults to 10.
         /// </summary>
-        public int MaximumDigits { get; set; }
+        public int MaximumDigits { get; private set; }
 
         public string Region { get; set; }
+        public PhoneNumberType[] PhoneTypesToCheck { get; set; }
 
         public override string FormatErrorMessage(string name)
         {
@@ -77,7 +83,12 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             var s = value as string;
             if (String.IsNullOrEmpty(s)) return true;
-            if (s != null && s.Length <= MaximumDigits && s.Length >= MinimumLength && s.IsValidPhoneNumber(this.Region)) return base.IsValid(value);
+            if (s != null && s.Length <= MaximumDigits && s.Length >= MinimumLength &&
+                s.IsValidPhoneNumber(this.Region, this.PhoneTypesToCheck))
+            {
+                return base.IsValid(value);
+            }
+
             return false;
         }
     }

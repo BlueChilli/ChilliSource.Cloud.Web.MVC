@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.12
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChilliSource.Cloud.Web.MVC", "ChilliSource.Cloud.Web.MVC\ChilliSource.Cloud.Web.MVC.csproj", "{DE1BFC12-AFBD-42FF-B558-1F574515A7D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChilliSource.Cloud.Web.MVC.Tests", "ChilliSource.Cloud.Web.MVC.Tests\ChilliSource.Cloud.Web.MVC.Tests.csproj", "{F0846D92-C753-431D-AD0D-C83BE4F48494}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChilliSource.Cloud.Web.MVC.Tests", "ChilliSource.Cloud.Web.MVC.Tests\ChilliSource.Cloud.Web.MVC.Tests.csproj", "{F0846D92-C753-431D-AD0D-C83BE4F48494}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,5 +27,6 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8;packages\EnterpriseLibrary.TransientFaultHandling.Data.6.0.1304.1\lib\NET45
+		SolutionGuid = {71A6D1BF-E302-45BE-842E-F6B2AB726E40}
 	EndGlobalSection
 EndGlobal

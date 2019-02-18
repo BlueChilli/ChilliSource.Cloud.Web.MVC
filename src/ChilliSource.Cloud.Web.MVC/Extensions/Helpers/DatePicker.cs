@@ -1,4 +1,4 @@
-﻿using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -50,7 +50,7 @@ namespace ChilliSource.Cloud.Web.MVC
             // can't use built in helpers because they try to bind to the composite model and ignore the selected item
             bool isCustomCss = GetMetaData(metadata, "IsCustomCss", false);
             string result = "";
-            string expressionPropertyName = html.ViewData.TemplateInfo.GetFullHtmlFieldName(expression.GetExpressionText());
+            string expressionPropertyName = html.ViewData.TemplateInfo.GetFullHtmlFieldName(GetExpressionText(expression));
             if (GetMetaData(metadata, "ShowDay", true))
             {
                 result += GetDropDownHtml(html, expressionPropertyName, days, htmlAttributes, isCustomCss ? "input-day" : "input-mini") + "&nbsp;";
@@ -72,6 +72,28 @@ namespace ChilliSource.Cloud.Web.MVC
                 result += GetDropDownHtml(html, expressionPropertyName, minutes, htmlAttributes, isCustomCss ? "input-minute" : "input-mini") + "&nbsp;";
             }
             return MvcHtmlString.Create(result.TrimEnd("&nbsp;"));
+        }
+
+        private static string GetExpressionText(LambdaExpression expression)
+        {
+            var nameParts = new Stack<string>();
+            var part = expression.Body;
+
+            while (part != null)
+            {
+                if (part.NodeType != ExpressionType.MemberAccess)
+                {
+                    break;
+                }
+
+                var memberExpressionPart = (MemberExpression)part;
+                nameParts.Push("." + memberExpressionPart.Member.Name);
+                part = memberExpressionPart.Expression;
+
+            }
+
+
+            return nameParts.Count > 0 ? nameParts.Aggregate((left, right) => left + right).TrimStart('.') : String.Empty;
         }
 
         private static bool GetMetaData(ModelMetadata metadata, string name, bool defaultAs = false)

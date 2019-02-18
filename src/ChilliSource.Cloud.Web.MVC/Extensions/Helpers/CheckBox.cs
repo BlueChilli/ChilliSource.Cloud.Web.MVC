@@ -1,5 +1,5 @@
 ﻿
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,6 +23,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="expression">An expression that identifies the model.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <returns>An HTML string for checkboxes for enumeration values with flag attribute.</returns>
+        [Obsolete("no field template replace as of yet")]
         public static MvcHtmlString CheckBoxForFlagEnum<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null)
         {
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);

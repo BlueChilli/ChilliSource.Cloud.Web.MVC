@@ -16,27 +16,6 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Returns HTML string for the button element.
         /// </summary>
-        /// <typeparam name="TModel">The type of the button model.</typeparam>
-        /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
-        /// <param name="actionName">The name of the action used to generate URL of the button action.</param>
-        /// <param name="controllerName">The name of the controller used to generate URL of the button action.</param>
-        /// <param name="area">The name of the area used to generate URL of the button action.</param>
-        /// <param name="routeName">The name of the route used to generate URL of the button action.</param>
-        /// <param name="id">The value of ID in the route values used to generate URL of the button action.</param>
-        /// <param name="routeValues">An object that contains the parameters for a route used to generate URL of the button action.</param>
-        /// <param name="displayText">The text to display on the button element.</param>
-        /// <param name="buttonClasses">The CSS class for the button element.</param>
-        /// <param name="iconClasses">The CSS icon class for the button element.</param>
-        /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
-        /// <returns>An HTML-encoded string for the button element.</returns>
-        public static MvcHtmlString Button<TModel>(this HtmlHelper<TModel> htmlHelper, string actionName, string controllerName = "", string area = "", string routeName = "", string id = null, object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
-        {
-            return Button(new UrlHelper(htmlHelper.ViewContext.RequestContext), actionName, controllerName, area, id, routeName, routeValues, displayText, buttonClasses, iconClasses, buttonAttributes);
-        }
-
-        /// <summary>
-        /// Returns HTML string for the button element.
-        /// </summary>
         /// <param name="urlHelper">The System.Web.Mvc.UrlHelper.</param>
         /// <param name="actionName">The name of the action used to generate URL of the button action.</param>
         /// <param name="controllerName">The name of the controller used to generate URL of the button action.</param>
@@ -49,6 +28,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="iconClasses">The CSS icon class for the button element.</param>
         /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
         /// <returns>An HTML-encoded string for the button element.</returns>
+        [Obsolete]
         public static MvcHtmlString Button(UrlHelper urlHelper, string actionName, string controllerName = "", string area = "", string routeName = "", string id = null, object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
         {
             displayText = (displayText == String.Empty) ? actionName : displayText;
@@ -133,40 +113,6 @@ namespace ChilliSource.Cloud.Web.MVC
             }
 
             return Button(urlHelper, displayText, buttonClasses: buttonClasses, iconClasses: iconClasses, buttonAttributes: attributes);
-        }
-
-        /// <summary>
-        /// Returns HTML string for the submit button element.
-        /// </summary>
-        /// <typeparam name="TModel">The type of the button model.</typeparam>
-        /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
-        /// <param name="displayText">The text to display on the button element.</param>
-        /// <param name="buttonClasses">The CSS class for the button element.</param>
-        /// <param name="iconClasses">The CSS icon class for the button element.</param>
-        /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
-        /// <returns>An HTML-encoded string for the submit button element.</returns>
-        public static MvcHtmlString ButtonSubmit<TModel>(this HtmlHelper<TModel> htmlHelper, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
-        {
-            var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
-            return ButtonSubmit(urlHelper, displayText, buttonClasses, iconClasses, buttonAttributes);
-        }
-
-        /// <summary>
-        /// Returns HTML string for the submit button element.
-        /// </summary>
-        /// <param name="urlHelper">The System.Web.Mvc.UrlHelper.</param>
-        /// <param name="displayText">The text to display on the button element.</param>
-        /// <param name="buttonClasses">The CSS class for the button element.</param>
-        /// <param name="iconClasses">The CSS icon class for the button element.</param>
-        /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
-        /// <returns>An HTML-encoded string for the submit button element.</returns>
-        public static MvcHtmlString ButtonSubmit(UrlHelper urlHelper, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
-        {
-            if (!buttonClasses.Contains("btn-primary")) buttonClasses += " btn-primary";
-            var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(buttonAttributes);
-            if (!attributes.ContainsKey("type")) attributes["type"] = "submit";
-
-            return Button(urlHelper, urlHelper.CurrentAction(), displayText: displayText, buttonClasses: buttonClasses.Trim(), iconClasses: iconClasses, buttonAttributes: attributes);
         }
 
         /// <summary>

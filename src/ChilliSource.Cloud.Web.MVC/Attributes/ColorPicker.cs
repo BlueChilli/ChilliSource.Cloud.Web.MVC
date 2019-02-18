@@ -1,5 +1,5 @@
 ﻿
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +10,10 @@ using System.Web.Routing;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
+    [Obsolete("Not implemented in field templates ATM")]
     /// <summary>
     /// Marks a field as a ColorPicker
-    /// </summary>
+    /// </summary>    
     public class ColorPickerAttribute : Attribute, IMetadataAware
     {
         /// <summary>
@@ -30,17 +31,17 @@ namespace ChilliSource.Cloud.Web.MVC
             metadata.AdditionalValues["ColorPicker-Color"] = DefaultColor;
         }
 
-        public static void Resolve(ModelMetadata metadata, FieldOptions fieldOptions, RouteValueDictionary attributes)
-        {
-            if ( metadata.AdditionalValues.ContainsKey("ColorPicker-Format"))
-            {
-                fieldOptions.SpecialisedType = SpecializedType.ColorPicker;
+        //public static void Resolve(ModelMetadata metadata, FieldOptions fieldOptions, RouteValueDictionary attributes)
+        //{
+        //    if ( metadata.AdditionalValues.ContainsKey("ColorPicker-Format"))
+        //    {
+        //        fieldOptions.SpecialisedType = SpecializedType.ColorPicker;
 
-                fieldOptions.AppendedText = "<i></i>";
-                string color = (metadata.Model as string).DefaultTo(metadata.AdditionalValues["ColorPicker-Color"] as string, "#000000");
-                fieldOptions.WrappedAttributes = new { id = metadata.PropertyName + "-color", data_color_format = metadata.AdditionalValues["ColorPicker-Format"], data_color = color, @class = "color" };
-            }
-        }
+        //        fieldOptions.AppendedText = "<i></i>";
+        //        string color = (metadata.Model as string).DefaultTo(metadata.AdditionalValues["ColorPicker-Color"] as string, "#000000");
+        //        fieldOptions.WrappedAttributes = new { id = metadata.PropertyName + "-color", data_color_format = metadata.AdditionalValues["ColorPicker-Format"], data_color = color, @class = "color" };
+        //    }
+        //}
     }
 
     /// <summary>

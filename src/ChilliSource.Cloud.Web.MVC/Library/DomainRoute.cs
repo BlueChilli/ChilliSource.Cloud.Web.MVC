@@ -12,8 +12,8 @@ namespace ChilliSource.Cloud.Web.MVC
     //var domainRoute = "";
     //switch (ProjectConfigurationSection.GetConfig().ProjectEnvironment)
     //{
-    //    case ProjectEnvironment.Development: domainRoute = "{trainerSubdomain}.trainer.dev.bluechilli.com"; break;
-    //    case ProjectEnvironment.Staging: domainRoute = "{trainerSubdomain}.trainer.staging.bluechilli.com"; break;
+    //    case ProjectEnvironment.Development: domainRoute = "{trainerSubdomain}.trainer.dev.DOMAINNAME.com"; break;
+    //    case ProjectEnvironment.Staging: domainRoute = "{trainerSubdomain}.trainer.staging.DOMAINNAME.com"; break;
     //    case ProjectEnvironment.Production: domainRoute = "{trainerSubdomain}.ptapp.com"; break;
     //}
 

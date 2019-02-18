@@ -1,5 +1,5 @@
 ﻿
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
 using System.Collections.Generic;
@@ -27,8 +27,8 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Returns HTML string for responsive tabs.
         /// </summary>
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
-        /// <param name="items">The list of BlueChilli.Web.NavTabItem.</param>
-        /// <param name="menuOptions">Tab options defined by BlueChilli.Web.NavMenuOptions</param>
+        /// <param name="items">The list of NavTabItem.</param>
+        /// <param name="menuOptions">Tab options defined by NavMenuOptions</param>
         /// <returns>An HTML string for responsive tabs.</returns>
         public static MvcHtmlString NavTabResponsive(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions menuOptions)
         {
@@ -45,8 +45,8 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Returns HTML string for navigation tabs.
         /// </summary>
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
-        /// <param name="items">The list of BlueChilli.Web.NavTabItem.</param>
-        /// <param name="menuOptions">Tab options defined by BlueChilli.Web.NavMenuOptions</param>
+        /// <param name="items">The list of NavTabItem.</param>
+        /// <param name="menuOptions">Tab options defined by NavMenuOptions</param>
         /// <returns>An HTML string for navigation tabs.</returns>
         public static MvcHtmlString NavTabs(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions menuOptions = null)
         {
@@ -68,8 +68,8 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Returns HTML string for navigation pills.
         /// </summary>
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
-        /// <param name="items">The list of BlueChilli.Web.NavTabItem.</param>
-        /// <param name="menuOptions">Tab options defined by BlueChilli.Web.NavMenuOptions</param>
+        /// <param name="items">The list of NavTabItem.</param>
+        /// <param name="menuOptions">Tab options defined by NavMenuOptions</param>
         /// <returns>An HTML string for navigation pills.</returns>
         public static MvcHtmlString NavPills(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions menuOptions = null)
         {
@@ -148,8 +148,8 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Returns HTML string for the active navigation tab.
         /// </summary>
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
-        /// <param name="items">The list of BlueChilli.Web.NavTabItem.</param>
-        /// <param name="menuOptions">Tab options defined by BlueChilli.Web.NavMenuOptions</param>
+        /// <param name="items">The list of NavTabItem.</param>
+        /// <param name="menuOptions">Tab options defined by NavMenuOptions</param>
         /// <returns>An HTML string for the active navigation tab.</returns>
         public static MvcHtmlString NavActiveAction(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions navOptions = null)
         {
@@ -183,7 +183,7 @@ namespace ChilliSource.Cloud.Web.MVC
     public class NavMenuOptions
     {
         /// <summary>
-        /// Creates a new instance of BlueChilli.Web.NavMenuOptions with default options.
+        /// Creates a new instance of NavMenuOptions with default options.
         /// </summary>
         public NavMenuOptions()
         {
@@ -238,7 +238,7 @@ namespace ChilliSource.Cloud.Web.MVC
     public class NavTabItem
     {
         /// <summary>
-        /// Creates a new instance of BlueChilli.Web.NavTabItem.
+        /// Creates a new instance of NavTabItem.
         /// </summary>
         public NavTabItem()
         {
@@ -246,7 +246,7 @@ namespace ChilliSource.Cloud.Web.MVC
         }
 
         /// <summary>
-        /// Creates a new instance of BlueChilli.Web.NavTabItem with specified BlueChilli.Web.MenuNode.
+        /// Creates a new instance of NavTabItem with specified MenuNode.
         /// </summary>
         /// <param name="menuNode">The menu node.</param>
         public NavTabItem(MenuNode menuNode) : this()
@@ -303,7 +303,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Sets the navigation tab to active.
         /// </summary>
-        /// <param name="items">The list of BlueChilli.Web.NavTabItem.</param>
+        /// <param name="items">The list of NavTabItem.</param>
         /// <param name="defaultIndex">The default index.</param>
         public static void SetActive(List<NavTabItem> items, int defaultIndex = 0)
         {

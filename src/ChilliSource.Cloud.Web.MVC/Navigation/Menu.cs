@@ -1,4 +1,4 @@
-﻿using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
 using System.Collections.Generic;
@@ -185,8 +185,8 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An object of MenuNode.</returns>
         public static MenuNode GetReferredMenu()
         {
-            var routeData = RouteHelper.GetRouteDataByUrl(HttpContext.Current.Request.UrlReferrer).Values;
-            return GetMenuFromRouteDate(routeData);
+            var routeData = RouteHelper.GetRouteDataByUrl(HttpContext.Current.Request.UrlReferrer);
+            return GetMenuFromRouteData(routeData);
         }
 
         /// <summary>
@@ -198,10 +198,17 @@ namespace ChilliSource.Cloud.Web.MVC
             var returnUrl = Authentication.GetReturnUrl();
             if (Authentication.IsValidReturnUrl(returnUrl))
             {
-                var routeData = RouteHelper.GetRouteDataByUrl(returnUrl).Values;
-                return GetMenuFromRouteDate(routeData);
+                var routeData = RouteHelper.GetRouteDataByUrl(returnUrl);
+                return GetMenuFromRouteData(routeData);
             }
             return null;
+        }
+
+        public static MenuNode GetMenuFromRouteData(RouteData routeData)
+        {
+            if (routeData.DataTokens.ContainsKey(RouteHelper.KeyArea)) routeData.Values.AddOrSkipIfExists(RouteHelper.KeyArea, routeData.DataTokens[RouteHelper.KeyArea]);
+
+            return GetMenuFromRouteData(routeData.Values);
         }
 
         /// <summary>
@@ -209,7 +216,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         /// <param name="routeData">A System.Web.Routing.RouteValueDictionary.</param>
         /// <returns>An object of MenuNode.</returns>
-        public static MenuNode GetMenuFromRouteDate(RouteValueDictionary routeData)
+        public static MenuNode GetMenuFromRouteData(RouteValueDictionary routeData)
         {
             var area = RouteHelper.CurrentArea(routeData) ?? "";
             var controller = RouteHelper.CurrentController(routeData) ?? "";
@@ -328,10 +335,12 @@ namespace ChilliSource.Cloud.Web.MVC
             Controller = "";
             Action = "";
             Title = "";
-            Tag = "";
             Target = "";
             ReturnUrl = "";
             CssClass = "";
+
+            Tags = new List<string>();
+            NotTags = new List<string>();
 
             Children = new List<MenuNode>();
         }
@@ -510,7 +519,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>Returns formatted icon name.</returns>
         private string ResolveIcon(string iconClasses)
         {
-            if (iconClasses.Equals("icon-white") && !String.IsNullOrEmpty(Icon)) return "{0} {1}".FormatWith(Icon, iconClasses);
+            if (iconClasses.Equals("icon-white") && !String.IsNullOrEmpty(Icon)) return $"{Icon} {iconClasses}";
             return iconClasses.DefaultTo(Icon);
         }
 
@@ -531,10 +540,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="routeValues">The route values.</param>
         /// <param name="protocol">The protocol name.</param>
         /// <param name="hostName">The host name.</param>
+        /// <param name="fragment">A URL fragment identifier (#).</param>
         /// <returns>Menu link.</returns>
-        public string Url(int id, object routeValues = null, string protocol = "", string hostName = "")
+        public string Url(int id, object routeValues = null, string protocol = "", string hostName = "", string fragment = "")
         {
-            return Url(id.ToString(), routeValues, protocol, hostName);
+            return Url(id.ToString(), routeValues, protocol, hostName, fragment);
         }
 
         /// <summary>
@@ -544,13 +554,19 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="routeValues">The route values.</param>
         /// <param name="protocol">The protocol name.</param>
         /// <param name="hostName">The host name.</param>
+        /// <param name="fragment">A URL fragment identifier (#).</param>
         /// <returns>Menu link.</returns>
-        public string Url(string id = "", object routeValues = null, string protocol = "", string hostName = "")
+        public string Url(string id = "", object routeValues = null, string protocol = "", string hostName = "", string fragment = "")
         {
             MenuNode menuNode = this.ReturnMe();
 
             var url = UrlHelperExtensions.Create();
-            return url.DefaultAction(menuNode.Action, menuNode.Controller, menuNode.Area, menuNode.RouteName, id, routeValues, protocol, hostName);
+            return url.DefaultAction(menuNode.Action, menuNode.Controller, menuNode.Area, menuNode.RouteName, id, routeValues, protocol, hostName, fragment);
+        }
+
+        public string Url(MenuUrlValues urlValues)
+        {
+            return urlValues == null ? Url() : Url(urlValues.Id, urlValues.RouteValues, urlValues.Protocol, urlValues.HostName, urlValues.Fragment);
         }
 
         /// <summary>
@@ -646,20 +662,6 @@ namespace ChilliSource.Cloud.Web.MVC
         #endregion
 
         #region Link
-        /// <summary>
-        /// Returns HTML string for the link element from title, id, routeValues, linkClasses, iconClasses and linkAttributes.
-        /// </summary>
-        /// <param name="id">The value of ID in the route values used to generate URL of the link element.</param>
-        /// <param name="title">The value of title in the route values.</param>
-        /// <param name="routeValues">An object that contains the parameters for a route used to generate URL of the link element.</param>
-        /// <param name="linkClasses">The CSS class for the link element.</param>
-        /// <param name="iconClasses">The CSS icon class for the link element.</param>
-        /// <param name="linkAttributes">An object that contains the HTML attributes to set for the link element.</param>
-        /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString Link(int id, string title = "", object routeValues = null, string linkClasses = "", string iconClasses = "", object linkAttributes = null)
-        {
-            return Link(title, id.ToString(), routeValues, linkClasses, iconClasses, linkAttributes);
-        }
 
         /// <summary>
         /// Returns HTML string for the link element from title, id, routeValues, linkClasses, iconClasses and linkAttributes.
@@ -685,7 +687,7 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
             var menu = ReturnMe();
-            return HtmlHelperExtensions.Link(url, menu.Action, menu.Controller, menu.Area, menu.RouteName, options.Id, options.RouteValues, options.Title == String.Empty ? menu.Title : options.Title, options.LinkClasses, this.ResolveIcon(options.IconClasses), options.HtmlAttributes, options.HostName);
+            return HtmlHelperExtensions.Link(url, menu.Action, menu.Controller, menu.Area, menu.RouteName, options.Id, options.RouteValues, options.Title == String.Empty ? menu.Title : options.Title, options.LinkClasses, this.ResolveIcon(options.IconClasses), options.HtmlAttributes, options.HostName, options.Fragment);
         }
 
         /// <summary>
@@ -789,8 +791,8 @@ namespace ChilliSource.Cloud.Web.MVC
                 var format = "$('.{0}').unbind('click').bind('click', function () {{ window.location.href = '{1}?' + {2}; }});";
                 // http://stackoverflow.com/questions/8648892/convert-url-parameters-to-a-javascript-object/13366851#13366851
                 var currentParams = string.IsNullOrWhiteSpace(uri.Query) ? "{}" :
-                        @"JSON.parse('{{""' + decodeURI({0}).replace(/""/g, '\\""').replace(/&/g, '"",""').replace(/=/g,'"":""') + '""}}')".FormatWith(uri.Query);
-                var query = "$.param($.extend($(this).data(), {0}, {1}))".FormatWith(currentParams, pageDataFunction);
+                        $@"JSON.parse('{{""' + decodeURI({uri.Query}).replace(/""/g, '\\""').replace(/&/g, '"",""').replace(/=/g,'"":""') + '""}}')";
+                var query = $"$.param($.extend($(this).data(), {currentParams}, {pageDataFunction}))";
 
                 return MvcHtmlString.Create(String.Format(format, selector, uri.AbsolutePath, query));
             }
@@ -992,38 +994,7 @@ namespace ChilliSource.Cloud.Web.MVC
         }
 
         #region Button
-        /// <summary>
-        /// Returns HTML string for the button element from title, id, routeValues, buttonClasses, iconClasses and buttonAttributes.
-        /// </summary>
-        /// <param name="id">The value of ID in the route values used to generate id of button element.</param>
-        /// <param name="title">The value of title in the route values.</param>
-        /// <param name="routeValues">An object that contains the parameters for a route used to generate the button element.</param>
-        /// <param name="buttonClasses">The CSS class for the button element.</param>
-        /// <param name="iconClasses">The CSS icon class for the button element.</param>
-        /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
-        /// <returns>HTML string for the button.</returns>
-
-        public MvcHtmlString Button(string title = "", string id = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
-        {
-            UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
-            return HtmlHelperExtensions.Button(url, this.Action, this.Controller, this.Area, this.RouteName, id, routeValues, title == String.Empty ? this.ActionTitle : title, buttonClasses, this.ResolveIcon(iconClasses), buttonAttributes);
-        }
-
-        /// <summary>
-        /// Returns HTML string for the button element from title, id, routeValues, buttonClasses, iconClasses and buttonAttributes.
-        /// </summary>
-        /// <param name="id">The value of ID in the route values used to generate id of button element.</param>
-        /// <param name="title">The value of title in the route values.</param>
-        /// <param name="routeValues">An object that contains the parameters for a route used to generate the button element.</param>
-        /// <param name="buttonClasses">The CSS class for the button element.</param>
-        /// <param name="iconClasses">The CSS icon class for the button element.</param>
-        /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
-        /// <returns>HTML string for the button.</returns>
-        public MvcHtmlString Button(int id, string title = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
-        {
-            return Button(title, id.ToString(), routeValues, buttonClasses, iconClasses, buttonAttributes);
-        }
-
+ 
         /// <summary>
         /// Returns HTML string for the button element to perform post action.
         /// </summary>
@@ -1055,21 +1026,6 @@ namespace ChilliSource.Cloud.Web.MVC
         public MvcHtmlString ButtonPost(int id, string title = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, string confirmFunction = "")
         {
             return ButtonPost(title, id.ToString(), routeValues, buttonClasses, iconClasses, buttonAttributes, confirmFunction);
-        }
-
-        /// <summary>
-        /// Returns HTML string for the button element to perform submit action.
-        /// </summary>
-        /// <param name="title">The value of title in the route values.</param>
-        /// <param name="routeValues">An object that contains the parameters for a route used to generate the button element.</param>
-        /// <param name="buttonClasses">The CSS class for the button element.</param>
-        /// <param name="iconClasses">The CSS icon class for the button element.</param>
-        /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
-        /// <returns>HTML string for the button.</returns>
-        public MvcHtmlString ButtonSubmit(string title = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
-        {
-            UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
-            return HtmlHelperExtensions.ButtonSubmit(url, title == String.Empty ? this.ActionTitle : title, buttonClasses, this.ResolveIcon(iconClasses), buttonAttributes);
         }
 
         /// <summary>
@@ -1135,11 +1091,12 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="id">The value of ID in the route values.</param>
         /// <param name="routeValues">An object that contains the parameters for a route.</param>
         /// <param name="protocol">The protocol name.</param>
+        /// <param name="fragment">A URL fragment identifier (#).</param>
         /// <returns>An instance of the RedirectResult class.</returns>
-        public RedirectResult Redirect(string id = "", object routeValues = null, string protocol = "")
+        public RedirectResult Redirect(string id = "", object routeValues = null, string protocol = "", string fragment = "")
         {
             var httpContext = (HttpContext.Current == null) ? null : HttpContext.Current.Request.RequestContext.HttpContext;
-            var redirectTo = this.Url(id, routeValues, protocol);
+            var redirectTo = this.Url(id, routeValues, protocol, fragment: fragment);
 
             if (httpContext != null && httpContext.Request.IsAjaxRequest())
             {
@@ -1155,33 +1112,12 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="id">The value of ID in the route values.</param>
         /// <param name="routeValues">An object that contains the parameters for a route.</param>
         /// <param name="protocol">The protocol name.</param>
+        /// <param name="fragment">A URL fragment identifier (#).</param>
         /// <returns>An instance of the RedirectResult class.</returns>
-        public RedirectResult Redirect(int id, object routeValues = null, string protocol = "")
+        public RedirectResult Redirect(int id, object routeValues = null, string protocol = "", string fragment = "")
         {
-            return Redirect(id.ToString(), routeValues, protocol);
+            return Redirect(id.ToString(), routeValues, protocol, fragment);
         }
-        #endregion
-
-        #region Modal
-        /// <summary>
-        /// Returns HTML string for the modal element.
-        /// </summary>
-        /// <param name="actionTitle">The title of the link.</param>
-        /// <param name="routeValues">An object that contains the parameters for a route used to generate the modal.</param>
-        /// <param name="width">The modal width.</param>
-        /// <param name="height">The modal height.</param>
-        /// <param name="iconClasses">The CSS icon class for the modal element.</param>
-        /// <param name="htmlAttributes">The specified html attribute object.</param>
-        /// <param name="commandOnly">If false, add "onclick" attribute to modal.</param>
-        /// <param name="dynamicData">The data to submit for HTTP request in JSON format.</param>
-        /// <param name="BackgroundDrop">True to add CSS "backdrop: 'static'", otherwise not.</param>
-        /// <param name="EscapeKey">True to add CSS "keyboard: false".</param>
-        /// <returns>HTML string for the modal.</returns>
-        public MvcHtmlString ModalOpen(string actionTitle = "", object routeValues = null, int? width = null, int? height = null, string iconClasses = "", object htmlAttributes = null, bool commandOnly = false, string dynamicData = "", bool BackgroundDrop = true, bool EscapeKey = true)
-        {
-            return MvcHtmlString.Create(ModalHelper.ModalOpen(this.GetIdAs(MenuIdType.Modal), Url(routeValues: routeValues), actionTitle.DefaultTo(this.ActionTitle), width, height, this.ResolveIcon(iconClasses), htmlAttributes, commandOnly, dynamicData, BackgroundDrop, EscapeKey));
-        }
-
         #endregion
 
         #region Misc Helpers
@@ -1218,7 +1154,10 @@ namespace ChilliSource.Cloud.Web.MVC
             // This value is checked in jquery.bluechilli-mvc.js
             if (!attributes.ContainsKey("data-submitted")) attributes["data-submitted"] = "false";
 
-            return htmlHelper.BeginForm(menuNode.Action, menuNode.Controller, FormMethod.Post, attributes);
+            var method = FormMethod.Post;
+            if (attributes.ContainsKey("method")) method = EnumExtensions.Parse<FormMethod>(attributes["method"].ToString());
+
+            return htmlHelper.BeginForm(menuNode.Action, menuNode.Controller, method, attributes);
         }
 
         /// <summary>
@@ -1303,7 +1242,7 @@ namespace ChilliSource.Cloud.Web.MVC
     public class HtmlLinkFieldOptions : HtmlDefaultFieldOptions
     {
         /// <summary>
-        /// Initialises a new instance of BlueChilli.Web.HtmlLinkFieldOptions class.
+        /// Initialises a new instance of HtmlLinkFieldOptions class.
         /// </summary>
         public HtmlLinkFieldOptions()
         {
@@ -1335,6 +1274,10 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Gets or sets the host name of the link.
         /// </summary>
         public string HostName { get; set; }
+        /// <summary>
+        /// Gets or sets the fragment of the link.
+        /// </summary>
+        public string Fragment { get; set; }
     }
 
     /// <summary>
@@ -1363,7 +1306,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Checks whether the menu item is visible or not.
         /// </summary>
-        /// <param name="Menu">The BlueChilli.Web.MenuNode.</param>
+        /// <param name="Menu">The MenuNode.</param>
         /// <returns>True if menu item is visible, otherwise false.</returns>
         bool IsVisible(MenuNode Menu);
     }
@@ -1376,10 +1319,32 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Checks whether the menu item is active or not
         /// </summary>
-        /// <param name="menu">The BlueChilli.Web.MenuNode.</param>
+        /// <param name="menu">The MenuNode.</param>
         /// <param name="routeValues"></param>
         /// <returns>True if menu item is active, otherwise false</returns>
         bool IsActive(MenuNode menu, object routeValues = null);
+    }
+
+    /// <summary>
+    /// Class for passing url parameters to various methods
+    /// </summary>
+    public class MenuUrlValues
+    {
+        public MenuUrlValues()
+        {
+
+        }
+
+        public MenuUrlValues(long id)
+        {
+            Id = id.ToString();
+        }
+
+        public string Id { get; set; }
+        public object RouteValues { get; set; }
+        public string Protocol { get; set; }
+        public string Fragment { get; set; }
+        public string HostName { get; set; }
     }
     #endregion
 }

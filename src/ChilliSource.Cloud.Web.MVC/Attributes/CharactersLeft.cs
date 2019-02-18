@@ -13,15 +13,11 @@ namespace ChilliSource.Cloud.Web.MVC
     /// </summary>
     public class CharactersLeftAttribute : Attribute, IMetadataAware
     {
+        public const string Key = "CharactersLeft";
+
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["CharactersLeft"] = true;
-        }
-
-        public static string Resolve(ModelMetadata metadata, FieldOptions fieldOptions, RouteValueDictionary attributes)
-        {
-            attributes["charactersleft"] = true;
-            return String.Empty;
+            metadata.AdditionalValues[Key] = true;
         }
     }
 }

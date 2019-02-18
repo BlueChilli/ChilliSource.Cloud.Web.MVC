@@ -1,5 +1,5 @@
 ﻿
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -17,7 +17,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// When the file extension is one of the following extensions, a defined CSS class name and associated icon image will be used, otherwise unknown file object ("ufo") CSS class name and associated icon image will be used.
         /// File extensions: "csv", "doc", "docx", "gif", "html", "jpeg", "jpg", "mov", "mp3", "mpeg", "odp", "ods", "odt", "pdf", "png", "ppt", "pptx", "rtf", "swf", "txt", "wmv", "xls", "xlsx", "zip".
         /// </param>
-        /// <param name="size">The file size defined by BlueChilli.Web.IconFileTypeSize</param>
+        /// <param name="size">The file size defined by IconFileTypeSize</param>
         /// <returns>An HTML string for the icon element.</returns>
         public static MvcHtmlString IconFileType(this HtmlHelper html, string filename, IconFileTypeSize size = IconFileTypeSize.Medium)
         {
@@ -30,7 +30,7 @@ namespace ChilliSource.Cloud.Web.MVC
     }
 
     /// <summary>
-    /// Enumeration values of BlueChilli.Web.IconFileTypeSize.
+    /// Enumeration values of IconFileTypeSize.
     /// </summary>
     public enum IconFileTypeSize
     {

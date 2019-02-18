@@ -1,4 +1,4 @@
-﻿using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (httpContext == null)
             {
-                var request = new HttpRequest("/", ProjectConfigurationSection.GetConfig().BaseUrl, "");                
+                var request = new HttpRequest("/", GlobalWebConfiguration.Instance.BaseUrl, "");                
                 var response = new HttpResponse(new StringWriter());
                 httpContext = new HttpContext(request, response);
             }
@@ -167,25 +167,27 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="routeValues">An object that contains the parameters for a route.</param>
         /// <param name="protocol">The protocol for the URL, such as "http" or "https".</param>
         /// <param name="hostName">The host name for the URL.</param>
+        /// <param name="fragment">A fragment identifier (%23).</param>
         /// <returns>The fully qualified URL to an action method.</returns>
-        public static string DefaultAction(this UrlHelper urlHelper, string actionName, string controllerName = "", string areaName = null, string routeName = "", string id = null, object routeValues = null, string protocol = "", string hostName = "")
+        public static string DefaultAction(this UrlHelper urlHelper, string actionName, string controllerName = "", string areaName = null, string routeName = "", string id = null, object routeValues = null, string protocol = "", string hostName = "", string fragment = "")
         {
             controllerName = controllerName.DefaultTo(urlHelper.CurrentController());
             areaName = (areaName == null) ? urlHelper.CurrentArea() : areaName; //String.Empty will remove area
 
             var routeValuesDictionary = routeValues as RouteValueDictionary;
             if (routeValuesDictionary == null) routeValuesDictionary = new RouteValueDictionary(routeValues);
+            routeValuesDictionary = FixEnumerableRouteDataValues(routeValuesDictionary);
 
             if (String.IsNullOrEmpty(routeName))
             {
-                routeValuesDictionary["area"] = StringExtensions.DefaultTo(routeValuesDictionary["area"], areaName);
+                routeValuesDictionary["area"] = StringExtensions.DefaultTo((string)routeValuesDictionary["area"], areaName);
             }
             else
             {
-                var routeAction = StringExtensions.DefaultTo(routeValuesDictionary["action"], actionName);
+                var routeAction = StringExtensions.DefaultTo((string)routeValuesDictionary["action"], actionName);
                 if (!String.IsNullOrEmpty(routeAction)) routeValuesDictionary["action"] = routeAction;
 
-                var routeController = StringExtensions.DefaultTo(routeValuesDictionary["controller"], controllerName);
+                var routeController = StringExtensions.DefaultTo((string)routeValuesDictionary["controller"], controllerName);
                 if (!String.IsNullOrEmpty(routeController)) routeValuesDictionary["controller"] = routeController;
             }
 
@@ -198,9 +200,35 @@ namespace ChilliSource.Cloud.Web.MVC
             if (!String.IsNullOrEmpty(id)) routeValuesDictionary["id"] = id;
 
             string href = String.IsNullOrEmpty(routeName) ? urlHelper.Action(actionName, controllerName, routeValuesDictionary, protocol, hostName) : urlHelper.RouteUrl(routeName, routeValuesDictionary, protocol, hostName);
+            href = href + (String.IsNullOrEmpty(fragment) ? "" : $"#{fragment}");
 
             return href;
         }
+
+        private static RouteValueDictionary FixEnumerableRouteDataValues(RouteValueDictionary routes)
+        {
+            var result = new RouteValueDictionary();
+            foreach (var key in routes.Keys)
+            {
+                object value = routes[key];
+                if (value is System.Collections.IEnumerable && !(value is string))
+                {
+                    int index = 0;
+                    foreach (var val in (System.Collections.IEnumerable)value)
+                    {
+                        result.Add(string.Format("{0}[{1}]", key, index), val);
+                        index++;
+                    }
+                }
+                else
+                {
+                    result.Add(key, value);
+                }
+            }
+
+            return result;
+        }
+
 
         /// <summary>
         /// Generates a System.Uri for an action method by using the specified action name, controller name, route values and protocol or generates the System.Uri for the specified route values by using the specified route name and protocol.
@@ -231,7 +259,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (url.StartsWith("~"))
             {
                 var httpContext = urlHelper.RequestContext.HttpContext;
-                var appPath = httpContext.Request.ApplicationPath ?? new Uri(ProjectConfigurationSection.GetConfig().BaseUrl).PathAndQuery;
+                var appPath = httpContext.Request.ApplicationPath ?? new Uri(GlobalWebConfiguration.Instance.BaseUrl).PathAndQuery;
                 url = VirtualPathUtility.ToAbsolute(url, appPath);
             }
             url = urlHelper.RequestContext.HttpContext.Request.Url.GetLeftPart(UriPartial.Authority) + url;

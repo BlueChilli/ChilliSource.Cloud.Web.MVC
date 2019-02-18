@@ -11,6 +11,8 @@ namespace ChilliSource.Cloud.Web.MVC
     /// </summary>
     public class LabelAttribute : Attribute, IMetadataAware
     {
+        public const string Key = "CharactersLeft";
+
         /// <summary>
         /// Label text
         /// </summary>
@@ -23,7 +25,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["Label"] = Value;
+            metadata.AdditionalValues[Key] = Value;
         }
     }
 }

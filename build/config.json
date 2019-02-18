@@ -1,11 +1,11 @@
 {
-	"productName" : "ChilliSource Cloud Web.MVC",
+	"productName" : "ChilliSource Cloud Web MVC",
 	"projectName" : "ChilliSource.Cloud.Web.MVC",
 	"githubOwner": "BlueChilli",
 	"githubRepository": "ChilliSource.Cloud.Web.MVC",
 	"packageWhiteList": ["ChilliSource.Cloud.Web.MVC"],
 	"solutionFile" : "../src/ChilliSource.Cloud.Web.MVC.sln",
-	"tags": [ "ChilliSource", "ChilliSource Cloud Web.MVC"],
+	"tags": [ "ChilliSource", "ChilliSource Cloud Web MVC"],
 	"authors" : ["Blue Chilli Technology Pty Ltd"],
 	"copyright" : "Copyright Blue Chilli Technology Pty Ltd 2017",
 	"iconUrl": "https://avatars0.githubusercontent.com/u/5924219?v=3&s=200",

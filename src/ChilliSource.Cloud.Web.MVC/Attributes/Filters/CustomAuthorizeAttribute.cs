@@ -26,7 +26,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public bool HasAdditionalRoles() { return this.AdditionalRoles != null && this.AdditionalRoles.Length > 0; }
 
         /// <summary>
-        /// Initialize a new instance of BlueChilli.Web.CustomAuthorizeAttribute.
+        /// Initialize a new instance of CustomAuthorizeAttribute.
         /// </summary>
         public CustomAuthorizeAttribute() : base() { }
 
@@ -159,7 +159,7 @@ namespace ChilliSource.Cloud.Web.MVC
         private static UrlHelper UrlHelper { get { return new UrlHelper(HttpContext.Current.Request.RequestContext); } }
 
         /// <summary>
-        /// Initialise a new instance of BlueChilli.Web.MyCustomAuthorizeAttribute.
+        /// Initialise a new instance of MyCustomAuthorizeAttribute.
         /// </summary>
         public CustomAuthorizeBaseAttribute()
         {
@@ -181,7 +181,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             returnUrl = filterContext.RequestContext.TransformUrl(returnUrl);
 
-            redirectTo = UriExtensions.Parse(redirectTo, new { ReturnUrl = returnUrl }).AbsoluteUri;
+            redirectTo = UriExtensions.Parse(redirectTo).AddQuery(new { ReturnUrl = returnUrl }).AbsoluteUri;
             if (filterContext.HttpContext.Request.IsAjaxRequest())
             {
                 filterContext.HttpContext.Response.Headers["X-Ajax-Redirect"] = redirectTo;

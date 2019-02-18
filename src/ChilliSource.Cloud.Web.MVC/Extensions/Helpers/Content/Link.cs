@@ -1,5 +1,5 @@
 ﻿
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
 using System.Web;
@@ -29,6 +29,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="iconClasses">The CSS icon class for the link element.</param>
         /// <param name="linkAttributes">An object that contains the HTML attributes to set for the link element.</param>
         /// <returns>An HTML-encoded string for the link element.</returns>
+        [Obsolete] 
         public static MvcHtmlString Link<TModel>(this HtmlHelper<TModel> htmlHelper, string actionName, string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null)
         {
             var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
@@ -50,8 +51,9 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="iconClasses">The CSS icon class for the link element.</param>
         /// <param name="linkAttributes">An object that contains the HTML attributes to set for the link element.</param>
         /// <param name="hostName">The host name for the link.</param>
+        /// <param name="fragment">A URL fragment identifier (#).</param>
         /// <returns>An HTML-encoded string for the link element.</returns>
-        public static MvcHtmlString Link(UrlHelper urlHelper, string actionName = "", string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string hostName = "")
+        public static MvcHtmlString Link(UrlHelper urlHelper, string actionName = "", string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string hostName = "", string fragment = "")
         {
             displayText = (displayText == String.Empty) ? actionName : displayText;
             TagBuilder tag = new TagBuilder("a");
@@ -65,13 +67,13 @@ namespace ChilliSource.Cloud.Web.MVC
             }
 
             var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(linkAttributes);
-            
+
             tag.MergeAttributes(attributes);
             if (!String.IsNullOrEmpty(linkClasses)) tag.AddCssClass(linkClasses);
 
             if (attributes["onclick"] == null)
             {
-                var href = urlHelper.DefaultAction(actionName, controllerName, area, routeName, id, routeValues, hostName: hostName);
+                var href = urlHelper.DefaultAction(actionName, controllerName, area, routeName, id, routeValues, hostName: hostName, fragment: fragment);
                 tag.MergeAttribute("href", href);
             }
 

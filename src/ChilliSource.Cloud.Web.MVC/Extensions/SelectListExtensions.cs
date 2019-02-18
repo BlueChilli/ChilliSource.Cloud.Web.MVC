@@ -1,5 +1,5 @@
 ﻿
-using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,6 +62,28 @@ namespace ChilliSource.Cloud.Web.MVC
             }
             return new SelectList(kvpList, "Key", "Value", value);
         }
+
+        /// <summary>
+        /// Converts a collection into a MultiSelectList object
+        /// </summary>
+        /// <typeparam name="T">Collection element type</typeparam>
+        /// <typeparam name="TValue">Value type</typeparam>
+        /// <typeparam name="TText">Text type. Must be convertible to String.</typeparam>
+        /// <param name="collection">List of elements</param>
+        /// <param name="valueFunc">Anonymous function to get the item value</param>
+        /// <param name="textFunc">Anonymous function to get the display value</param>
+        /// <param name="value">Current selected values</param>
+        /// <returns>Converted MultiSelectList object</returns>
+        public static MultiSelectList ToSelectList<T, TValue, TText>(this IEnumerable<T> collection, Func<T, TValue> valueFunc, Func<T, TText> textFunc, IEnumerable<TValue> values)
+        {
+            var kvpList = new List<KeyValuePair<TValue, string>>();
+            foreach (var item in collection)
+            {
+                kvpList.Add(new KeyValuePair<TValue, string>(valueFunc(item), textFunc(item).ToString()));
+            }
+            return new MultiSelectList(kvpList, "Key", "Value", values);
+        }
+
 
         /// <summary>
         /// Converts a collection into a SelectList object

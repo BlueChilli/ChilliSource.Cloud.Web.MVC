@@ -1,4 +1,4 @@
-﻿using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -240,7 +240,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// Returns a Globally Recognised Avatar as an &lt;img /&gt; - http://gravatar.com
         /// </summary>
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
-        /// <param name="options">Image options defined by BlueChilli.Web.Misc.GravatarOptions.</param>
+        /// <param name="options">Image options defined by Misc.GravatarOptions.</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
         public static HtmlString GravatarImage(this HtmlHelper htmlHelper, GravatarOptions options)
         {

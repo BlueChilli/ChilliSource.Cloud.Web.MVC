@@ -13,6 +13,25 @@ namespace ChilliSource.Cloud.Web.MVC
         private static readonly GlobalMVCConfiguration _instance = new GlobalMVCConfiguration();
         public static GlobalMVCConfiguration Instance { get { return _instance; } }
 
-        private GlobalMVCConfiguration() { }
+        private GlobalMVCConfiguration()
+        {
+        }
+
+        internal GoogleApis GoogleApis { get; set; }
+
+        public void SetGoogleApisSettings(string apiKey, string libraries)
+        {
+            GoogleApis = new GoogleApis
+            {
+                ApiKey = apiKey,
+                Libraries = libraries
+            };
+        }
+    }
+
+    internal class GoogleApis
+    {
+        internal string ApiKey { get; set; }
+        internal string Libraries { get; set; }
     }
 }

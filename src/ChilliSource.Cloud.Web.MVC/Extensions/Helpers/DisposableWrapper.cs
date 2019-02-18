@@ -1,4 +1,4 @@
-﻿using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using System;
 using System.Linq.Expressions;
 using System.Web.Mvc;
@@ -36,12 +36,12 @@ namespace ChilliSource.Cloud.Web.MVC
     {
 
         /// <summary>
-        /// Returns BlueChilli.Web.DisposableWrapper object to write HTML link begin tag when created and to write HTML link end tag when disposed.
+        /// Returns DisposableWrapper object to write HTML link begin tag when created and to write HTML link end tag when disposed.
         /// This is really just an example of how DisposableWrapper can be used to create Html helper methods.
         /// </summary>
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="link">An HTML-encoded link.</param>
-        /// <returns>A BlueChilli.Web.DisposableWrapper object.</returns>
+        /// <returns>A DisposableWrapper object.</returns>
         public static IDisposable BeginLink(this HtmlHelper htmlHelper, MvcHtmlString link)
         {
             return new DisposableWrapper(

@@ -19,14 +19,14 @@ namespace ChilliSource.Cloud.Web.MVC
            PropertyDescriptor propertyDescriptor,
            IModelBinder propertyBinder)
         {
-            var propertyType = propertyDescriptor.PropertyType;
-
             if (bindingContext.ModelType == typeof(string) && (bindingContext.ModelMetadata.AdditionalValues.ContainsKey("ShouldTrim") || this.TrimAllStrings))
             {
                 var providerValue = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
                 var sValue = ((string)providerValue.AttemptedValue);
                 return (sValue == null ? null : sValue.Trim());
             }
+
+            var propertyType = Nullable.GetUnderlyingType(propertyDescriptor.PropertyType) ?? propertyDescriptor.PropertyType;
 
             // Check if the property type is an enum with the flag attribute
             if (propertyType.IsEnum && propertyType.IsDefined(typeof(FlagsAttribute), true))

@@ -9,7 +9,7 @@ using System.Web.Routing;
 namespace ChilliSource.Cloud.Web.MVC
 {
     /// <summary>
-    /// See RouteValueDictionaryExtensions in BlueChilli.Lib for additional functions.
+    /// See RouteValueDictionaryExtensions in ChilliSource.Cloud.Web for additional functions.
     /// </summary>
     public class RouteValueDictionaryHelper
     {
