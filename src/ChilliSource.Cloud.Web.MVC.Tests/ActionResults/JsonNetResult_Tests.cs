@@ -2,6 +2,7 @@
 using Moq;
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
@@ -49,7 +50,7 @@ namespace ChilliSource.Cloud.Web.MVC.Tests
 
         public JsonResult Action1()
         {
-            return Json(new { Name = "Jim", Favourite = System.Net.Http.HttpMethod.Post }, JsonRequestBehavior.AllowGet);
+            return Json(new { Name = "Jim", Favourite = HttpMethod.Post }, JsonRequestBehavior.AllowGet);
         }
     }
 }
