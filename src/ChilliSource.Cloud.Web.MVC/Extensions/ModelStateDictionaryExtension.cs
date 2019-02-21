@@ -1,11 +1,18 @@
-﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+#if NET_4X
 using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -60,7 +67,7 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 if (msCopy.Key.Equals(expressionText) || msCopy.Key.StartsWith(expressionText + "."))
                 {
-                    modelState.Remove(msCopy);
+                    modelState.Remove(msCopy.Key);
                 }
             }
         }

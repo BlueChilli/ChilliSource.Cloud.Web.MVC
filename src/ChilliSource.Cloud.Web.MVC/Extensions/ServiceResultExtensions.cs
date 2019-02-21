@@ -4,7 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+#if NET_4X
 using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {

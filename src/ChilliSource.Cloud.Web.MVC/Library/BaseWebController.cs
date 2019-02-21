@@ -30,7 +30,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public BaseWebController(IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
+            _serviceProvider = serviceProvider;            
         }
 #endif
         public ViewNamingConvention ViewNamingConvention { get; set; }
@@ -203,7 +203,12 @@ namespace ChilliSource.Cloud.Web.MVC
                 response.AddToModelState(_controller);
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
+#if NET_4X
                     return new HttpNotFoundResult(response.Error);
+#else
+                    return new NotFoundResult();
+#endif
+
                 }
                 this.IgnoreModelState = true;
                 return _onFailure(response.Result);
@@ -380,7 +385,11 @@ namespace ChilliSource.Cloud.Web.MVC
                 response.AddToModelState(_controller);
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
+#if NET_4X
                     return new HttpNotFoundResult(response.Error);
+#else
+                    return new NotFoundResult();
+#endif
                 }
                 this.IgnoreModelState = true;
                 return await _onFailure(response.Result);
