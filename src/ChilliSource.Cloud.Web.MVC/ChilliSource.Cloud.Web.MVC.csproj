@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;net462;net472</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net461;net462;net472</TargetFrameworks>
     <DebugType>pdbonly</DebugType>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
@@ -26,24 +26,40 @@
     <DocumentationFile>bin\Release\net462\ChilliSource.Cloud.Web.MVC.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)'=='net461'">
+    <DefineConstants>$(DefineConstants);NET_4X</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net462'">
+    <DefineConstants>$(DefineConstants);NET_4X</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net472'">
+    <DefineConstants>$(DefineConstants);NET_4X</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
-    <PackageReference Include="ChilliSource.Cloud.Web" Version="1.0.1" />
+    <Compile Condition="'$(TargetFramework)'!='netstandard2.0'" Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
     <PackageReference Include="ChilliSource.Core.Extensions" Version="2.0.2" />
-    <PackageReference Include="ChilliSource.Cloud.Core" Version="1.0.1" />
-    
-    <PackageReference Include="ImageResizer" Version="3.4.3" />
-    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.7" />
-    <PackageReference Include="Microsoft.AspNet.Razor" Version="3.2.7" />
-    <PackageReference Include="Microsoft.AspNet.WebPages" Version="3.2.7" />
-    <PackageReference Include="Microsoft.Web.Infrastructure" Version="1.0.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+
+    <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="ChilliSource.Cloud.Web" Version="1.0.1" />
+    <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="ChilliSource.Cloud.Core" Version="1.0.1" />
+
+    <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="ImageResizer" Version="3.4.3" />
+    <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="Microsoft.AspNet.Mvc" Version="5.2.7" />
+    <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="Microsoft.AspNet.Razor" Version="3.2.7" />
+    <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="Microsoft.AspNet.WebPages" Version="3.2.7" />    
+    <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="Microsoft.Web.Infrastructure" Version="1.0.0.0" />
+
+    <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="ChilliSource.Cloud.Web" Version="2.0.0-alpha0021" />
+    <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.2" />    
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Web" />
+    <Reference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="Microsoft.CSharp" />
+    <Reference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="System.Configuration" />
+    <Reference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="System.Web" />
   </ItemGroup>
 
 </Project>

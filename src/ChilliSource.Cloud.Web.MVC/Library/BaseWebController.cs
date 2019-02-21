@@ -1,22 +1,39 @@
-﻿
-using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System;
 using System.Diagnostics;
 using System.Net;
-using System.Web.Mvc;
 using System.Threading.Tasks;
+
+#if NET_4X
+using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
+#if NET_4X
     public class BaseWebController : AsyncController
     {
-        public ViewNamingConvention ViewNamingConvention { get; set; }
-
-
         protected override ITempDataProvider CreateTempDataProvider()
         {
             return new CookieTempDataProvider(useEncryption: true);
         }
+#else
+    public class BaseWebController : Controller
+    {
+        IServiceProvider _serviceProvider;
+
+        public BaseWebController(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+#endif
+        public ViewNamingConvention ViewNamingConvention { get; set; }
 
         [DebuggerNonUserCode]
         public IServiceCallerSyntax<T> ServiceCall<T>(Func<ServiceResult<T>> action)
@@ -56,7 +73,7 @@ namespace ChilliSource.Cloud.Web.MVC
         internal new ActionResult View(string viewName, object model)
         {
             return base.View(viewName, model);
-        }        
+        }
     }
 
     public enum ViewNamingConvention

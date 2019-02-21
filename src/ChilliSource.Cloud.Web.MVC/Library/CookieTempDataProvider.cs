@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿#if NET_4X
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -155,3 +156,146 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 }
+#else
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.DataProtection;
+
+
+namespace ChilliSource.Cloud.Web.MVC
+{
+    /// <summary>
+    /// Based from http://brockallen.com/2012/06/11/cookie-based-tempdata-provider/
+    /// </summary>
+    public class CookieTempDataProvider : ITempDataProvider
+    {
+        const string CookieName = "TempData";
+        private bool UseEncryption;
+        IDataProtector _dataProtector;
+
+        public CookieTempDataProvider(IDataProtectionProvider dataProtectionProvider, bool useEncryption)
+        {
+            UseEncryption = useEncryption;
+            _dataProtector = dataProtectionProvider.CreateProtector("TempData");
+        }
+
+        public void SaveTempData(HttpContext context, IDictionary<string, object> values)
+        {
+            // convert the temp data dictionary into json
+            string value = Serialize(values);
+            // compress the json (it really helps)
+            var bytes = Compress(value);
+            // sign and encrypt the data via the asp.net machine key
+            value = Protect(bytes);
+            // issue the cookie
+            IssueCookie(context, value);
+        }
+
+        public IDictionary<string, object> LoadTempData(HttpContext context)
+        {
+            // get the cookie
+            var value = context.Request.Cookies[CookieName];
+            // verify and decrypt the value via the asp.net machine key
+            var bytes = Unprotect(value);
+            // decompress to json
+            value = Decompress(bytes);
+            // convert the json back to a dictionary
+            return Deserialize(value);
+        }
+
+        void IssueCookie(HttpContext httpContext, string value)
+        {
+            var cookieOptions = new CookieOptions()
+            {
+                HttpOnly = true,
+                Secure = httpContext.Request.IsHttps,
+                Expires = DateTime.UtcNow.AddHours(1)
+            };
+
+            if (value == null)
+            {
+                cookieOptions.Expires = DateTime.Now.AddMonths(-1);
+            }
+
+            if (value != null || httpContext.Request.Cookies[CookieName] != null)
+            {
+                httpContext.Response.Cookies.Append(CookieName, value, cookieOptions);
+            }
+        }
+
+        string Protect(byte[] data)
+        {
+            if (data == null || data.Length == 0) return null;
+            var value = UseEncryption ? _dataProtector.Protect(data) : data;
+            return Convert.ToBase64String(value);
+        }
+
+        byte[] Unprotect(string value)
+        {
+            if (String.IsNullOrWhiteSpace(value)) return null;
+            var bytes = Convert.FromBase64String(value);
+            return UseEncryption ? _dataProtector.Unprotect(bytes) : bytes;
+        }
+
+        byte[] Compress(string value)
+        {
+            if (value == null) return null;
+
+            var data = Encoding.UTF8.GetBytes(value);
+            using (var input = new MemoryStream(data))
+            {
+                using (var output = new MemoryStream())
+                {
+                    using (Stream cs = new DeflateStream(output, CompressionMode.Compress))
+                    {
+                        input.CopyTo(cs);
+                    }
+
+                    return output.ToArray();
+                }
+            }
+        }
+
+        string Decompress(byte[] data)
+        {
+            if (data == null || data.Length == 0) return null;
+
+            using (var input = new MemoryStream(data))
+            {
+                using (var output = new MemoryStream())
+                {
+                    using (Stream cs = new DeflateStream(input, CompressionMode.Decompress))
+                    {
+                        cs.CopyTo(output);
+                    }
+
+                    var result = output.ToArray();
+                    return Encoding.UTF8.GetString(result);
+                }
+            }
+        }
+
+        string Serialize(IDictionary<string, object> data)
+        {
+            if (data == null || data.Keys.Count == 0) return null;
+
+            return JsonConvert.SerializeObject(data);
+        }
+
+        IDictionary<string, object> Deserialize(string data)
+        {
+            if (String.IsNullOrWhiteSpace(data)) return null;
+
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(data);
+        }
+    }
+}
+#endif
