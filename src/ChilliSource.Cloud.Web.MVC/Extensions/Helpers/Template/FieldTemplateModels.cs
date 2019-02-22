@@ -4,16 +4,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 #if NET_4X
 using System.Web.Mvc;
+using System.Web.Routing;
 #else
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
 #endif
-using System.Web.Routing;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -66,12 +69,12 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public static MvcHtmlString AddOn(string text)
         {
-            return MvcHtmlString.Create($"<span class=\"input-group-addon\">{text}</span>");
+            return MvcHtmlStringCompatibility.Create($"<span class=\"input-group-addon\">{text}</span>");
         }
 
         public static MvcHtmlString ButtonAddOn(string text, string classes = "")
         {
-            return MvcHtmlString.Create($"<span class=\"input-group-btn\"><button type=\"button\" class=\"btn {classes}\">{text}</button></span>");
+            return MvcHtmlStringCompatibility.Create($"<span class=\"input-group-btn\"><button type=\"button\" class=\"btn {classes}\">{text}</button></span>");
         }
     }
 
@@ -165,7 +168,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public MvcHtmlString ToolbarJson()
         {
             var items = Toolbar.Select(g => $"['{g.Key}', [{g.Value.Select(i => $"'{i}'").ToDelimitedString(",")}]]").ToList();
-            return MvcHtmlString.Create($"[{items.ToDelimitedString(",")}]");
+            return MvcHtmlStringCompatibility.Create($"[{items.ToDelimitedString(",")}]");
         }
 
     }

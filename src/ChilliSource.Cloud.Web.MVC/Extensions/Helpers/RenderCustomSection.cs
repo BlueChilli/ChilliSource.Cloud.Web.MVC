@@ -126,7 +126,7 @@ namespace ChilliSource.Cloud.Web.MVC
                     }
                 }
             }
-            return MvcHtmlString.Create(result.ToString());
+            return MvcHtmlStringCompatibility.Create(result.ToString());
         }
     }
 }

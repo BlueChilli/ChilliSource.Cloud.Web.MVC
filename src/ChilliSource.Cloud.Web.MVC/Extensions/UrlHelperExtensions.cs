@@ -128,7 +128,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML-encoded string of the specified result string when the specified URL is the current URL in System.Web.Mvc.UrlHelper, otherwise HTML-encoded string of empty string.</returns>
         public static MvcHtmlString WhenIsCurrent(this UrlHelper urlHelper, string url, string resultWhenTrue)
         {
-            return IsCurrent(urlHelper, url) ? new MvcHtmlString(resultWhenTrue) : new MvcHtmlString("");
+            return IsCurrent(urlHelper, url) ? MvcHtmlStringCompatibility.Create(resultWhenTrue) : new MvcHtmlString("");
         }
 #endif
 
@@ -177,7 +177,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML-encoded string of the specified result string when the specified controller name is the current controller name in System.Web.Mvc.UrlHelper, otherwise HTML-encoded string of empty string.</returns>
         public static MvcHtmlString WhenIsCurrentController(this UrlHelper urlHelper, string controller, string resultWhenTrue)
         {
-            return IsCurrentController(urlHelper, controller) ? new MvcHtmlString(resultWhenTrue) : new MvcHtmlString("");
+            return IsCurrentController(urlHelper, controller) ? MvcHtmlStringCompatibility.Create(resultWhenTrue) : MvcHtmlStringCompatibility.Create("");
         }
         #endregion
 

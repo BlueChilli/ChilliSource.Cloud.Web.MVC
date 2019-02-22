@@ -31,7 +31,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML string for the modal window.</returns>
         public static MvcHtmlString ModalContainer(this HtmlHelper helper, string id, string title = "", bool showClose = true, bool showPrint = false)
         {
-            return new MvcHtmlString(ModalContainer(id, title, showClose, showPrint));
+            return MvcHtmlStringCompatibility.Create(ModalContainer(id, title, showClose, showPrint));
         }
 
         /// <summary>

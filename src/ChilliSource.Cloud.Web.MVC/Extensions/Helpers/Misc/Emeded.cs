@@ -38,14 +38,14 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         {
             var attributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
             string format = @"<iframe width=""{0}px"" height=""{1}px"" frameborder=""0"" src=""//www.youtube.com/embed/{2}?fs={3}&rel={4}&modestbranding={5}&wMode={6}&theme={7}&autoplay={8}"" {9}></iframe>";
-            return MvcHtmlString.Empty.Format(format, width, height.GetValueOrDefault(width * 9 / 16 + 25), videoId, allowFullScreen.ToInt(), showRelatedVideos.ToInt(), showYouTubeBranding.Toggle().ToInt(), windowMode.GetDescription(), theme.GetDescription(), autoPlay.ToInt(), attributes.ToAttributeString());
+            return MvcHtmlStringCompatibility.Empty().Format(format, width, height.GetValueOrDefault(width * 9 / 16 + 25), videoId, allowFullScreen.ToInt(), showRelatedVideos.ToInt(), showYouTubeBranding.Toggle().ToInt(), windowMode.GetDescription(), theme.GetDescription(), autoPlay.ToInt(), attributes.ToAttributeString());
         }
 
         public static MvcHtmlString VimeoEmbed(this HtmlHelper helper, string videoId, int width, int? height = null, object htmlAttributes = null, string color = "", bool autoPlay = false)
         {
             var attributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
             string format = @"<iframe src=""https://player.vimeo.com/video/{0}?color={1}&title=0&byline=0&portrait=0&badge=0&autoplay={2}"" width=""{3}"" height=""{4}"" frameborder=""0"" webkitallowfullscreen mozallowfullscreen allowfullscreen {5}></iframe>";
-            return MvcHtmlString.Empty.Format(format, videoId, color, autoPlay.ToInt(), width, height.GetValueOrDefault(width * 9 / 16 + 25), attributes.ToAttributeString());
+            return MvcHtmlStringCompatibility.Empty().Format(format, videoId, color, autoPlay.ToInt(), width, height.GetValueOrDefault(width * 9 / 16 + 25), attributes.ToAttributeString());
         }
     }
 

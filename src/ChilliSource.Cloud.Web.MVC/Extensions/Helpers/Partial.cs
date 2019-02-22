@@ -21,7 +21,13 @@ namespace ChilliSource.Cloud.Web.MVC
         public static MvcHtmlString PartialFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, string partialViewName)
         {
             string name = ExpressionHelper.GetExpressionText(expression);
+
+#if NET_4X
             object model = ModelMetadata.FromLambdaExpression(expression, helper.ViewData).Model;
+#else
+            object model = ExpressionMetadataProvider.FromLambdaExpression(expression, helper.ViewData, helper.MetadataProvider).Model;
+#endif
+
             StringBuilder htmlFieldPrefix = new StringBuilder();
             if (helper.ViewData.TemplateInfo.HtmlFieldPrefix != "")
             {

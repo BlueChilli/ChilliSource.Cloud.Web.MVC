@@ -1,4 +1,5 @@
-﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -33,7 +35,12 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <remarks>In almost all cases consume this function via FieldFor or FieldInnerFor and place a ButtonGroupAttribute on your property.</remarks>
         public static MvcHtmlString ButtonGroupForEnum<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, IEnumerable<SelectListItem> selectList = null)
         {
-            var metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+#if NET_4X
+            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+#else
+            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
+#endif
+
             var list = selectList;
             if (selectList == null)
             {
@@ -66,7 +73,11 @@ namespace ChilliSource.Cloud.Web.MVC
             var values = new string[] { bool.TrueString, bool.FalseString };
             var list = values.ToSelectList(names);
 
-            var metaData = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+#if NET_4X
+            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+#else
+            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
+#endif
 
             return MakeButtonGroup(htmlHelper, expression, htmlAttributes, metaData, list);
         }
@@ -89,7 +100,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 sb.AppendFormat(format, metaData.Model != null && metaData.Model.ToString() == item.Value ? " active" : "", propertyName, item.Value, onclick, item.Text);
             }
             sb.AppendLine("</div>");
-            return MvcHtmlString.Create(sb.ToString());
+            return MvcHtmlStringCompatibility.Create(sb.ToString());
         }
     }
 }

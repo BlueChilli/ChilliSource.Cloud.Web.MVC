@@ -507,7 +507,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An object of MvcHtmlString.</returns>
         public MvcHtmlString WhenCurrent(string resultWhenTrue)
         {
-            return IsCurrent() ? MvcHtmlString.Create(resultWhenTrue) : MvcHtmlString.Empty;
+            return IsCurrent() ? MvcHtmlStringCompatibility.Create(resultWhenTrue) : MvcHtmlStringCompatibility.Empty();
         }
 
         /// <summary>
@@ -655,7 +655,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (isAjax)
             {
                 var format = "$('.{0}').unbind('click').bind('click', function () {{ $.ajaxLoad('{1}', '{2}', {3}{4}); $.onAjaxStart('{1}');}});";
-                return MvcHtmlString.Create(String.Format(format, selector, this.Target, url,
+                return MvcHtmlStringCompatibility.Create(String.Format(format, selector, this.Target, url,
                     String.IsNullOrEmpty(pageDataFunction) ? "$(this).data()" : "$.extend($(this).data(), " + pageDataFunction + ")",
                     String.IsNullOrEmpty(successFunction) ? "" : ", " + successFunction));
             }
@@ -667,12 +667,12 @@ namespace ChilliSource.Cloud.Web.MVC
                         $@"JSON.parse('{{""' + decodeURI({uri.Query}).replace(/""/g, '\\""').replace(/&/g, '"",""').replace(/=/g,'"":""') + '""}}')";
                 var query = $"$.param($.extend($(this).data(), {currentParams}, {pageDataFunction}))";
 
-                return MvcHtmlString.Create(String.Format(format, selector, uri.AbsolutePath, query));
+                return MvcHtmlStringCompatibility.Create(String.Format(format, selector, uri.AbsolutePath, query));
             }
             else
             {
                 var format = "$('.{0}').unbind('click').bind('click', function () {{ window.location.href = '{1}' + $.param($(this).data()); }});";
-                return MvcHtmlString.Create(String.Format(format, selector, url + (String.IsNullOrEmpty(uri.Query) ? "?" : "&")));
+                return MvcHtmlStringCompatibility.Create(String.Format(format, selector, url + (String.IsNullOrEmpty(uri.Query) ? "?" : "&")));
             }
         }
 
@@ -685,7 +685,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>HTML string for the link.</returns>
         public MvcHtmlString PagerActiveAction(int? pagerId = null, bool isAjax = false, string active = "")
         {
-            var result = MvcHtmlString.Empty;
+            var result = MvcHtmlStringCompatibility.Empty();
             var routeValues = MenuNode.GetActiveCommand(active);
             if (routeValues == null) return result;
             var selector = pagerId.HasValue ? "pager" + pagerId.Value.ToString() : "pagination a";
@@ -736,7 +736,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
                 sb.AppendLine(child.MenuItem(routeValues: routeValues).ToHtmlString());
             }
-            return MvcHtmlString.Create(sb.ToString());
+            return MvcHtmlStringCompatibility.Create(sb.ToString());
         }
 
         /// <summary>
@@ -747,7 +747,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>HTML string for the link.</returns>
         public MvcHtmlString MenuItem(HtmlLinkFieldOptions linkOptions, HtmlListItemFieldOptions listItemOptions = null)
         {
-            if (!Authentication.IsInAnyRole(this.Roles)) return MvcHtmlString.Empty;
+            if (!Authentication.IsInAnyRole(this.Roles)) return MvcHtmlStringCompatibility.Empty();
 
             if (linkOptions == null) linkOptions = new HtmlLinkFieldOptions();
             if (listItemOptions == null) listItemOptions = new HtmlListItemFieldOptions();
@@ -756,14 +756,14 @@ namespace ChilliSource.Cloud.Web.MVC
             var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(listItemOptions.HtmlAttributes);
             liTag.MergeAttributes(attributes);
 
-            liTag.InnerHtml = Link(linkOptions).ToHtmlString();
+            liTag.SetInnerHtml(Link(linkOptions).ToHtmlString());
 
             if (IsActive(linkOptions.RouteValues))
             {
                 liTag.AddCssClass("active");
             }
 
-            return MvcHtmlString.Create(liTag.ToString());
+            return MvcHtmlStringCompatibility.Create(liTag.ToString());
         }
 
         /// <summary>
@@ -778,18 +778,18 @@ namespace ChilliSource.Cloud.Web.MVC
         public MvcHtmlString MenuItem(string title = "", object routeValues = null, string linkClasses = null, IMenuNodeVisibility visibility = null, IMenuNodeStatus statusProvider = null)
         {
             if (!Authentication.IsInAnyRole(this.Roles) || !this.IsVisible(visibility))
-                return MvcHtmlString.Empty;
+                return MvcHtmlStringCompatibility.Empty();
 
             TagBuilder liTag = new TagBuilder("li");
 
-            liTag.InnerHtml = Link(title: title, routeValues: routeValues, linkClasses: linkClasses).ToHtmlString();
+            liTag.SetInnerHtml(Link(title: title, routeValues: routeValues, linkClasses: linkClasses).ToHtmlString());
 
             if ((statusProvider == null && IsActive(routeValues))
               || (statusProvider != null && statusProvider.IsActive(this, routeValues)))
             {
                 liTag.AddCssClass("active");
             }
-            return MvcHtmlString.Create(liTag.ToString());
+            return MvcHtmlStringCompatibility.Create(liTag.ToString());
         }
         #endregion
 #endif

@@ -1,26 +1,29 @@
 ﻿using ChilliSource.Cloud.Core;
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Text;
+using ChilliSource.Core.Extensions;
+using System.Web;
+
 #if NET_4X
 using ChilliSource.Cloud.Core.Images;
 using System.Web.Mvc;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
 #endif
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Configuration;
-using System.IO;
-using System.Web;
-using System.Linq;
-using System.Text;
-using ChilliSource.Core.Extensions;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
+#if NET_4X
     public static partial class HtmlHelperExtensions
     {
         /// <summary>
@@ -41,9 +44,10 @@ namespace ChilliSource.Cloud.Web.MVC
             if (!String.IsNullOrEmpty(altText)) builder.Attributes.Add("alt", altText);
 
             if (htmlAttributes != null) builder.MergeAttributes(HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes));
-            return MvcHtmlString.Create(builder.ToString(TagRenderMode.SelfClosing));
+            return MvcHtmlStringCompatibility.Create(builder.ToString(TagRenderMode.SelfClosing));
         }
     }
+#endif
 
     public class ImageResizerHelper
     {
@@ -123,7 +127,13 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (!String.IsNullOrEmpty(altText)) builder.Attributes.Add("alt", altText);
             if (htmlAttributes != null) builder.MergeAttributes(HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes));
-            return MvcHtmlString.Create(builder.ToString(TagRenderMode.SelfClosing));
+
+#if NET_4X
+            return MvcHtmlStringCompatibility.Create(builder.ToString(TagRenderMode.SelfClosing));
+#else
+            builder.TagRenderMode = TagRenderMode.SelfClosing;
+            return MvcHtmlStringCompatibility.Create(builder);
+#endif
         }
 
         /// <summary>
@@ -167,7 +177,7 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 var uri = UriExtensions.Parse($"{this._prefix}/{this._remoteStorage.GetPartialFilePath(filename)}");
                 return isLocal ? filename : fullPath ? uri.AbsoluteUri : uri.AbsolutePath;
-            } 
+            }
         }
 
         /// <summary>
@@ -195,8 +205,8 @@ namespace ChilliSource.Cloud.Web.MVC
         public MvcHtmlString BackgroundImage(string filename, ImageResizerCommand cmd, bool norepeat = true, string alternativeImage = null)
         {
             var url = ImageUrl(filename, cmd, alternativeImage);
-            return MvcHtmlString.Empty.Format("background: url('{0}'){1}; height: {2}px; width: {3}px;", url, norepeat ? " no-repeat" : "", cmd.Height, cmd.Width);
-        }        
+            return MvcHtmlStringCompatibility.Empty().Format("background: url('{0}'){1}; height: {2}px; width: {3}px;", url, norepeat ? " no-repeat" : "", cmd.Height, cmd.Width);
+        }
 
         /// <summary>
         /// Appends image resize query parameters to the image file name.
@@ -224,7 +234,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (!String.IsNullOrEmpty(cmd.BgColor)) query.Add("bgcolor", cmd.BgColor);
 
             return String.Format("{0}?{1}", filename, query.ToString());
-        }   
+        }
     }
 
     #region Image Resizer

@@ -52,7 +52,7 @@ namespace ChilliSource.Cloud.Web.MVC
             menuOptions.NavCssClasses = "hidden-desktop";
             result += NavPills(htmlHelper, items, menuOptions).ToHtmlString();
 
-            return MvcHtmlString.Create(result);
+            return MvcHtmlStringCompatibility.Create(result);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace ChilliSource.Cloud.Web.MVC
             }
             result += "</ul>";
 
-            return MvcHtmlString.Create(result);
+            return MvcHtmlStringCompatibility.Create(result);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace ChilliSource.Cloud.Web.MVC
             }
             result += "</ul>";
 
-            return MvcHtmlString.Create(result);
+            return MvcHtmlStringCompatibility.Create(result);
         }
 
         private static void NavTabSetDefaults(List<NavTabItem> items, NavMenuOptions menuOptions)
@@ -153,7 +153,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 anchorTag = HtmlHelperExtensions.Link(urlHelper, item.Action, item.Controller, item.Area, item.RouteName, "", item.RouteValues, item.LinkText, "", item.Icon).ToHtmlString();
             }
 
-            liTag.InnerHtml = anchorTag.ToString();
+            liTag.SetInnerHtml(anchorTag.ToString());
 
             return liTag.ToString();
         }
@@ -167,7 +167,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML string for the active navigation tab.</returns>
         public static MvcHtmlString NavActiveAction(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions navOptions = null)
         {
-            if (items == null || items.Count == 0) return MvcHtmlString.Empty;
+            if (items == null || items.Count == 0) return MvcHtmlStringCompatibility.Empty();
             if (navOptions == null) navOptions = new NavMenuOptions();
             var item = items.Where(i => i.IsActive).First();
 
@@ -175,7 +175,7 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 var urlHelper = htmlHelper.GetUrlHelper();
                 var url = urlHelper.DefaultAction(item.Action, item.Controller, item.Area, item.RouteName, null, navOptions.RouteValues);
-                return MvcHtmlString.Empty.Format("$('#{0}').load('{1}');", navOptions.AjaxTarget, url);
+                return MvcHtmlStringCompatibility.Empty().Format("$('#{0}').load('{1}');", navOptions.AjaxTarget, url);
             }
             else
             {

@@ -1,5 +1,6 @@
 ﻿
-using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,16 +8,18 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using System.Text;
 using System.Web;
+
 #if NET_4X
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
 #endif
-using System.Web.Mvc.Html;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -34,7 +37,11 @@ namespace ChilliSource.Cloud.Web.MVC
         [Obsolete("no field template replace as of yet")]
         public static MvcHtmlString CheckBoxForFlagEnum<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null)
         {
+#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+#else
+            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
+#endif
             Type enumModelType = metadata.ModelType;
 
             // Check to make sure this is an enum.
@@ -86,11 +93,11 @@ namespace ChilliSource.Cloud.Web.MVC
                             @"<div>{0}{1}</div>",
                             checkbox.ToString(),
                             label.ToString()
-                        );  
+                        );
                 }
             }
 
-            return new MvcHtmlString(sb.ToString());
+            return MvcHtmlStringCompatibility.Create(sb.ToString());
         }
     }
 }

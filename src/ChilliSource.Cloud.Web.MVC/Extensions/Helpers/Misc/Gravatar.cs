@@ -1,4 +1,5 @@
-﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
 #endif
@@ -58,7 +60,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
             [DescriptionAttribute("retro")]
             Retro
         }
-        
+
         /// <summary>
         /// Gravatar allows users to self-rate their images so that they can indicate if an image is appropriate for a certain audience. By default, only 'G' rated images are displayed unless you indicate that you would like to see higher ratings
         /// </summary>
@@ -77,7 +79,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
             [DescriptionAttribute("x")]
             X
         }
-        
+
         /// <summary>
         /// Returns a Globally Recognised Avatar as an 80 pixel &lt;img /&gt; - http://gravatar.com
         /// </summary>
@@ -212,7 +214,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         {
             return GravatarImage(htmlHelper, emailAddress, size, DefaultImage.Default, defaultImageUrl, forceDefaultImage, rating, false);
         }
-        
+
         /// <summary>
         /// Returns a Globally Recognised Avatar as an &lt;img /&gt; - http://gravatar.com
         /// </summary>
@@ -262,11 +264,16 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         private static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage, string defaultImageUrl, bool forceDefaultImage, Rating rating, bool forceSecureRequest, object htmlAttributes = null)
         {
             var imgTag = new TagBuilder("img");
+#if NET_4X
+            bool isSecureConnection = htmlHelper.ViewContext.HttpContext.Request.IsSecureConnection;
+#else
+            bool isSecureConnection = htmlHelper.ViewContext.HttpContext.Request.IsHttps;
+#endif
 
             imgTag.Attributes.Add("src",
                 string.Format("{0}://{1}.gravatar.com/avatar/{2}?s={3}{4}{5}{6}",
-                    htmlHelper.ViewContext.HttpContext.Request.IsSecureConnection || forceSecureRequest ? "https" : "http",
-                    htmlHelper.ViewContext.HttpContext.Request.IsSecureConnection || forceSecureRequest ? "secure" : "www",
+                    isSecureConnection || forceSecureRequest ? "https" : "http",
+                    isSecureConnection || forceSecureRequest ? "secure" : "www",
                     EncryptionHelper.GetMd5Hash(emailAddress.Trim().ToLower()),
                     size.ToString(),
                     "&d=" + (!string.IsNullOrEmpty(defaultImageUrl) ? HttpUtility.UrlEncode(defaultImageUrl) : defaultImage.GetDescription()),

@@ -56,7 +56,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 content = content.Substring(0, content.IndexOf(InnerTemplateMarker));
             }
 
-            return MvcHtmlString.Create(content);
+            return MvcHtmlStringCompatibility.Create(content);
         }
 
         public static MvcHtmlString ContainerTemplateEnd(HtmlHelper html, string template, object model, string folder = "Templates")
@@ -69,9 +69,9 @@ namespace ChilliSource.Cloud.Web.MVC
             }
             else
             {
-                return MvcHtmlString.Empty;
+                return MvcHtmlStringCompatibility.Empty();
             }
-            return MvcHtmlString.Create(content);
+            return MvcHtmlStringCompatibility.Create(content);
         }
         #endregion
     }

@@ -28,7 +28,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public static MvcHtmlString ValidationSummaryHtml(this HtmlHelper html, string validationMessage)
         {
             var code = html.ValidationSummary(validationMessage);
-            return MvcHtmlString.Create(HttpUtility.HtmlDecode(code.ToHtmlString()));
+            return MvcHtmlStringCompatibility.Create(HttpUtility.HtmlDecode(code.ToHtmlString()));
         }
     }
 }

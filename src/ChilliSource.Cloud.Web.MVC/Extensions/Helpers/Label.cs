@@ -25,7 +25,12 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="expression">An expression that identifies the model property.</param>
         public static string GetLabelTextFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
         {
+#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
+#else
+            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider).Metadata;
+#endif
+
             string labelText = (metadata.AdditionalValues.SingleOrDefault(m => m.Key == LabelAttribute.Key).Value as string);
             string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
             return labelText ?? metadata.DisplayName ?? metadata.PropertyName.ToSentenceCase(true) ?? htmlFieldName.Split('.').Last();

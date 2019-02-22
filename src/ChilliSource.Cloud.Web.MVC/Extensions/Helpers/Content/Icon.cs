@@ -33,7 +33,7 @@ namespace ChilliSource.Cloud.Web.MVC
             var ext = Path.GetExtension(filename).TrimStart('.').ToLower();
             var extensions = new List<string> { "csv", "doc", "docx", "gif", "html", "jpeg", "jpg", "mov", "mp3", "mpeg", "odp", "ods", "odt", "pdf", "png", "ppt", "pptx", "rtf", "swf", "txt", "wmv", "xls", "xlsx", "zip" };
             if (!extensions.Contains(ext)) ext = "ufo";
-            return MvcHtmlString.Empty.Format(format, size.GetDescription(), ext);
+            return MvcHtmlStringCompatibility.Empty().Format(format, size.GetDescription(), ext);
         }
     }
 

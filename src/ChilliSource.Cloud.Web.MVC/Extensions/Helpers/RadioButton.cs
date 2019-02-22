@@ -33,7 +33,12 @@ namespace ChilliSource.Cloud.Web.MVC
         [Obsolete("no field template replace as of yet")]
         public static MvcHtmlString RadioButtonForEnum<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, bool inline = false)
         {
-            var metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+#if NET_4X
+            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+#else
+            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
+#endif
+
             Type enumType = Nullable.GetUnderlyingType(metadata.ModelType) ?? metadata.ModelType;
             var values = Enum.GetNames(enumType);
             var names = EnumExtensions.GetDescriptions(enumType);
@@ -58,7 +63,12 @@ namespace ChilliSource.Cloud.Web.MVC
         [Obsolete("no field template replace as of yet")]
         public static MvcHtmlString RadioButtonForList<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, SelectList list, object htmlAttributes = null, bool inline = false)
         {
-            var metaData = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+#if NET_4X
+            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+#else
+            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
+#endif
+
             return MakeRadio(htmlHelper, expression, htmlAttributes, inline, metaData, list);
         }
 
@@ -85,7 +95,7 @@ namespace ChilliSource.Cloud.Web.MVC
                     item.Text
                 );
             }
-            return MvcHtmlString.Create(sb.ToString());
+            return MvcHtmlStringCompatibility.Create(sb.ToString());
         }
     }
 }

@@ -26,7 +26,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         public static MvcHtmlString CurrentWebVersion(this HtmlHelper helper)
         {
             var version = AssemblyHelper.GetWebApplicationAssembly().GetName().Version;
-            return new MvcHtmlString(version.ToString());
+            return MvcHtmlStringCompatibility.Create(version.ToString());
         }
 
         /// <summary>

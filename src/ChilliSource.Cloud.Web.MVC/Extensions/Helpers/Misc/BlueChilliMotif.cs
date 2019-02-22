@@ -45,7 +45,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
             sb.AppendLine("                                                                              ::");
             sb.AppendLine("                                                                              :");
             sb.AppendLine("    -->");
-            return MvcHtmlString.Create(sb.ToString());
+            return MvcHtmlStringCompatibility.Create(sb.ToString());
         }
     }                                                                                    
 }

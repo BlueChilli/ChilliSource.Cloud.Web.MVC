@@ -5,16 +5,18 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+
 #if NET_4X
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
 #endif
-using System.Web.Mvc.Html;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -37,7 +39,14 @@ namespace ChilliSource.Cloud.Web.MVC
         public static MvcHtmlString ContentEditableFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, string tag, string placeholder = "", string charactersLeftSelector = null, object htmlAttributes = null)
         {
             var member = expression.Body as MemberExpression;
+#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
+            object model = metadata.Model;
+#else
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+            ModelMetadata metadata = explorer.Metadata;
+            object model = explorer.Model;
+#endif
 
             var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(htmlAttributes);
             attributes["contenteditable"] = Boolean.TrueString.ToLower();
@@ -55,17 +64,21 @@ namespace ChilliSource.Cloud.Web.MVC
             }
 
             var htmlTag = new TagBuilder(tag);
-            var value = metadata.Model == null ? null : metadata.Model.ToString();
+            var value = model == null ? null : model.ToString();
             if (!String.IsNullOrEmpty(metadata.DisplayFormatString))
             {
-                if (!String.IsNullOrEmpty(value)) value = String.Format("{" + metadata.DisplayFormatString + "}", metadata.Model);
+                if (!String.IsNullOrEmpty(value)) value = String.Format("{" + metadata.DisplayFormatString + "}", model);
             }
             htmlTag.SetInnerText(value.DefaultTo(placeholder));
             htmlTag.MergeAttributes(attributes);
 
             var hiddenTarget = html.HiddenFor(expression);
 
-            return MvcHtmlString.Create(htmlTag.ToString(TagRenderMode.Normal) + hiddenTarget.ToString());
+#if NET_4X
+            return MvcHtmlStringCompatibility.Create(htmlTag.ToString(TagRenderMode.Normal) + hiddenTarget.ToString());
+#else
+            return MvcHtmlStringCompatibility.Create(htmlTag.ToString(TagRenderMode.Normal) + hiddenTarget.ToString());
+#endif
         }
     }
 }

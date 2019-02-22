@@ -40,7 +40,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
             tag.Attributes.Add("width", size.ToString());
             tag.Attributes.Add("height", size.ToString());
 
-            return new MvcHtmlString(tag.ToString(TagRenderMode.SelfClosing));
+            return MvcHtmlStringCompatibility.Create(tag.ToString(TagRenderMode.SelfClosing));
         }
 
         /// <summary>

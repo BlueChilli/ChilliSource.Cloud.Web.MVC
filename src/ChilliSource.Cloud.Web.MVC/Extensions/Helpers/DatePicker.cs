@@ -1,19 +1,13 @@
-﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+﻿#if NET_4X
+using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-#if NET_4X
 using System.Web.Mvc;
-#else
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.DataProtection;
-#endif
 using System.Web.Routing;
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -32,15 +26,17 @@ namespace ChilliSource.Cloud.Web.MVC
         public static MvcHtmlString DatePickerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object htmlAttributes = null)
         {
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
-            DateTime? value = metadata.Model.ToNullable<DateTime>();
+            object model = metadata.Model;
+
+            DateTime? value = model.ToNullable<DateTime>();
 
             var days = Enumerable.Range(1, 31).Select(i => new SelectListItem { Text = i.ToString(), Value = i.ToString(), Selected = value.HasValue && value.Value.Day == i }).ToList();
             var months = Enumerable.Range(1, 12).Select(i => new SelectListItem { Text = GetMonthName(i, true), Value = i.ToString(), Selected = value.HasValue && value.Value.Month == i }).ToList();
 
-            int yearStart = DateTime.Now.AddYears((metadata.AdditionalValues.SingleOrDefault(m => m.Key == "DateYearRange_YearLow").Value as int?).GetValueOrDefault(-100)).Year;
-            int yearCount = (metadata.AdditionalValues.SingleOrDefault(m => m.Key == "DateYearRange_YearCount").Value as int?).GetValueOrDefault(200);
+            int yearStart = DateTime.Now.AddYears((metadata.AdditionalValues.SingleOrDefault(m => (string)m.Key == "DateYearRange_YearLow").Value as int?).GetValueOrDefault(-100)).Year;
+            int yearCount = (metadata.AdditionalValues.SingleOrDefault(m => (string)m.Key == "DateYearRange_YearCount").Value as int?).GetValueOrDefault(200);
             var years = Enumerable.Range(yearStart, yearCount).Select(i => new SelectListItem { Text = i.ToString(), Value = i.ToString(), Selected = value.HasValue && value.Value.Year == i }).ToList();
-            if ((metadata.AdditionalValues.SingleOrDefault(m => m.Key == "DateYearRange_IsReversed").Value as bool?).GetValueOrDefault())
+            if ((metadata.AdditionalValues.SingleOrDefault(m => (string)m.Key == "DateYearRange_IsReversed").Value as bool?).GetValueOrDefault())
                 years.Reverse();
 
             var hours = Enumerable.Range(0, 24).Select(i => new SelectListItem { Text = i.ToString(), Value = i.ToString(), Selected = value.HasValue && value.Value.Hour == i }).ToList();
@@ -79,7 +75,7 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 result += GetDropDownHtml(html, expressionPropertyName, minutes, htmlAttributes, isCustomCss ? "input-minute" : "input-mini") + "&nbsp;";
             }
-            return MvcHtmlString.Create(result.TrimEnd("&nbsp;"));
+            return MvcHtmlStringCompatibility.Create(result.TrimEnd("&nbsp;"));
         }
 
         private static string GetExpressionText(LambdaExpression expression)
@@ -106,7 +102,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         private static bool GetMetaData(ModelMetadata metadata, string name, bool defaultAs = false)
         {
-            return (metadata.AdditionalValues.SingleOrDefault(m => m.Key == "Date" + name).Value as bool?).GetValueOrDefault(defaultAs);
+            return (metadata.AdditionalValues.SingleOrDefault(m => (string)m.Key == "Date" + name).Value as bool?).GetValueOrDefault(defaultAs);
         }
 
         private static string GetMonthName(int month, bool abbreviate)
@@ -115,7 +111,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return abbreviate ? info.GetAbbreviatedMonthName(month) : info.GetMonthName(month);
         }
 
-        private static string GetDropDownHtml(HtmlHelper html, string name, List<SelectListItem> items, object htmlAttributes, string inputSize)
+        private static MvcHtmlString GetDropDownHtml(HtmlHelper html, string name, List<SelectListItem> items, object htmlAttributes, string inputSize)
         {
             var wrapper = new TagBuilder("div");
             wrapper.AddCssClass("styled-select");
@@ -139,9 +135,11 @@ namespace ChilliSource.Cloud.Web.MVC
                 options.Append(option.ToString(TagRenderMode.Normal));
             }
 
-            select.InnerHtml = options.ToString();
-            wrapper.InnerHtml = select.ToString(TagRenderMode.Normal) + @"<div class=""arrow""></div>";
-            return wrapper.ToString(TagRenderMode.Normal);
+            select.SetInnerHtml(options.ToString());
+            wrapper.SetInnerHtml(select.ToString(TagRenderMode.Normal) + @"<div class=""arrow""></div>");
+
+            return MvcHtmlStringCompatibility.Create(wrapper, TagRenderMode.Normal);
         }
     }
 }
+#endif

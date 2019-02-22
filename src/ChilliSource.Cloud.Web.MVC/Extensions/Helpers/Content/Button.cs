@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 #if NET_4X
 using System.Web.Mvc;
 using System.Web.Routing;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
@@ -47,7 +49,7 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 var iconTag = new TagBuilder("i");
                 iconTag.AddCssClass(iconClasses);
-                tag.InnerHtml = iconTag.ToString() + " " + tag.InnerHtml;
+                tag.SetInnerHtml(iconTag.ToString() + " " + tag.InnerHtml);
             }
 
             var attributes = buttonAttributes as RouteValueDictionary;
@@ -62,7 +64,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 tag.MergeAttribute("onclick", String.Format(@"window.location=""{0}""", href));
             }
 
-            return MvcHtmlString.Create(tag.ToString(TagRenderMode.Normal));
+            return MvcHtmlStringCompatibility.Create(tag.ToString(TagRenderMode.Normal));
         }
 
         /// <summary>

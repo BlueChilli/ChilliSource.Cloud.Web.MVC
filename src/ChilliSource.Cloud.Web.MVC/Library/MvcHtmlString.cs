@@ -8,12 +8,20 @@ using System.Text.Encodings.Web;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
-    public class MvcHtmlString : IHtmlContent
+    /// <summary>
+    ///  This interface makes code targeting .net 4.x compatible with .net standard 2.0
+    /// </summary>
+    public interface MvcHtmlString : IHtmlContent
     {
-        public static readonly MvcHtmlString Empty = new MvcHtmlString(new HtmlString(String.Empty));
+
+    }
+
+    internal class MvcHtmlStringImpl : MvcHtmlString
+    {
+        public static readonly MvcHtmlString Empty = MvcHtmlStringCompatibility.Create(String.Empty);
 
         IHtmlContent _inner;
-        internal MvcHtmlString(IHtmlContent inner)
+        internal MvcHtmlStringImpl(IHtmlContent inner)
         {
             _inner = inner;
         }
@@ -23,12 +31,51 @@ namespace ChilliSource.Cloud.Web.MVC
             _inner.WriteTo(writer, encoder);
         }
 
-        public static MvcHtmlString Create(string value)
+        public override string ToString()
         {
-            if (String.IsNullOrEmpty(value))
-                return Empty;
+            throw new ApplicationException("MvcHtmlString.ToString() is not intended to be used");
+        }
+    }
 
-            return new MvcHtmlString(new HtmlString(value));
+    internal class CompositeMvcHtmlString : MvcHtmlString
+    {
+        private List<IHtmlContent> _contentList = new List<IHtmlContent>();
+
+        public CompositeMvcHtmlString() { }
+
+        public void Append(IHtmlContent content)
+        {
+            if (content is CompositeMvcHtmlString)
+            {
+                //flattens structure when adding a composite.
+                _contentList.AddRange((content as CompositeMvcHtmlString)._contentList);
+            }
+            else
+            {
+                _contentList.Add(content);
+            }
+        }
+
+        public void AppendRange(IEnumerable<IHtmlContent> contents)
+        {
+            foreach (var content in contents)
+            {
+                //using append method to flatten structure if needed
+                this.Append(content);
+            }
+        }
+
+        public void WriteTo(TextWriter writer, HtmlEncoder encoder)
+        {
+            foreach (var content in _contentList)
+            {
+                content.WriteTo(writer, encoder);
+            }
+        }
+
+        public override string ToString()
+        {
+            throw new ApplicationException("CompositeMvcHtmlString.ToString() is not intended to be used");
         }
     }
 }

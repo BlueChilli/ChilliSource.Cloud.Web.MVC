@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 #if NET_4X
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
 #else
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -13,7 +14,6 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
 #endif
-using System.Web.Mvc.Html;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -27,8 +27,8 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="result">The specified text.</param>
         /// <returns>An HTML string using the specified text</returns>
         public static MvcHtmlString When(this HtmlHelper htmlHelper, bool condition, string result)
-        {
-            return condition ? MvcHtmlString.Create(result) : MvcHtmlString.Empty;
+        {            
+            return condition ? MvcHtmlStringCompatibility.Create(result) : MvcHtmlStringCompatibility.Empty();
         }
 
         /// <summary>
@@ -38,15 +38,26 @@ namespace ChilliSource.Cloud.Web.MVC
         public static TValue GetModelStateValue<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
         {
             var name = html.NameFor(expression).ToString();
+#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
+            object model = metadata.Model;
+#else
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+            ModelMetadata metadata = explorer.Metadata;
+            object model = explorer.Model;
+#endif
 
             string attemptedValue = null;
             if (html.ViewContext.ViewData.ModelState.ContainsKey(name))
             {
-                var valueProvider = html.ViewContext.ViewData.ModelState[name].Value;
-                if (valueProvider != null) attemptedValue = valueProvider.AttemptedValue;
+                var kvp = html.ViewContext.ViewData.ModelState[name];
+#if NET_4X
+                attemptedValue = kvp.Value?.AttemptedValue;
+#else
+                attemptedValue = kvp.AttemptedValue;
+#endif
             }
-            var result = String.IsNullOrEmpty(attemptedValue) || (metadata.Model != null && attemptedValue == metadata.Model.ToString()) ? metadata.Model : attemptedValue;
+            var result = String.IsNullOrEmpty(attemptedValue) || (model != null && attemptedValue == model.ToString()) ? model : attemptedValue;
             if (result == null) return default(TValue);
 
             Type t = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);

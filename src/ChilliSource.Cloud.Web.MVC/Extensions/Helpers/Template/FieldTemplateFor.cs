@@ -34,7 +34,7 @@ namespace ChilliSource.Cloud.Web.MVC
             var templateStart = html.FieldTemplateOuterForBegin<TModel, TValue>(expression, options);
             var templateInner = html.FieldTemplateInnerFor<TModel, TValue>(expression, fieldOptions);
             var templateEnd = html.FieldTemplateOuterForEnd<TModel, TValue>(expression, options);
-            var template = MvcHtmlString.Empty.Format("{0}{1}{2}", templateStart, templateInner, templateEnd);
+            var template = MvcHtmlStringCompatibility.Empty().Format("{0}{1}{2}", templateStart, templateInner, templateEnd);
             return template;
         }
 

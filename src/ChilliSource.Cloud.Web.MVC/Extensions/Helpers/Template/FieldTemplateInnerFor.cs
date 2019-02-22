@@ -1,4 +1,5 @@
-﻿using ChilliSource.Cloud.Core;
+﻿#if NET_4X
+using ChilliSource.Cloud.Core;
 using ChilliSource.Core.Extensions;
 using System;
 using System.Collections;
@@ -10,15 +11,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-#if NET_4X
 using System.Web.Mvc;
-#else
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.DataProtection;
-#endif
 using System.Web.Mvc.Html;
 using System.Web.Routing;
 
@@ -36,8 +29,12 @@ namespace ChilliSource.Cloud.Web.MVC
         public static MvcHtmlString FieldTemplateInnerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, FieldTemplateOptions fieldOptions = null)
         {
             var member = expression.Body as MemberExpression;
+
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
-            var request = HttpContext.Current.Request;
+            object model = metadata.Model;
+
+            var httpContext = html.ViewContext.HttpContext;
+            var request = httpContext.Request;
             var name = html.NameFor(expression).ToString();
 
             //TODO
@@ -47,8 +44,9 @@ namespace ChilliSource.Cloud.Web.MVC
             string attemptedValue = null;
             if (html.ViewContext.ViewData.ModelState.ContainsKey(name))
             {
-                var valueProvider = html.ViewContext.ViewData.ModelState[name].Value;
-                if (valueProvider != null) attemptedValue = valueProvider.AttemptedValue;
+                var kvp = html.ViewContext.ViewData.ModelState[name];
+
+                attemptedValue = kvp.Value?.AttemptedValue;
             }
 
             if (fieldOptions == null) fieldOptions = new FieldTemplateOptions();
@@ -56,7 +54,7 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 Id = html.IdFor(expression).ToString(),
                 Name = name,
-                Value = String.IsNullOrEmpty(attemptedValue) || (metadata.Model != null && attemptedValue == metadata.Model.ToString()) ? metadata.Model : attemptedValue,
+                Value = String.IsNullOrEmpty(attemptedValue) || (model != null && attemptedValue == model.ToString()) ? model : attemptedValue,
                 DisplayName = html.GetLabelTextFor(expression),
                 Options = fieldOptions,
                 HtmlAttributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(fieldOptions.HtmlAttributes)
@@ -204,7 +202,7 @@ namespace ChilliSource.Cloud.Web.MVC
                         switch (metadata.DataTypeName)
                         {
                             case "Currency":
-                                data.Options.PreAddOn = new MvcHtmlString("<span class=\"input-group-addon\">$</span>");
+                                data.Options.PreAddOn = MvcHtmlStringCompatibility.Create("<span class=\"input-group-addon\">$</span>");
                                 break;
 
                         }
@@ -361,4 +359,4 @@ namespace ChilliSource.Cloud.Web.MVC
 
     }
 }
-    
+#endif

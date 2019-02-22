@@ -30,7 +30,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 librariesParam = String.Format("libraries={0}&", libraries);
             }
 
-            return MvcHtmlString.Create($@"<script type=""text/javascript"" src=""//maps.googleapis.com/maps/api/js?{librariesParam}key={GlobalMVCConfiguration.Instance.GoogleApis?.ApiKey}&language=en""></script>");
+            return MvcHtmlStringCompatibility.Create($@"<script type=""text/javascript"" src=""//maps.googleapis.com/maps/api/js?{librariesParam}key={GlobalMVCConfiguration.Instance.GoogleApis?.ApiKey}&language=en""></script>");
         }
     }
 }

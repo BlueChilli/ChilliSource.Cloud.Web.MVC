@@ -40,12 +40,12 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
             string helpText = (metadata.AdditionalValues.SingleOrDefault(m => m.Key == "HelpText").Value as string);
-            if (string.IsNullOrEmpty(helpText)) return new MvcHtmlString("");
+            if (string.IsNullOrEmpty(helpText)) return MvcHtmlStringCompatibility.Create("");
 
             string helpTextDisplay = (metadata.AdditionalValues.SingleOrDefault(m => m.Key == "HelpText-Display").Value as string);
             if (transformData != null) helpText = helpText.TransformWith(transformData);
 
-            return new MvcHtmlString(string.Format(@"<p class=""{0}"">{1}</p>", helpTextDisplay, helpText));
+            return MvcHtmlStringCompatibility.Create(string.Format(@"<p class=""{0}"">{1}</p>", helpTextDisplay, helpText));
         }
     }
 }

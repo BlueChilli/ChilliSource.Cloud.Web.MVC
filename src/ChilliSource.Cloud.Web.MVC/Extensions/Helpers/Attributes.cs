@@ -30,7 +30,7 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 sb.AppendFormat(@" {0}=""{1}""", key, attributes[key]);
             }
-            return MvcHtmlString.Create(sb.ToString().Trim());
+            return MvcHtmlStringCompatibility.Create(sb.ToString().Trim());
         }
     }
 }
