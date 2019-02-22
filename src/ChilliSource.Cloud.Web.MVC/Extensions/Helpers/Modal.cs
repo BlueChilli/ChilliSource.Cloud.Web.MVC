@@ -2,7 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+#if NET_4X
 using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 using System.Web.Routing;
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -55,53 +63,6 @@ namespace ChilliSource.Cloud.Web.MVC
                 return String.Format("{0}, {1}", source, value);
 
             return value;
-        }
-
-        /// <summary>
-        /// Returns HTML string of the link to open modal window.
-        /// </summary>
-        /// <param name="id">The id of the link.</param>
-        /// <param name="url">The URL of the link.</param>
-        /// <param name="title">The title of the link.</param>
-        /// <param name="width">The width of the modal window.</param>
-        /// <param name="height">The height of the modal window.</param>
-        /// <param name="iconClasses">CSS class for the icon of the link.</param>
-        /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
-        /// <param name="commandOnly">True to return link without "onclick" event, otherwise with "onclick" event.</param>
-        /// <param name="dynamicData">The dynamic data passed to "ajaxLoad" function.</param>
-        /// <param name="BackgroundDrop">True to add CSS "backdrop: 'static'", otherwise not.</param>
-        /// <param name="EscapeKey">True to add CSS "keyboard: false"</param>
-        /// <returns>An HTML string of the link to open modal window.</returns>
-        [Obsolete]
-        public static string ModalOpen(string id, string url, string title = "", int? width = null, int? height = null, string iconClasses = "", object htmlAttributes = null, bool commandOnly = false, string dynamicData = "", bool BackgroundDrop = true, bool EscapeKey = true)
-        {
-            string options = "";
-            if (!BackgroundDrop) options = AppendJsonData(options, "backdrop: 'static'");
-            if (!EscapeKey) options = AppendJsonData(options, "keyboard: false");
-            options = (options.Length == 0) ? "'show'" : String.Format("{{ {0} }}", options);
-
-            string onclick = @"$.ajaxLoad('{0}_content', '{1}', {2}, function() {{ $('#{0}').modal({5}){3}{4}; }});";
-            string widthCss = ".css({{'width':'{0}'}})";
-            string heightCss = ".css({{'height':'{0}'}})"; //FYI Max height is 500px!
-
-            widthCss = width.HasValue ? String.Format(widthCss, width.Value) : "";
-            heightCss = height.HasValue ? String.Format(heightCss, height.Value) : "";
-
-            TagBuilder tag = new TagBuilder("a");
-            tag.InnerHtml = title;
-            if (!String.IsNullOrEmpty(iconClasses))
-            {
-                var iconTag = new TagBuilder("i");
-                iconTag.AddCssClass(iconClasses);
-                tag.InnerHtml = iconTag.ToString() + " " + tag.InnerHtml;
-            }
-            string onclickFormatted = String.Format(onclick, id, url, String.IsNullOrEmpty(dynamicData) ? "null" : dynamicData, widthCss, heightCss, options);
-            if (commandOnly) return onclickFormatted;
-            tag.Attributes.Add("onclick", onclickFormatted);
-            tag.Attributes.Add("href", "javascript:void(0);");
-            if (htmlAttributes != null) tag.MergeAttributes(HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes));
-
-            return tag.ToString(TagRenderMode.Normal);
-        }
+        }      
     }
 }

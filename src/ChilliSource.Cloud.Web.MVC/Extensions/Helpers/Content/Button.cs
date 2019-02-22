@@ -1,10 +1,19 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+#if NET_4X
 using System.Web.Mvc;
 using System.Web.Routing;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -28,8 +37,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="iconClasses">The CSS icon class for the button element.</param>
         /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
         /// <returns>An HTML-encoded string for the button element.</returns>
-        [Obsolete]
-        public static MvcHtmlString Button(UrlHelper urlHelper, string actionName, string controllerName = "", string area = "", string routeName = "", string id = null, object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
+        private static MvcHtmlString Button(UrlHelper urlHelper, string actionName, string controllerName = "", string area = "", string routeName = "", string id = null, object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
         {
             displayText = (displayText == String.Empty) ? actionName : displayText;
             TagBuilder tag = new TagBuilder("button");
@@ -77,7 +85,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <remarks>Uses jquery.doPost.js</remarks>
         public static MvcHtmlString ButtonPost<TModel>(this HtmlHelper<TModel> htmlHelper, string actionName, string controllerName = "", string area = "", string routeName = "", string id = "", object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, string confirm = null)
         {
-            return ButtonPost(new UrlHelper(htmlHelper.ViewContext.RequestContext), actionName, controllerName, area, routeName, id, routeValues, displayText, buttonClasses, iconClasses, buttonAttributes, confirm);
+            return ButtonPost(htmlHelper.GetUrlHelper(), actionName, controllerName, area, routeName, id, routeValues, displayText, buttonClasses, iconClasses, buttonAttributes, confirm);
         }
 
         /// <summary>
@@ -128,7 +136,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML-encoded string for the disabled button element.</returns>
         public static MvcHtmlString ButtonDisabled<TModel>(this HtmlHelper<TModel> htmlHelper, string displayText, string helpText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
         {
-            return ButtonDisabled(new UrlHelper(htmlHelper.ViewContext.RequestContext), displayText, helpText, buttonClasses, iconClasses, buttonAttributes);
+            return ButtonDisabled(htmlHelper.GetUrlHelper(), displayText, helpText, buttonClasses, iconClasses, buttonAttributes);
         }
 
         /// <summary>
@@ -182,7 +190,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML-encoded string for the button element to perform Ajax asynchronous request.</returns>
         public static MvcHtmlString ButtonAjax<TModel>(this HtmlHelper<TModel> htmlHelper, string target, string actionName, string controllerName = "", string area = "", string routeName = "", string id = "", object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, bool post = false, string dynamicData = "", string callbackJs = "")
         {
-            return ButtonAjax(new UrlHelper(htmlHelper.ViewContext.RequestContext), target, actionName, controllerName, area, routeName, id, routeValues, displayText, buttonClasses, iconClasses, buttonAttributes, post, dynamicData, callbackJs);
+            return ButtonAjax(htmlHelper.GetUrlHelper(), target, actionName, controllerName, area, routeName, id, routeValues, displayText, buttonClasses, iconClasses, buttonAttributes, post, dynamicData, callbackJs);
         }
 
         /// <summary>

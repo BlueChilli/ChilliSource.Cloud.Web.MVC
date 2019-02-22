@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET_4X
+using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
@@ -211,3 +212,4 @@ namespace ChilliSource.Cloud.Web.MVC
         public string ReturnUrl { get; set; }
     }
 }
+#endif

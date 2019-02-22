@@ -1,4 +1,5 @@
-﻿using ImageResizer;
+﻿#if NET_4X
+using ImageResizer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -99,3 +100,4 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 }
+#endif

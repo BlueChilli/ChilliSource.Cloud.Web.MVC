@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿#if NET_4X
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Web;
@@ -53,5 +54,5 @@ namespace ChilliSource.Cloud.Web.MVC
             }
         }
     }
-
 }
+#endif

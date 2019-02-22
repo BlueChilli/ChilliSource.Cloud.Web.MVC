@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET_4X
+using System;
 using System.Linq;
 using System.Web.Mvc;
 using System.ComponentModel;
@@ -90,3 +91,4 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 }
+#endif

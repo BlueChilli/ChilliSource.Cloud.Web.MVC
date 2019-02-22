@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET_4X
+using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 
@@ -86,5 +87,5 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         public object errors { get; set; }
     }
-
 }
+#endif

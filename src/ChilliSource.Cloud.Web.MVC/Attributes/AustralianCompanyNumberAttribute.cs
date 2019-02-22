@@ -1,3 +1,4 @@
+#if NET_4X
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -66,3 +67,4 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 }
+#endif

@@ -3,8 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.IO;
+using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+#if NET_4X
 using System.Web.Mvc;
 using System.Web.WebPages;
+#else
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -58,10 +70,27 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (!content.ContainsKey(templateKey))
             {
-                content.Add(templateKey, template(null).ToHtmlString());
+                var templateResult = template(null);
+#if NET_4X
+                var templateStr = templateResult.ToHtmlString();                
+#else
+                var strBuilder = new StringBuilder();
+                using (var textWriter = new StringWriter(strBuilder))
+                {
+                    templateResult.WriteTo(textWriter, HtmlEncoder.Default);
+                }
+
+                var templateStr = strBuilder.ToString();
+#endif
+
+                content.Add(templateKey, templateStr);
             }
 
+#if NET_4X
             return new HelperResult(writer => { });
+#else
+            return new HelperResult(writer => Task.CompletedTask);
+#endif
         }
 
         /// <summary>

@@ -1,9 +1,18 @@
 ﻿
-using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
 using System.Web;
+#if NET_4X
 using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 using System.Web.Routing;
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -13,29 +22,6 @@ namespace ChilliSource.Cloud.Web.MVC
     /// </summary>
     public static partial class HtmlHelperExtensions
     {
-        /// <summary>
-        /// Returns HTML string for the link element.
-        /// </summary>
-        /// <typeparam name="TModel">The type of the model.</typeparam>
-        /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
-        /// <param name="actionName">The name of the action used to generate URL of the link element.</param>
-        /// <param name="controllerName">The name of the controller used to generate URL of the link element.</param>
-        /// <param name="area">The name of the area used to generate URL of the link element.</param>
-        /// <param name="routeName">The name of the route used to generate URL of the link element.</param>
-        /// <param name="id">The value of ID in the route values used to generate URL of the link element.</param>
-        /// <param name="routeValues">An object that contains the parameters for a route used to generate URL of the link element.</param>
-        /// <param name="displayText">The text to display for the link element.</param>
-        /// <param name="linkClasses">The CSS class for the link element.</param>
-        /// <param name="iconClasses">The CSS icon class for the link element.</param>
-        /// <param name="linkAttributes">An object that contains the HTML attributes to set for the link element.</param>
-        /// <returns>An HTML-encoded string for the link element.</returns>
-        [Obsolete] 
-        public static MvcHtmlString Link<TModel>(this HtmlHelper<TModel> htmlHelper, string actionName, string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null)
-        {
-            var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
-            return Link(urlHelper, actionName, controllerName, area, routeName, id, routeValues, displayText, linkClasses, iconClasses, linkAttributes);
-        }
-
         /// <summary>
         /// Returns HTML string for the link element.
         /// </summary>
@@ -137,7 +123,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <remarks>Uses jquery.doPost.js</remarks>
         public static MvcHtmlString LinkPost<TModel>(this HtmlHelper<TModel> htmlHelper, string actionName, string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
         {
-            var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
+            var urlHelper = htmlHelper.GetUrlHelper();
             return LinkPost(urlHelper, actionName, controllerName, area, routeName, id, routeValues, displayText, linkClasses, iconClasses, linkAttributes, confirmFunction);
         }
 

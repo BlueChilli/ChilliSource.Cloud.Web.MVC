@@ -1,4 +1,4 @@
-﻿
+﻿#if NET_4X
 using ChilliSource.Core.Extensions;
 using ChilliSource.Cloud.Core;
 using System;
@@ -98,3 +98,4 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 }
+#endif

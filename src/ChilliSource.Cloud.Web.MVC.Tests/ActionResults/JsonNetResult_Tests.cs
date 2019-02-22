@@ -6,7 +6,15 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
+#if NET_4X
 using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 using Xunit;
 
 namespace ChilliSource.Cloud.Web.MVC.Tests

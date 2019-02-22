@@ -1,4 +1,5 @@
-﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
 using System.Collections.Generic;
@@ -6,8 +7,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+#if NET_4X
 using System.Web.Mvc;
 using System.Web.Routing;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -16,6 +26,7 @@ namespace ChilliSource.Cloud.Web.MVC
     /// </summary>
     public static class UrlHelperExtensions
     {
+#if NET_4X
         /// <summary>
         /// Creates a new instance from the current HTTP context.
         /// </summary>
@@ -26,7 +37,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (httpContext == null)
             {
-                var request = new HttpRequest("/", GlobalWebConfiguration.Instance.BaseUrl, "");                
+                var request = new HttpRequest("/", GlobalWebConfiguration.Instance.BaseUrl, "");
                 var response = new HttpResponse(new StringWriter());
                 httpContext = new HttpContext(request, response);
             }
@@ -39,6 +50,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             return url;
         }
+#endif
 
         #region Current
         /// <summary>
@@ -48,7 +60,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>A string value of action.</returns>
         public static string CurrentAction(this UrlHelper urlHelper)
         {
+#if NET_4X
             return RouteHelper.CurrentAction(urlHelper.RequestContext);
+#else
+            return RouteHelper.CurrentAction(urlHelper.ActionContext.RouteData.Values);
+#endif
         }
 
         /// <summary>
@@ -58,7 +74,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>A string value of controller.</returns>
         public static string CurrentController(this UrlHelper urlHelper)
         {
+#if NET_4X
             return RouteHelper.CurrentController(urlHelper.RequestContext);
+#else
+            return RouteHelper.CurrentController(urlHelper.ActionContext.RouteData.Values);
+#endif
         }
 
         /// <summary>
@@ -68,9 +88,14 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>A string value of area.</returns>
         public static string CurrentArea(this UrlHelper urlHelper)
         {
+#if NET_4X
             return RouteHelper.CurrentArea(urlHelper.RequestContext);
+#else
+            return RouteHelper.CurrentArea(urlHelper.ActionContext.RouteData.Values);
+#endif
         }
 
+#if NET_4X
         /// <summary>
         /// Checks if the specified URL or the route data match the URL or route data in the System.Web.Mvc.UrlHelper.
         /// </summary>
@@ -93,6 +118,19 @@ namespace ChilliSource.Cloud.Web.MVC
             }
             return true;
         }
+
+        /// <summary>
+        /// Returns HTML-encoded string of the specified result string when the specified URL is the current URL in System.Web.Mvc.UrlHelper.
+        /// </summary>
+        /// <param name="urlHelper">The specified System.Web.Mvc.UrlHelper.</param>
+        /// <param name="url">The specified URL.</param>
+        /// <param name="resultWhenTrue">An HTML-encoded string.</param>
+        /// <returns>An HTML-encoded string of the specified result string when the specified URL is the current URL in System.Web.Mvc.UrlHelper, otherwise HTML-encoded string of empty string.</returns>
+        public static MvcHtmlString WhenIsCurrent(this UrlHelper urlHelper, string url, string resultWhenTrue)
+        {
+            return IsCurrent(urlHelper, url) ? new MvcHtmlString(resultWhenTrue) : new MvcHtmlString("");
+        }
+#endif
 
         /// <summary>
         /// Checks if the specified area and controller names are same as area and controller names in System.Web.Mvc.UrlHelper.
@@ -128,18 +166,6 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             if (controller == null) controller = "";
             return controller.Equals(CurrentController(urlHelper), StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// Returns HTML-encoded string of the specified result string when the specified URL is the current URL in System.Web.Mvc.UrlHelper.
-        /// </summary>
-        /// <param name="urlHelper">The specified System.Web.Mvc.UrlHelper.</param>
-        /// <param name="url">The specified URL.</param>
-        /// <param name="resultWhenTrue">An HTML-encoded string.</param>
-        /// <returns>An HTML-encoded string of the specified result string when the specified URL is the current URL in System.Web.Mvc.UrlHelper, otherwise HTML-encoded string of empty string.</returns>
-        public static MvcHtmlString WhenIsCurrent(this UrlHelper urlHelper, string url, string resultWhenTrue)
-        {
-            return IsCurrent(urlHelper, url) ? new MvcHtmlString(resultWhenTrue) : new MvcHtmlString("");
         }
 
         /// <summary>
@@ -194,7 +220,11 @@ namespace ChilliSource.Cloud.Web.MVC
             //default protocol to current protocol if hostname set, but protocol isn't
             if (!String.IsNullOrEmpty(hostName) && String.IsNullOrEmpty(protocol))
             {
+#if NET_4X
                 protocol = urlHelper.RequestContext.HttpContext.Request.Url.Scheme;
+#else
+                protocol = urlHelper.ActionContext.HttpContext.Request.Scheme;
+#endif
             }
 
             if (!String.IsNullOrEmpty(id)) routeValuesDictionary["id"] = id;
@@ -247,6 +277,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return UriExtensions.Parse(DefaultAction(urlHelper, actionName, controllerName, areaName, routeName, id, routeValues, protocol));
         }
 
+#if NET_4X
         /// <summary>
         /// Generates a fully qualified URL by using URI schema and authority segments from the specified System.Web.Mvc.UrlHelper, URL string and protocol. 
         /// </summary>
@@ -266,5 +297,6 @@ namespace ChilliSource.Cloud.Web.MVC
             if (!String.IsNullOrEmpty(protocol)) url = url.Replace(urlHelper.RequestContext.HttpContext.Request.Url.Scheme, protocol);
             return url;
         }
+#endif
     }
 }

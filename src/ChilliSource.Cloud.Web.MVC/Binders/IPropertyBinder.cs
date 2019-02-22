@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET_4X
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -21,3 +22,4 @@ namespace ChilliSource.Cloud.Web.MVC
         void BindProperty(ControllerContext controllerContext, ModelBindingContext bindingContext, PropertyDescriptor propertyDescriptor, ValueProviderResult valueProviderResult);
     }
 }
+#endif

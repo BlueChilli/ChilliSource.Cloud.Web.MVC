@@ -1,3 +1,4 @@
+#if NET_4X
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -89,3 +90,4 @@ namespace ChilliSource.Cloud.Web.MVC
 
     }
 }
+#endif

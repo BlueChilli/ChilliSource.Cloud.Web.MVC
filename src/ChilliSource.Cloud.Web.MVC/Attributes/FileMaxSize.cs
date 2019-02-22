@@ -1,11 +1,11 @@
-﻿using System;
+﻿#if NET_4X
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
-
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -69,3 +69,4 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 }
+#endif

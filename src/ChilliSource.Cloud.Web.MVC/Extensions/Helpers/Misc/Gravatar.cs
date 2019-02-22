@@ -7,7 +7,16 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
+#if NET_4X
 using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 
 //todo this googled code could do with a refactor 
 //Named so to not pollute @Html

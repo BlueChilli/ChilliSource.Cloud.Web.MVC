@@ -1,4 +1,4 @@
-﻿
+﻿#if NET_4X
 using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
@@ -56,3 +56,4 @@ namespace ChilliSource.Cloud.Web.MVC
         hsla
     }
 }
+#endif

@@ -7,7 +7,15 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Web;
+#if NET_4X
 using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 using System.Web.Security;
 
 namespace ChilliSource.Cloud.Web.MVC

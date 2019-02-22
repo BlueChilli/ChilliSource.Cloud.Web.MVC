@@ -5,7 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+#if NET_4X
 using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc.Rendering;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -104,7 +113,7 @@ namespace ChilliSource.Cloud.Web.MVC
             TValue value = default(TValue))
         {
             var list = collection.Select(c => new { Key = valueFunc(c).ToString(), Value = textFunc(c).ToString(), Group = groupFunc(c).ToString() });
-            return new SelectList(list, "Key", "Value", "Group", value);
+            return new SelectList(list, "Key", "Value", value, "Group");
         }
         /// <summary>
         /// Converts 2 collections containing values and display texts into a SelectList object

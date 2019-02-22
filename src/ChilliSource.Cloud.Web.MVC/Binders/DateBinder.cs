@@ -1,8 +1,10 @@
-﻿using System;
+﻿#if NET_4X
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -16,6 +18,7 @@ namespace ChilliSource.Cloud.Web.MVC
         ///  FieldFor version of date control does not emmit hidden fields - see DateFormat. Set AllFieldsPosted to true to work with Inspinia Date template.
         /// </summary>
         public bool AllFieldsPosted { get; set; }
+
         /// <summary>
         /// Binds the model for System.DateTime object.
         /// </summary>
@@ -114,5 +117,11 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             return (metadata.AdditionalValues.SingleOrDefault(m => m.Key == "DateShow" + name).Value as bool?).GetValueOrDefault(defaultAs);
         }
+
+        public Task BindModelAsync(ModelBindingContext bindingContext)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
+#endif

@@ -3,7 +3,15 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Web;
+#if NET_4X
 using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 using System.Web.Mvc.Html;
 using ChilliSource.Cloud.Web;
 using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;

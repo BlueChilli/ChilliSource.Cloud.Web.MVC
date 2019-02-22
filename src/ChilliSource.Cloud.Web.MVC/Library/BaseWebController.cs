@@ -26,13 +26,9 @@ namespace ChilliSource.Cloud.Web.MVC
 #else
     public class BaseWebController : Controller
     {
-        IServiceProvider _serviceProvider;
-
-        public BaseWebController(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;            
-        }
 #endif
+        public BaseWebController() { }
+
         public ViewNamingConvention ViewNamingConvention { get; set; }
 
         [DebuggerNonUserCode]

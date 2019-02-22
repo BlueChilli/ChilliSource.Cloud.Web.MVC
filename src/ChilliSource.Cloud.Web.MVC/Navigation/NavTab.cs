@@ -1,5 +1,5 @@
-﻿
-using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
 using System.Collections.Generic;
@@ -8,14 +8,28 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
+
+#if NET_4X
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
+#else
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
+#if NET_4X
     public static partial class HtmlHelperExtensions
     {
+
         //@{
         //    var navTabs = new List<NavTabItem>();
         //    navTabs.Add(new NavTabItem() { Action = "Details", LinkText = "Occupancy", Icon = "icon-list" });
@@ -99,7 +113,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         private static string NavTabItemMaker(this HtmlHelper htmlHelper, NavTabItem item, NavMenuOptions menuOptions, bool reverseIcon = false)
         {
-            var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
+            var urlHelper = htmlHelper.GetUrlHelper();
 
             var url = urlHelper.DefaultAction(item.Action, item.Controller, item.Area, item.RouteName, null, item.RouteValues);
 
@@ -159,7 +173,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (navOptions.IsAjax)
             {
-                var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
+                var urlHelper = htmlHelper.GetUrlHelper();
                 var url = urlHelper.DefaultAction(item.Action, item.Controller, item.Area, item.RouteName, null, navOptions.RouteValues);
                 return MvcHtmlString.Empty.Format("$('#{0}').load('{1}');", navOptions.AjaxTarget, url);
             }
@@ -176,6 +190,7 @@ namespace ChilliSource.Cloud.Web.MVC
             }
         }
     }
+#endif
 
     /// <summary>
     /// Represents options of the navigation menu.
@@ -300,6 +315,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         public bool IsActive { get; set; }       // For default when using Ajax menus
 
+#if NET_4X
         /// <summary>
         /// Sets the navigation tab to active.
         /// </summary>
@@ -308,7 +324,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public static void SetActive(List<NavTabItem> items, int defaultIndex = 0)
         {
             if (items == null || items.Count == 0) return;
-            var routeValues = MenuBase.GetActiveCommand();
+            var routeValues = MenuNode.GetActiveCommand();
             if (routeValues == null)
             {
                 items[defaultIndex].IsActive = true;
@@ -320,5 +336,6 @@ namespace ChilliSource.Cloud.Web.MVC
             routeValues.Remove("action");
             item.RouteValues = routeValues;
         }
+#endif
     }
 }

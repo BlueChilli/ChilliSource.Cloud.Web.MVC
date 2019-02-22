@@ -1,7 +1,15 @@
 ﻿using ChilliSource.Cloud.Core;
-using ChilliSource.Cloud.Core.Images;
 using System;
+#if NET_4X
+using ChilliSource.Cloud.Core.Images;
 using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
