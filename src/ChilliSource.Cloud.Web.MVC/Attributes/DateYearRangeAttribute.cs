@@ -46,9 +46,9 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             if (metadata.AdditionalValues.ContainsKey("DateYearRange_YearLow"))
             {
-                YearLow = (int)metadata.AdditionalValues["DateYearRange_YearLow"];
-                YearCount = (int)metadata.AdditionalValues["DateYearRange_YearCount"];
-                IsReversed = (bool)metadata.AdditionalValues["DateYearRange_IsReversed"];
+                YearLow = (int)metadata.AdditionalValues()["DateYearRange_YearLow"];
+                YearCount = (int)metadata.AdditionalValues()["DateYearRange_YearCount"];
+                IsReversed = (bool)metadata.AdditionalValues()["DateYearRange_IsReversed"];
             }
             else
             {
@@ -58,9 +58,9 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["DateYearRange_YearLow"] = YearLow;
-            metadata.AdditionalValues["DateYearRange_YearCount"] = YearCount;
-            metadata.AdditionalValues["DateYearRange_IsReversed"] = IsReversed;
+            metadata.AdditionalValues()["DateYearRange_YearLow"] = YearLow;
+            metadata.AdditionalValues()["DateYearRange_YearCount"] = YearCount;
+            metadata.AdditionalValues()["DateYearRange_IsReversed"] = IsReversed;
         }
 
         public override bool IsValid(object value)

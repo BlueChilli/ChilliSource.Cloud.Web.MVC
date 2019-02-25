@@ -27,8 +27,8 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["ColorPicker-Format"] = Format;
-            metadata.AdditionalValues["ColorPicker-Color"] = DefaultColor;
+            metadata.AdditionalValues()["ColorPicker-Format"] = Format;
+            metadata.AdditionalValues()["ColorPicker-Color"] = DefaultColor;
         }
 
         //public static void Resolve(ModelMetadata metadata, FieldOptions fieldOptions, RouteValueDictionary attributes)
@@ -38,8 +38,8 @@ namespace ChilliSource.Cloud.Web.MVC
         //        fieldOptions.SpecialisedType = SpecializedType.ColorPicker;
 
         //        fieldOptions.AppendedText = "<i></i>";
-        //        string color = (metadata.Model as string).DefaultTo(metadata.AdditionalValues["ColorPicker-Color"] as string, "#000000");
-        //        fieldOptions.WrappedAttributes = new { id = metadata.PropertyName + "-color", data_color_format = metadata.AdditionalValues["ColorPicker-Format"], data_color = color, @class = "color" };
+        //        string color = (metadata.Model as string).DefaultTo(metadata.AdditionalValues()["ColorPicker-Color"] as string, "#000000");
+        //        fieldOptions.WrappedAttributes = new { id = metadata.PropertyName + "-color", data_color_format = metadata.AdditionalValues()["ColorPicker-Format"], data_color = color, @class = "color" };
         //    }
         //}
     }

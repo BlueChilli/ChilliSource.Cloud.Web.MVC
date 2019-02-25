@@ -39,8 +39,11 @@ namespace ChilliSource.Cloud.Web.MVC
         {
 #if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+            object model = metadata.Model;
 #else
-            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
+            ModelMetadata metadata = explorer.Metadata;
+            object model = explorer.Model;
 #endif
             Type enumModelType = metadata.ModelType;
 
@@ -81,19 +84,18 @@ namespace ChilliSource.Cloud.Web.MVC
                     checkbox.Attributes["class"] = propertyName;
                     checkbox.MergeAttributes(attributes);
 
-                    var model = metadata.Model as Enum;
+                    var enumModel = model as Enum;
                     long targetValue = Convert.ToInt64(item);
-                    long flagValue = Convert.ToInt64(model);
+                    long flagValue = Convert.ToInt64(enumModel);
 
                     if ((targetValue & flagValue) == targetValue)
                         checkbox.Attributes["checked"] = "checked";
 
-                    sb.AppendFormat
-                        (
+                    sb.Append(String.Format(
                             @"<div>{0}{1}</div>",
                             checkbox.ToString(),
                             label.ToString()
-                        );
+                        ));
                 }
             }
 

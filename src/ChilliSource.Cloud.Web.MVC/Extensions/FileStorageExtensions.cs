@@ -7,9 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+
 #if NET_4X
 using System.Web.Mvc;
 #else
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -44,13 +46,14 @@ namespace ChilliSource.Cloud.Web.MVC.Extensions
         {
             attachmentFilename = attachmentFilename.DefaultTo(filename).ToFilename();
             if (!Path.HasExtension(attachmentFilename)) attachmentFilename = attachmentFilename + Path.GetExtension(filename);
-            response.AddHeader("content-disposition", string.Format("attachment; filename=\"{0}\"", attachmentFilename));
+            
+            response.Headers["content-disposition"] = string.Format("attachment; filename=\"{0}\"", attachmentFilename);
 
             var result = await fileStorage.GetContentAsync(filename, encryptionKeys)
                                   .IgnoreContext();
             Stream stream = result.Stream;
 
-            var contentType = String.IsNullOrEmpty(result.ContentType) ? MimeMapping.GetMimeMapping(filename) : result.ContentType;
+            var contentType = String.IsNullOrEmpty(result.ContentType) ? "application/octet-stream" : result.ContentType;
             return new FileStreamResult(stream, contentType);
         }
     }

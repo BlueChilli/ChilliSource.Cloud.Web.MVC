@@ -1,18 +1,12 @@
-﻿using System;
+﻿#if NET_4X
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-#if NET_4X
 using System.Web.Mvc;
-#else
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.DataProtection;
-#endif
 using System.Web.Mvc.Html;
+
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -49,7 +43,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public static MvcHtmlString ContainerTemplateBegin(HtmlHelper html, string template, object model, string folder = "Templates")
         {
-            var content = html.Partial($"{folder}/{template}", model).ToString();
+            var content = html.Partial($"{folder}/{template}", model).ToHtmlString();
 
             if (content.Contains(InnerTemplateMarker))
             {
@@ -61,7 +55,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public static MvcHtmlString ContainerTemplateEnd(HtmlHelper html, string template, object model, string folder = "Templates")
         {
-            var content = html.Partial($"{folder}/{template}", model).ToString();
+            var content = html.Partial($"{folder}/{template}", model).ToHtmlString();
 
             if (content.Contains(InnerTemplateMarker))
             {
@@ -76,4 +70,4 @@ namespace ChilliSource.Cloud.Web.MVC
         #endregion
     }
 }
-    
+#endif

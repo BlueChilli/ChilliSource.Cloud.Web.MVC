@@ -1,15 +1,8 @@
-﻿using System;
+﻿#if NET_4X
+using System;
 using System.Collections.Generic;
 using System.Web;
-#if NET_4X
 using System.Web.Mvc;
-#else
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.DataProtection;
-#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -76,3 +69,4 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 }
+#endif

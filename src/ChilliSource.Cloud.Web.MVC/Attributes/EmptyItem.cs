@@ -35,10 +35,10 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["EmptyItem-Text"] = Text;
+            metadata.AdditionalValues()["EmptyItem-Text"] = Text;
             if (SkipIfSingleItem)
             {
-                metadata.AdditionalValues["EmptyItem-SkipSingle"] = true;
+                metadata.AdditionalValues()["EmptyItem-SkipSingle"] = true;
             }
         }
 
@@ -50,7 +50,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (metadata.AdditionalValues.ContainsKey("EmptyItem-Text"))
             {
-                var emptyItem = new[] { new SelectListItem { Text = metadata.AdditionalValues["EmptyItem-Text"].ToString(), Value = "" } };
+                var emptyItem = new[] { new SelectListItem { Text = metadata.AdditionalValues()["EmptyItem-Text"].ToString(), Value = "" } };
                 return emptyItem.Concat(items).ToList();
             }
             else if (metadata.IsNullableValueType)

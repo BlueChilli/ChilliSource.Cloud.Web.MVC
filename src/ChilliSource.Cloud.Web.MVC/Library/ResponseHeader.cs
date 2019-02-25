@@ -1,18 +1,11 @@
-﻿using System;
+﻿#if NET_4X
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-#if NET_4X
 using System.Web.Mvc;
-#else
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.DataProtection;
-#endif
 using System.IO;
 using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 
@@ -92,3 +85,4 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 }
+#endif

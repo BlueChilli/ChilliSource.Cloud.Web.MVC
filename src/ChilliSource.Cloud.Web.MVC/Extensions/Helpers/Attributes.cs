@@ -2,6 +2,7 @@
 using System.Text;
 #if NET_4X
 using System.Web.Mvc;
+using System.Web.Routing;
 #else
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
 #endif
-using System.Web.Routing;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -28,7 +28,7 @@ namespace ChilliSource.Cloud.Web.MVC
             var sb = new StringBuilder();
             foreach (var key in attributes.Keys)
             {
-                sb.AppendFormat(@" {0}=""{1}""", key, attributes[key]);
+                sb.Append(String.Format(@" {0}=""{1}""", key, attributes[key]));
             }
             return MvcHtmlStringCompatibility.Create(sb.ToString().Trim());
         }

@@ -32,8 +32,8 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["HelpText"] = Value;
-            metadata.AdditionalValues["HelpText-Display"] = (DisplayAsBlock) ? "help-block" : "help-inline";
+            metadata.AdditionalValues()["HelpText"] = Value;
+            metadata.AdditionalValues()["HelpText-Display"] = (DisplayAsBlock) ? "help-block" : "help-inline";
         }
 
         public static MvcHtmlString GetHelpTextFor<TModel, TValue>(HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object transformData = null)

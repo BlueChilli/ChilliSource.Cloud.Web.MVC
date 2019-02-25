@@ -66,7 +66,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 tag.MergeAttribute("href", href);
             }
 
-            return MvcHtmlStringCompatibility.Create(tag.ToString(TagRenderMode.Normal));
+            return MvcHtmlStringCompatibility.Create(tag, TagRenderMode.Normal);
         }
 
         /// <summary>

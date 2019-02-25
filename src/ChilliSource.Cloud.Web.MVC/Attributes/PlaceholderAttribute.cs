@@ -29,14 +29,14 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["Placeholder"] = Value;
+            metadata.AdditionalValues()["Placeholder"] = Value;
         }
 
         public static string Resolve(ModelMetadata metadata, RouteValueDictionary attributes)
         {
             if (metadata.AdditionalValues.ContainsKey(Key))
             {
-                var value = metadata.AdditionalValues[Key] as string;
+                var value = metadata.AdditionalValues()[Key] as string;
                 var placeholderText = value == Key ? metadata.GetDisplayName() : value;
                 attributes.AddOrSkipIfExists("placeholder", placeholderText);
                 return placeholderText;

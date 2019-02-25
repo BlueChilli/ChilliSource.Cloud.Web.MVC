@@ -17,7 +17,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["ShouldTrim"] = true;
+            metadata.AdditionalValues()["ShouldTrim"] = true;
         }
     }
 }

@@ -16,66 +16,69 @@ namespace ChilliSource.Cloud.Web.MVC
 
     }
 
-    internal class MvcHtmlStringImpl : MvcHtmlString
+    internal static partial class MvcHtmlStringCompatibility
     {
-        public static readonly MvcHtmlString Empty = MvcHtmlStringCompatibility.Create(String.Empty);
-
-        IHtmlContent _inner;
-        internal MvcHtmlStringImpl(IHtmlContent inner)
+        private class MvcHtmlStringImpl : MvcHtmlString
         {
-            _inner = inner;
-        }
+            public static readonly MvcHtmlString Empty = MvcHtmlStringCompatibility.Create(String.Empty);
 
-        public void WriteTo(TextWriter writer, HtmlEncoder encoder)
-        {
-            _inner.WriteTo(writer, encoder);
-        }
-
-        public override string ToString()
-        {
-            throw new ApplicationException("MvcHtmlString.ToString() is not intended to be used");
-        }
-    }
-
-    internal class CompositeMvcHtmlString : MvcHtmlString
-    {
-        private List<IHtmlContent> _contentList = new List<IHtmlContent>();
-
-        public CompositeMvcHtmlString() { }
-
-        public void Append(IHtmlContent content)
-        {
-            if (content is CompositeMvcHtmlString)
+            IHtmlContent _inner;
+            internal MvcHtmlStringImpl(IHtmlContent inner)
             {
-                //flattens structure when adding a composite.
-                _contentList.AddRange((content as CompositeMvcHtmlString)._contentList);
+                _inner = inner;
             }
-            else
+
+            public void WriteTo(TextWriter writer, HtmlEncoder encoder)
             {
-                _contentList.Add(content);
+                _inner.WriteTo(writer, encoder);
+            }
+
+            public override string ToString()
+            {
+                throw new ApplicationException("MvcHtmlString.ToString() is not intended to be used");
             }
         }
 
-        public void AppendRange(IEnumerable<IHtmlContent> contents)
+        private class CompositeMvcHtmlString : MvcHtmlString
         {
-            foreach (var content in contents)
-            {
-                //using append method to flatten structure if needed
-                this.Append(content);
-            }
-        }
+            private List<IHtmlContent> _contentList = new List<IHtmlContent>();
 
-        public void WriteTo(TextWriter writer, HtmlEncoder encoder)
-        {
-            foreach (var content in _contentList)
-            {
-                content.WriteTo(writer, encoder);
-            }
-        }
+            public CompositeMvcHtmlString() { }
 
-        public override string ToString()
-        {
-            throw new ApplicationException("CompositeMvcHtmlString.ToString() is not intended to be used");
+            public void Append(IHtmlContent content)
+            {
+                if (content is CompositeMvcHtmlString)
+                {
+                    //flattens structure when adding a composite.
+                    _contentList.AddRange((content as CompositeMvcHtmlString)._contentList);
+                }
+                else
+                {
+                    _contentList.Add(content);
+                }
+            }
+
+            public void AppendRange(IEnumerable<IHtmlContent> contents)
+            {
+                foreach (var content in contents)
+                {
+                    //using append method to flatten structure if needed
+                    this.Append(content);
+                }
+            }
+
+            public void WriteTo(TextWriter writer, HtmlEncoder encoder)
+            {
+                foreach (var content in _contentList)
+                {
+                    content.WriteTo(writer, encoder);
+                }
+            }
+
+            public override string ToString()
+            {
+                throw new ApplicationException("CompositeMvcHtmlString.ToString() is not intended to be used");
+            }
         }
     }
 }

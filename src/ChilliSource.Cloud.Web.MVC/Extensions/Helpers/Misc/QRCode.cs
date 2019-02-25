@@ -1,16 +1,15 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Web;
+
 #if NET_4X
 using System.Web.Mvc;
-#else
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.DataProtection;
-#endif
 using System.Web.Routing;
+#else
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Routing;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC.Misc
 {
@@ -40,7 +39,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
             tag.Attributes.Add("width", size.ToString());
             tag.Attributes.Add("height", size.ToString());
 
-            return MvcHtmlStringCompatibility.Create(tag.ToString(TagRenderMode.SelfClosing));
+            return MvcHtmlStringCompatibility.Create(tag, TagRenderMode.SelfClosing);
         }
 
         /// <summary>

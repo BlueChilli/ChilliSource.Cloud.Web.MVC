@@ -1,18 +1,21 @@
-﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System;
 using System.Linq.Expressions;
+
 #if NET_4X
 using System.Web.Mvc;
 #else
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.Encodings.Web;
 #endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
+
+#if NET_4X
     /// <summary>
     /// Defines methods to run when object created or disposed.
     /// </summary>
@@ -58,4 +61,55 @@ namespace ChilliSource.Cloud.Web.MVC
             );
         }
     }
+#else
+
+    /// <summary>
+    /// Defines methods to run when object created or disposed.
+    /// </summary>
+    internal class DisposableWrapper : IDisposable
+    {
+        ViewContext _viewContext;
+        HtmlEncoder _htmlEncoder;
+        Func<IHtmlContent> _endContent;
+
+        public DisposableWrapper(HtmlHelper htmlHelper, Func<IHtmlContent> beginContent, Func<IHtmlContent> endContent)
+            : this(htmlHelper.ViewContext, HtmlEncoder.Default, beginContent, endContent)
+        {
+        }
+
+        public DisposableWrapper(ViewContext viewContext, HtmlEncoder htmlEncoder, Func<IHtmlContent> beginContent, Func<IHtmlContent> endContent)
+        {
+            _viewContext = viewContext;
+            _htmlEncoder = htmlEncoder;
+            _endContent = endContent;
+
+            beginContent()?.WriteTo(_viewContext.Writer, _htmlEncoder);
+        }
+
+        /// <summary>
+        /// When the object is disposed (end of using block), runs "endContent" function
+        /// </summary>
+        public void Dispose()
+        {
+            var writer = _viewContext?.Writer;
+            if (writer == null)
+                return;
+
+            var encoder = _htmlEncoder;
+            if (encoder == null)
+                return;
+
+            var endContent = _endContent;
+            if (endContent == null)
+                return;
+
+            endContent()?.WriteTo(writer, encoder);
+
+            _viewContext = null;
+            _htmlEncoder = null;
+            _endContent = null;
+
+        }
+    }    
+#endif
 }

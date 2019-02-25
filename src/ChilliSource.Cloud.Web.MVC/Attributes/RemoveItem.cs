@@ -1,10 +1,17 @@
-﻿#if NET_4X
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+#if NET_4X
 using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -21,19 +28,23 @@ namespace ChilliSource.Cloud.Web.MVC
         public string Text { get; set; }
         public string[] Texts { get; set; }
 
+#if NET_4X
         public void OnMetadataCreated(ModelMetadata metadata)
+#else
+        public void GetDisplayMetadata(DisplayMetadataProviderContext metadata)
+#endif      
         {
             if (EnumValue != null || EnumValues != null)
             {
-                metadata.AdditionalValues["RemoveItem-Value"] = EnumValue != null ? new string[] { EnumValue.ToString() } : EnumValues.Select(e => e.ToString()).ToArray(); 
+                metadata.AdditionalValues()["RemoveItem-Value"] = EnumValue != null ? new string[] { EnumValue.ToString() } : EnumValues.Select(e => e.ToString()).ToArray(); 
             }
             if (!String.IsNullOrEmpty(Value) || Values != null)
             {
-                metadata.AdditionalValues["RemoveItem-Value"] = !String.IsNullOrEmpty(Value) ? new string[] { Value } : Values;
+                metadata.AdditionalValues()["RemoveItem-Value"] = !String.IsNullOrEmpty(Value) ? new string[] { Value } : Values;
             }
             if (!String.IsNullOrEmpty(Text) || Texts != null)
             {
-                metadata.AdditionalValues["RemoveItem-Text"] = !String.IsNullOrEmpty(Text) ? new string[] { Text } : Texts;
+                metadata.AdditionalValues()["RemoveItem-Text"] = !String.IsNullOrEmpty(Text) ? new string[] { Text } : Texts;
             }
         }
 
@@ -42,16 +53,15 @@ namespace ChilliSource.Cloud.Web.MVC
             var list = items.ToList();
             if (metadata.AdditionalValues.ContainsKey("RemoveItem-Value"))
             {
-                var toRemove = metadata.AdditionalValues["RemoveItem-Value"] as string[];
+                var toRemove = metadata.AdditionalValues()["RemoveItem-Value"] as string[];
                 list.RemoveAll(l => toRemove.Contains(l.Value));
             }
             if (metadata.AdditionalValues.ContainsKey("RemoveItem-Text"))
             {
-                var toRemove = metadata.AdditionalValues["RemoveItem-Text"] as string[];
+                var toRemove = metadata.AdditionalValues()["RemoveItem-Text"] as string[];
                 list.RemoveAll(l => toRemove.Contains(l.Text));
             }
             return list;
         }
     }
 }
-#endif

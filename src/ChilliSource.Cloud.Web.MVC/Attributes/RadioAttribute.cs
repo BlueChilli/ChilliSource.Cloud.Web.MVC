@@ -43,9 +43,9 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["Radio"] = true;
-            if (!String.IsNullOrEmpty(FalseText)) metadata.AdditionalValues["RadioFalseText"] = FalseText;
-            if (!String.IsNullOrEmpty(FalseText)) metadata.AdditionalValues["RadioTrueText"] = TrueText;
+            metadata.AdditionalValues()["Radio"] = true;
+            if (!String.IsNullOrEmpty(FalseText)) metadata.AdditionalValues()["RadioFalseText"] = FalseText;
+            if (!String.IsNullOrEmpty(FalseText)) metadata.AdditionalValues()["RadioTrueText"] = TrueText;
         }
     }
 }

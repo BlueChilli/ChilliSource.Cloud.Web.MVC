@@ -5,12 +5,18 @@ using System.Web.Mvc;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
-    internal static class MvcHtmlStringCompatibility
+    internal static partial class MvcHtmlStringCompatibility
     {
         public static MvcHtmlString Empty()
         {
-            return MvcHtmlStringCompatibility.Empty();
+            return MvcHtmlString.Empty;
         }
+
+        public static MvcHtmlString Create(IHtmlString content)
+        {
+            return content is MvcHtmlString ? (content as MvcHtmlString) : new MvcHtmlString(content.ToHtmlString());
+        }
+
         public static MvcHtmlString Create(TagBuilder tagBuilder, TagRenderMode tagRenderMode)
         {
             return new MvcHtmlString(tagBuilder.ToString(tagRenderMode));
@@ -19,7 +25,7 @@ namespace ChilliSource.Cloud.Web.MVC
         //public static MvcHtmlString Create(params IHtmlString[] contents)
         //{
         //    if (contents == null || contents.Length == 0)
-        //        return MvcHtmlStringCompatibility.Empty();
+        //        return MvcHtmlString.Empty;
 
         //    if (contents.Length == 1)
         //    {
@@ -39,18 +45,23 @@ namespace ChilliSource.Cloud.Web.MVC
         //Note: possibly return IHtmlString, so we can implement the composite pattern here as well
         public static MvcHtmlString Append(this MvcHtmlString thisMvcString, IHtmlString content)
         {
-            if (content == MvcHtmlStringCompatibility.Empty())
+            if (content == MvcHtmlString.Empty)
             {
                 return thisMvcString;
             }
 
-            if (thisMvcString == MvcHtmlStringCompatibility.Empty())
+            if (thisMvcString == MvcHtmlString.Empty)
             {
                 return content is MvcHtmlString ? (content as MvcHtmlString) : new MvcHtmlString(content.ToHtmlString());
             }
 
             var strContent = thisMvcString.ToHtmlString() + content.ToHtmlString();
             return new MvcHtmlString(strContent);
+        }
+
+        public static MvcHtmlString Append(this MvcHtmlString thisMvcString, string value)
+        {
+            return thisMvcString.Append(Create(value));
         }
 
         //TODO: refactor dependencies and remove this method
@@ -67,7 +78,7 @@ using System;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
-    internal static class MvcHtmlStringCompatibility
+    internal static partial class MvcHtmlStringCompatibility
     {
         public static MvcHtmlString Empty()
         {
@@ -76,7 +87,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public static MvcHtmlString Create(IHtmlContent content)
         {
-            return new MvcHtmlStringImpl(content);
+            return content is MvcHtmlString ? (content as MvcHtmlString) : new MvcHtmlStringImpl(content);
         }
 
         //public static MvcHtmlString Create(params IHtmlContent[] contents)
@@ -125,10 +136,15 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 composite = new CompositeMvcHtmlString();
                 composite.Append(thisMvcString);
-            }            
+            }
 
             composite.Append(content);
             return composite;
+        }
+
+        public static MvcHtmlString Append(this MvcHtmlString thisMvcString, string value)
+        {
+            return thisMvcString.Append(Create(value));
         }
     }
 }

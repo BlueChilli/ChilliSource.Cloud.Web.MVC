@@ -25,7 +25,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["CheckBox"] = true;
+            metadata.AdditionalValues()["CheckBox"] = true;
         }
     }
 }

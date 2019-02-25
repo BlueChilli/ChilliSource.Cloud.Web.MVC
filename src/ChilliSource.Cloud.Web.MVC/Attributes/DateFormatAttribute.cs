@@ -52,12 +52,12 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["DateShowDay"] = ShowDay;
-            metadata.AdditionalValues["DateShowMonth"] = ShowMonth;
-            metadata.AdditionalValues["DateShowYear"] = ShowYear;
-            metadata.AdditionalValues["DateShowHour"] = ShowHour;
-            metadata.AdditionalValues["DateShowMinute"] = ShowMinute;
-            metadata.AdditionalValues["DateShowHelpText"] = ShowHelpText;
+            metadata.AdditionalValues()["DateShowDay"] = ShowDay;
+            metadata.AdditionalValues()["DateShowMonth"] = ShowMonth;
+            metadata.AdditionalValues()["DateShowYear"] = ShowYear;
+            metadata.AdditionalValues()["DateShowHour"] = ShowHour;
+            metadata.AdditionalValues()["DateShowMinute"] = ShowMinute;
+            metadata.AdditionalValues()["DateShowHelpText"] = ShowHelpText;
         }
     }
 }

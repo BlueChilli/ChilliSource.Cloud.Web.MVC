@@ -64,7 +64,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 tag.MergeAttribute("onclick", String.Format(@"window.location=""{0}""", href));
             }
 
-            return MvcHtmlStringCompatibility.Create(tag.ToString(TagRenderMode.Normal));
+            return MvcHtmlStringCompatibility.Create(tag, TagRenderMode.Normal);
         }
 
         /// <summary>

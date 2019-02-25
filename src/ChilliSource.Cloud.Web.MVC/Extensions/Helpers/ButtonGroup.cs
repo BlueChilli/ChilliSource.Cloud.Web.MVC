@@ -37,8 +37,11 @@ namespace ChilliSource.Cloud.Web.MVC
         {
 #if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+            object model = metadata.Model;
 #else
-            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
+            ModelMetadata metadata = explorer.Metadata;
+            object model = explorer.Model;
 #endif
 
             var list = selectList;
@@ -51,7 +54,8 @@ namespace ChilliSource.Cloud.Web.MVC
                 var items = RemoveItemAttribute.Resolve(metadata, list.ToList());
                 list = new SelectList(items, "Value", "Text");
             }
-            return MakeButtonGroup(htmlHelper, expression, htmlAttributes, metadata, list.ToSelectList());
+
+            return MakeButtonGroup(htmlHelper, expression, htmlAttributes, metadata, model, list.ToSelectList());
         }
 
         /// <summary>
@@ -75,32 +79,38 @@ namespace ChilliSource.Cloud.Web.MVC
 
 #if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+            object model = metadata.Model;
 #else
-            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
+            ModelMetadata metadata = explorer.Metadata;
+            object model = explorer.Model;
 #endif
 
-            return MakeButtonGroup(htmlHelper, expression, htmlAttributes, metaData, list);
+            return MakeButtonGroup(htmlHelper, expression, htmlAttributes, metadata, model, list);
         }
 
         //todo process htmlAttributes
-        private static MvcHtmlString MakeButtonGroup<TModel, TProperty>(HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes, ModelMetadata metaData, SelectList list)
+        private static MvcHtmlString MakeButtonGroup<TModel, TProperty>(HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes, ModelMetadata metaData, object model, SelectList list)
         {
             var propertyName = htmlHelper.NameFor(expression).ToString();
             var properyId = htmlHelper.IdFor(expression).ToString();
 
-            var sb = new StringBuilder(htmlHelper.HiddenFor(expression).ToHtmlString());
+            var result = MvcHtmlStringCompatibility.Create(htmlHelper.HiddenFor(expression));
+
             //TODO To support flags uses buttons-checkbox
-            sb.AppendLine(@"<div class=""btn-group"" data-toggle=""buttons-radio"">");
+            result = result.Append(@"<div class=""btn-group"" data-toggle=""buttons-radio"">");
 
             for (var i = 0; i < list.Count(); i++)
             {
                 var item = list.ElementAt(i);
                 var onclick = $"$('#{properyId}').val($(this).val()).change();";
                 var format = @"<button class=""btn{0}"" name=""{1}"" value=""{2}"" data-toggle=""button"" type=""button"" onclick=""{3}"">{4}</button>";
-                sb.AppendFormat(format, metaData.Model != null && metaData.Model.ToString() == item.Value ? " active" : "", propertyName, item.Value, onclick, item.Text);
+
+                result = result.Append(String.Format(format, model != null && model.ToString() == item.Value ? " active" : "", propertyName, item.Value, onclick, item.Text));
             }
-            sb.AppendLine("</div>");
-            return MvcHtmlStringCompatibility.Create(sb.ToString());
+            result = result.Append("</div>");
+
+            return result;
         }
     }
 }

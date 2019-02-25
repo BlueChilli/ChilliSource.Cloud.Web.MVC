@@ -44,7 +44,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (!String.IsNullOrEmpty(altText)) builder.Attributes.Add("alt", altText);
 
             if (htmlAttributes != null) builder.MergeAttributes(HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes));
-            return MvcHtmlStringCompatibility.Create(builder.ToString(TagRenderMode.SelfClosing));
+            return MvcHtmlStringCompatibility.Create(builder, TagRenderMode.SelfClosing);
         }
     }
 #endif
@@ -129,7 +129,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (htmlAttributes != null) builder.MergeAttributes(HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes));
 
 #if NET_4X
-            return MvcHtmlStringCompatibility.Create(builder.ToString(TagRenderMode.SelfClosing));
+            return MvcHtmlStringCompatibility.Create(builder, TagRenderMode.SelfClosing);
 #else
             builder.TagRenderMode = TagRenderMode.SelfClosing;
             return MvcHtmlStringCompatibility.Create(builder);

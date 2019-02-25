@@ -4,16 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+
 #if NET_4X
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
 #endif
-using System.Web.Mvc.Html;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -28,7 +30,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public static MvcHtmlString ValidationSummaryHtml(this HtmlHelper html, string validationMessage)
         {
             var code = html.ValidationSummary(validationMessage);
-            return MvcHtmlStringCompatibility.Create(HttpUtility.HtmlDecode(code.ToHtmlString()));
+            return MvcHtmlStringCompatibility.Create(code);
         }
     }
 }

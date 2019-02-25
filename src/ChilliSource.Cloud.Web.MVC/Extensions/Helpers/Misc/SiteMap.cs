@@ -1,4 +1,4 @@
-﻿
+﻿#if NET_4X
 using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
@@ -88,8 +88,10 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <returns>An XML string of the sitemap.</returns>
         public static string Create(IEnumerable<ISitemapItem> items)
         {
+            HttpContext context = HttpContext.Current;
+
             XDocument xDoc = new XDocument(
-                new XDeclaration("1.0", HttpContext.Current.Response.ContentEncoding.WebName, "yes"),
+                new XDeclaration("1.0", context.Response.ContentEncoding.WebName, "yes"),
                 new XElement(xmlns + UrlSet,
                     new XAttribute(XNamespace.Xmlns + UrlXsi, xsi),
                     new XAttribute(xsi + UrlSetSchemaLocation, UrlSetSchemaLocationUrl),
@@ -158,3 +160,4 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         Yearly
     }
 }
+#endif

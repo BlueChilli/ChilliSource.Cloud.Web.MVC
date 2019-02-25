@@ -40,18 +40,18 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["IntDropDownMin"] = Min;
-            metadata.AdditionalValues["IntDropDownMax"] = Max;
-            metadata.AdditionalValues["IntDropDownReverse"] = IsReverse;
+            metadata.AdditionalValues()["IntDropDownMin"] = Min;
+            metadata.AdditionalValues()["IntDropDownMax"] = Max;
+            metadata.AdditionalValues()["IntDropDownReverse"] = IsReverse;
         }
 
         public static IntegerDropDownAttribute ResolveAttribute(ModelMetadata metadata, MemberExpression member)
         {
             if (metadata.AdditionalValues.ContainsKey("IntDropDownMin"))
             {
-                int min = Convert.ToInt32(metadata.AdditionalValues["IntDropDownMin"]);
-                int max = Convert.ToInt32(metadata.AdditionalValues["IntDropDownMax"]);
-                bool reverse = Convert.ToBoolean(metadata.AdditionalValues["IntDropDownReverse"]);
+                int min = Convert.ToInt32(metadata.AdditionalValues()["IntDropDownMin"]);
+                int max = Convert.ToInt32(metadata.AdditionalValues()["IntDropDownMax"]);
+                bool reverse = Convert.ToBoolean(metadata.AdditionalValues()["IntDropDownReverse"]);
 
                 var yearRange = member.Member
                         .GetCustomAttributes(typeof(DateYearRangeAttribute), false)

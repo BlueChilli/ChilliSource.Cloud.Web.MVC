@@ -29,9 +29,9 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["ButtonGroup"] = true;
-            if (!String.IsNullOrEmpty(FalseText)) metadata.AdditionalValues["ButtonGroupFalseText"] = FalseText;
-            if (!String.IsNullOrEmpty(FalseText)) metadata.AdditionalValues["ButtonGroupTrueText"] = TrueText;
+            metadata.AdditionalValues()["ButtonGroup"] = true;
+            if (!String.IsNullOrEmpty(FalseText)) metadata.AdditionalValues()["ButtonGroupFalseText"] = FalseText;
+            if (!String.IsNullOrEmpty(FalseText)) metadata.AdditionalValues()["ButtonGroupTrueText"] = TrueText;
         }
     }
 }

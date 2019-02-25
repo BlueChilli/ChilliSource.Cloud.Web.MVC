@@ -74,11 +74,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             var hiddenTarget = html.HiddenFor(expression);
 
-#if NET_4X
-            return MvcHtmlStringCompatibility.Create(htmlTag.ToString(TagRenderMode.Normal) + hiddenTarget.ToString());
-#else
-            return MvcHtmlStringCompatibility.Create(htmlTag.ToString(TagRenderMode.Normal) + hiddenTarget.ToString());
-#endif
+            return MvcHtmlStringCompatibility.Create(htmlTag, TagRenderMode.Normal).Append(hiddenTarget);
         }
     }
 }

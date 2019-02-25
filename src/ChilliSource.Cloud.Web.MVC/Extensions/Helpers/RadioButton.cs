@@ -3,18 +3,21 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Web;
+using ChilliSource.Cloud.Web;
+using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
+
 #if NET_4X
 using System.Web.Mvc;
+using System.Web.Mvc.Html;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
 #endif
-using System.Web.Mvc.Html;
-using ChilliSource.Cloud.Web;
-using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -69,12 +72,12 @@ namespace ChilliSource.Cloud.Web.MVC
             ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
 #endif
 
-            return MakeRadio(htmlHelper, expression, htmlAttributes, inline, metaData, list);
+            return MakeRadio(htmlHelper, expression, htmlAttributes, inline, metadata, list);
         }
 
         private static MvcHtmlString MakeRadio<TModel, TProperty>(HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes, bool inline, ModelMetadata metaData, SelectList list)
         {
-            var sb = new StringBuilder();
+            var result = MvcHtmlStringCompatibility.Empty();
             for (var i = 0; i < list.Count(); i++)
             {
                 var item = list.ElementAt(i);
@@ -87,15 +90,14 @@ namespace ChilliSource.Cloud.Web.MVC
                 var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(htmlAttributes);
                 attributes.Merge("id", id);
 
-                var radio = htmlHelper.RadioButtonFor(expression, item.Value, attributes).ToHtmlString();
-                sb.AppendFormat(
-                    @"<label class=""radio{0}"">{1}{2}</label>",
-                    inline ? " inline" : "",
-                    radio,
-                    item.Text
-                );
+                var radio = htmlHelper.RadioButtonFor(expression, item.Value, attributes);
+
+                result = result.Append(String.Format(@"<label class=""radio{0}"">", inline ? " inline" : ""))
+                            .Append(radio)
+                            .Append(String.Format(@"{0}</label>", item.Text));                
             }
-            return MvcHtmlStringCompatibility.Create(sb.ToString());
+
+            return result;
         }
     }
 }

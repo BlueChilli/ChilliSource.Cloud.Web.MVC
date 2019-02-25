@@ -1,4 +1,6 @@
-﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+﻿#if NET_4X
+using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,17 +8,9 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-#if NET_4X
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
-#else
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.DataProtection;
-#endif
+
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -46,11 +40,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML string for a drop down list for enumeration values.</returns>
         public static MvcHtmlString EnumDropDownListFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TEnum>> expression, object htmlAttributes)
         {
-#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-#else
-            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
-#endif
 
             Type enumType = Nullable.GetUnderlyingType(metadata.ModelType) ?? metadata.ModelType;
             var values = EnumExtensions.GetValues(enumType).Cast<Enum>();
@@ -58,12 +48,12 @@ namespace ChilliSource.Cloud.Web.MVC
             for (var i = 0; i < modelValues.Count(); i++) modelValues[i] = modelValues[i].Trim();
 
             var items = from value in values
-                            select new SelectListItem
-                            {
-                                Text = EnumExtensions.GetDescription(value),
-                                Value = value.ToString(),
-                                Selected = modelValues.Contains(value.ToString())
-                            };
+                        select new SelectListItem
+                        {
+                            Text = EnumExtensions.GetDescription(value),
+                            Value = value.ToString(),
+                            Selected = modelValues.Contains(value.ToString())
+                        };
 
             items = EmptyItemAttribute.Resolve(metadata, items, SingleEmptyItem);
             items = RemoveItemAttribute.Resolve(metadata, items);
@@ -73,8 +63,8 @@ namespace ChilliSource.Cloud.Web.MVC
             var attributes = objects ?? HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
             if (metadata.AdditionalValues.ContainsKey("ConditionalDisplayPropertyName"))
             {
-                attributes["data-conditional-on"] = metadata.AdditionalValues["ConditionalDisplayPropertyName"];
-                attributes["data-conditional-values"] = string.Join(",", (object[])metadata.AdditionalValues["ConditionalDisplayPropertyValues"]);
+                attributes["data-conditional-on"] = metadata.AdditionalValues()["ConditionalDisplayPropertyName"];
+                attributes["data-conditional-values"] = string.Join(",", (object[])metadata.AdditionalValues()["ConditionalDisplayPropertyValues"]);
             }
 
             return htmlHelper.CustomDropDownListFor(expression, items.ToList(), attributes);
@@ -92,11 +82,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML select element.</returns>
         public static MvcHtmlString StringArrayListBoxFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, IEnumerable<string> values, Expression<Func<TModel, TEnum>> expression, object htmlAttributes)
         {
-#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-#else
-            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
-#endif
 
             IEnumerable<SelectListItem> items = from value in values
                                                 select new SelectListItem
@@ -115,8 +101,8 @@ namespace ChilliSource.Cloud.Web.MVC
             var attributes = objects ?? HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
             if (metadata.AdditionalValues.ContainsKey("ConditionalDisplayPropertyName"))
             {
-                attributes["data-conditional-on"] = metadata.AdditionalValues["ConditionalDisplayPropertyName"];
-                attributes["data-conditional-values"] = string.Join(",", (object[])metadata.AdditionalValues["ConditionalDisplayPropertyValues"]);
+                attributes["data-conditional-on"] = metadata.AdditionalValues()["ConditionalDisplayPropertyName"];
+                attributes["data-conditional-values"] = string.Join(",", (object[])metadata.AdditionalValues()["ConditionalDisplayPropertyValues"]);
             }
 
             return htmlHelper.ListBoxFor(expression, items, attributes);
@@ -126,11 +112,8 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             var propertyId = htmlHelper.IdFor(expression).ToString();
             var propertyName = htmlHelper.NameFor(expression).ToString();
-#if NET_4X
+
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-#else
-            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
-#endif
 
             var validationAttributes = htmlHelper.GetUnobtrusiveValidationAttributes(propertyName, metadata);
 
@@ -185,3 +168,4 @@ namespace ChilliSource.Cloud.Web.MVC
 
     }
 }
+#endif

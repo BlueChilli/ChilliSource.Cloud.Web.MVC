@@ -64,7 +64,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public void OnMetadataCreated(ModelMetadata metadata)
         {
-            metadata.AdditionalValues["FileExtensions"] = Extensions.Replace(" ", "");
+            metadata.AdditionalValues()["FileExtensions"] = Extensions.Replace(" ", "");
         }
 
 
@@ -72,7 +72,7 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             if (metadata.AdditionalValues.ContainsKey("FileExtensions"))
             {
-                Resolve(metadata.AdditionalValues["FileExtensions"].ToString(), attributes);
+                Resolve(metadata.AdditionalValues()["FileExtensions"].ToString(), attributes);
             }
         }
 
