@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
 #endif
 
-namespace ChilliSource.Cloud.Web.MVC.Extensions
+namespace ChilliSource.Cloud.Web.MVC
 {
     public static class FileStorageExtensions
     {

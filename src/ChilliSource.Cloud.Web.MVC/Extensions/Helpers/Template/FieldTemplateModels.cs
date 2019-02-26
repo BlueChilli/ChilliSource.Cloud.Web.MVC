@@ -136,7 +136,7 @@ namespace ChilliSource.Cloud.Web.MVC
     }
 
     public class FieldInnerTemplateModel
-    {
+    {        
         public string Id { get; set; }
 
         public string Name { get; set; }
@@ -149,8 +149,6 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public RouteValueDictionary HtmlAttributes { get; set; }
     }
-
-
 
     public class Html_CustomOptions
     {

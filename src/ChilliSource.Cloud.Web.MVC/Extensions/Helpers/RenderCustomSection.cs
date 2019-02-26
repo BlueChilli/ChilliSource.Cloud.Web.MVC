@@ -6,10 +6,12 @@ using System.Web;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+
 #if NET_4X
 using System.Web.Mvc;
 using System.Web.WebPages;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +37,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="section">section to be registered in for example "scripts"</param>
         /// <param name="template">code template</param>
         /// <returns></returns>
+#if NET_4X
         public static HelperResult RegisterCustomSection(this HtmlHelper html, string section, Func<object, HelperResult> template)
+#else
+        public static HelperResult RegisterCustomSection(this IHtmlHelper html, string section, Func<object, HelperResult> template)
+#endif
         {
             return RegisterCustomSection(html, section, Guid.NewGuid(), template);
         }
@@ -48,7 +54,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="templateKey">To register templates that should only be rendered once
         /// <param name="template">code template</param>
         /// <returns></returns>
+#if NET_4X
         public static HelperResult RegisterCustomSection(this HtmlHelper html, string section, Guid templateKey, Func<object, HelperResult> template)
+#else
+        public static HelperResult RegisterCustomSection(this IHtmlHelper html, string section, Guid templateKey, Func<object, HelperResult> template)
+#endif
         {
             var sections = html.ViewContext.HttpContext.Items[_CustomSection] as Dictionary<string, Dictionary<Guid, string>>;
 
@@ -100,7 +110,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="html"></param>
         /// <param name="template">script template</param>
         /// <returns></returns>
+#if NET_4X
         public static HelperResult RegisterCustomScripts(this HtmlHelper html, Func<object, HelperResult> template)
+#else
+        public static HelperResult RegisterCustomScripts(this IHtmlHelper html, Func<object, HelperResult> template)
+#endif        
         {
             return RegisterCustomSection(html, "scripts", template);
         }
@@ -111,7 +125,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="html"></param>
         /// <param name="section">section to output for example "scripts"</param>
         /// <returns></returns>
+#if NET_4X
         public static IHtmlContent RenderCustomSection(this HtmlHelper html, string section)
+#else
+        public static IHtmlContent RenderCustomSection(this IHtmlHelper html, string section)
+#endif        
         {
             var result = new StringBuilder();
 

@@ -17,7 +17,7 @@ namespace ChilliSource.Cloud.Web.MVC
         {
         }
 
-        internal GoogleApis GoogleApis { get; set; }
+        internal GoogleApis GoogleApis { get; set; }        
 
         public void SetGoogleApisSettings(string apiKey, string libraries)
         {

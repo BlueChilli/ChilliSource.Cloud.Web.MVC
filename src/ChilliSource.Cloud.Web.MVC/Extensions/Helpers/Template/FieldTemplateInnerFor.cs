@@ -1,5 +1,4 @@
-﻿#if NET_4X
-using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Cloud.Core;
 using ChilliSource.Core.Extensions;
 using System;
 using System.Collections;
@@ -10,10 +9,21 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+
+#if NET_4X
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
+#else
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -21,17 +31,31 @@ namespace ChilliSource.Cloud.Web.MVC
     {
         private static readonly SelectListItem[] SingleEmptyItem = { new SelectListItem { Text = "", Value = "" } };
 
+#if NET_4X
         public static IHtmlContent FieldTemplateInnerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
         {
             return FieldTemplateInnerFor(html, expression, new FieldTemplateOptions { HtmlAttributes = htmlAttributes });
         }
+#else        
+        public static IHtmlContent FieldTemplateInnerFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
+        {
+            return FieldTemplateInnerFor(html, expression, new FieldTemplateOptions { HtmlAttributes = htmlAttributes });
+        }
+#endif
 
+#if NET_4X
         public static IHtmlContent FieldTemplateInnerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, FieldTemplateOptions fieldOptions = null)
         {
-            var member = expression.Body as MemberExpression;
-
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
             object model = metadata.Model;
+#else
+        public static IHtmlContent FieldTemplateInnerFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, FieldTemplateOptions fieldOptions = null)
+        {
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+            ModelMetadata metadata = explorer.Metadata;
+            object model = explorer.Model;
+#endif
+            var member = expression.Body as MemberExpression;
 
             var httpContext = html.ViewContext.HttpContext;
             var request = httpContext.Request;
@@ -46,7 +70,11 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 var kvp = html.ViewContext.ViewData.ModelState[name];
 
+#if NET_4X
                 attemptedValue = kvp.Value?.AttemptedValue;
+#else
+                attemptedValue = kvp.AttemptedValue;
+#endif
             }
 
             if (fieldOptions == null) fieldOptions = new FieldTemplateOptions();
@@ -66,8 +94,19 @@ namespace ChilliSource.Cloud.Web.MVC
                 data.HtmlAttributes.Remove("Id");
             }
 
+#if NET_4X
             var validationAttributes = new RouteValueDictionary(html.GetUnobtrusiveValidationAttributes(data.Name, metadata));
             data.HtmlAttributes.Merge(validationAttributes);
+#else
+            var validator = html.ViewContext.HttpContext.RequestServices.GetService<ValidationHtmlAttributeProvider>();
+            var validationAttributes = new Dictionary<string, string>();
+            validator?.AddAndTrackValidationAttributes(html.ViewContext, explorer, data.Name, validationAttributes);
+            foreach (var att in validationAttributes)
+            {
+                if (!data.HtmlAttributes.ContainsKey(att.Key))
+                    data.HtmlAttributes.Add(att.Key, att.Value);
+            }
+#endif
 
             string typeName = typeof(TValue).Name;
             Type baseType = typeof(TValue).BaseType;
@@ -292,7 +331,7 @@ namespace ChilliSource.Cloud.Web.MVC
                     {
                         if (!String.IsNullOrEmpty(metadata.DisplayFormatString))
                         {
-                            data.Value = String.Format("{" + metadata.DisplayFormatString + "}", metadata.Model);
+                            data.Value = String.Format("{" + metadata.DisplayFormatString + "}", model);
                         }
                         else if (data.Options.SelectList != null && data.Options.SelectList.Any(x => x.Value == data.Value?.ToString()))
                         {
@@ -359,4 +398,3 @@ namespace ChilliSource.Cloud.Web.MVC
 
     }
 }
-#endif

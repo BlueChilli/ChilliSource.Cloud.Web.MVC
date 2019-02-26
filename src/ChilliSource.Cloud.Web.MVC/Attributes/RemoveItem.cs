@@ -32,7 +32,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public void OnMetadataCreated(ModelMetadata metadata)
 #else
         public void GetDisplayMetadata(DisplayMetadataProviderContext metadata)
-#endif      
+#endif
         {
             if (EnumValue != null || EnumValues != null)
             {

@@ -2,9 +2,11 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+
 #if NET_4X
 using System.Web.Mvc;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -23,15 +25,18 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="expression">An expression that identifies the model property.</param>
+
+#if NET_4X
         public static string GetLabelTextFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
         {
-#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
 #else
+        public static string GetLabelTextFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
             ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider).Metadata;
 #endif
 
-            string labelText = (metadata.AdditionalValues.SingleOrDefault(m => m.Key == LabelAttribute.Key).Value as string);
+            string labelText = (metadata.AdditionalValues.SingleOrDefault(m => (string)m.Key == LabelAttribute.Key).Value as string);
             string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
             return labelText ?? metadata.DisplayName ?? metadata.PropertyName.ToSentenceCase(true) ?? htmlFieldName.Split('.').Last();
         }

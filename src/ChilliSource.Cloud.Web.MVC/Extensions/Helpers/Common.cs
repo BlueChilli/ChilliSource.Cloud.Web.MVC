@@ -4,10 +4,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+
 #if NET_4X
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -27,8 +29,12 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="condition">True to use the specified text, otherwise not.</param>
         /// <param name="result">The specified text.</param>
         /// <returns>An HTML string using the specified text</returns>
+#if NET_4X
         public static IHtmlContent When(this HtmlHelper htmlHelper, bool condition, string result)
-        {            
+#else
+        public static IHtmlContent When(this IHtmlHelper htmlHelper, bool condition, string result)
+#endif
+        {
             return condition ? MvcHtmlStringCompatibility.Create(result) : MvcHtmlStringCompatibility.Empty();
         }
 
@@ -36,17 +42,20 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Get the model state value of a model property (attempted value will override model value)
         /// </summary>
         /// <returns>Value of prop taking into account postback value (attempted value)</returns>
-        public static TValue GetModelStateValue<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
-        {
-            var name = html.NameFor(expression).ToString();
+
 #if NET_4X
+        public static TValue GetModelStateValue<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {            
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
             object model = metadata.Model;
 #else
+        public static TValue GetModelStateValue<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
             ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;
 #endif
+            var name = html.NameFor(expression).ToString();
 
             string attemptedValue = null;
             if (html.ViewContext.ViewData.ModelState.ContainsKey(name))

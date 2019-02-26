@@ -1,14 +1,24 @@
-﻿#if NET_4X
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Routing;
+using ChilliSource.Cloud.Core;
+
+#if NET_4X
 using System.Web.Mvc;
+using System.Web.Routing;
+using System.Web;
+#else
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -47,7 +57,14 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public override bool IsValid(object value)
         {
+            //IFormFile
+
+#if NET_4X
             var file = value as HttpPostedFileBase;
+#else
+            var file = value as IFormFile;
+#endif
+
             if (file != null)
             {
                 return GetExtensions().Contains(Path.GetExtension(file.FileName).ToLower());
@@ -62,7 +79,11 @@ namespace ChilliSource.Cloud.Web.MVC
             return String.Format(ErrorMessage, name, errorMessage.TrimEnd(' ', ','));
         }
 
+#if NET_4X
         public void OnMetadataCreated(ModelMetadata metadata)
+#else
+        public void GetDisplayMetadata(DisplayMetadataProviderContext metadata)
+#endif
         {
             metadata.AdditionalValues()["FileExtensions"] = Extensions.Replace(" ", "");
         }
@@ -83,7 +104,8 @@ namespace ChilliSource.Cloud.Web.MVC
             var mimeTypes = new List<string>();
             foreach (var extension in extensions)
             {
-                var mimeType = MimeMapping.GetMimeMapping("dummy" + extension);
+                var mimeMapping = GlobalConfiguration.Instance.GetMimeMapping();
+                var mimeType = mimeMapping.GetMimeType("dummy" + extension);
                 if (mimeType.Equals("application/octet-stream", StringComparison.InvariantCultureIgnoreCase))
                 {
                     if (!mimeTypes.Contains(extension))
@@ -100,4 +122,3 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 }
-#endif
