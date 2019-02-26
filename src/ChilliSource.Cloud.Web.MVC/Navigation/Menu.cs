@@ -185,9 +185,9 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="menuNode">The menu node to get the form Id, action and controller from.</param>
         /// <param name="routeValues">An object that contains the parameters for a route used to generate the action.</param>
         /// <returns>HTML string for the action.</returns>
-        public static MvcHtmlString Action<TModel>(this HtmlHelper<TModel> htmlHelper, MenuNode menuNode, object routeValues = null)
+        public static IHtmlContent Action<TModel>(this HtmlHelper<TModel> htmlHelper, MenuNode menuNode, object routeValues = null)
         {
-            return htmlHelper.Action(menuNode.Action, menuNode.Controller, routeValues);
+            return htmlHelper.Action(menuNode.Action, menuNode.Controller, routeValues).AsHtmlContent();
         }
 
         /// <summary>
@@ -197,10 +197,10 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="menuNode">The menu node to get the ViewData.</param>
         /// <param name="templateName">The template.</param>
         /// <returns>HTML string for the Menu element.</returns>
-        public static MvcHtmlString Menu(this HtmlHelper htmlHelper, MenuNode menuNode, string templateName)
+        public static IHtmlContent Menu(this HtmlHelper htmlHelper, MenuNode menuNode, string templateName)
         {
             return CreateHtmlHelperForModel(htmlHelper, menuNode)
-                .DisplayFor(m => menuNode, templateName);
+                    .DisplayFor(m => menuNode, templateName).AsHtmlContent();
         }
 
         /// <summary>

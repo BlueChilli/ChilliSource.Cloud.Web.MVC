@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
@@ -28,7 +29,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="errorCorrectionLevel">The amount of error correction to build into the image. Higher error correction comes at the expense of reduced space for data.</param>
         /// <param name="htmlAttributes">Optional HTML attributes to include on the image element.</param>
         /// <returns>An HTML-encoded string for the QR code image element.</returns>
-        public static MvcHtmlString QRCode(this HtmlHelper htmlHelper, string data, int size = 80, int margin = 4, QRCodeErrorCorrectionLevel errorCorrectionLevel = QRCodeErrorCorrectionLevel.Medium, object htmlAttributes = null)
+        public static IHtmlContent QRCode(this HtmlHelper htmlHelper, string data, int size = 80, int margin = 4, QRCodeErrorCorrectionLevel errorCorrectionLevel = QRCodeErrorCorrectionLevel.Medium, object htmlAttributes = null)
         {
             var url = QRCodeUrl(data, size, margin, errorCorrectionLevel);
 

@@ -53,7 +53,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="link">An HTML-encoded link.</param>
         /// <returns>A DisposableWrapper object.</returns>
-        public static IDisposable BeginLink(this HtmlHelper htmlHelper, MvcHtmlString link)
+        public static IDisposable BeginLink(this HtmlHelper htmlHelper, IHtmlContent link)
         {
             return new DisposableWrapper(
                 () => htmlHelper.ViewContext.Writer.Write(link.ToHtmlString().TrimEnd("</a>")),

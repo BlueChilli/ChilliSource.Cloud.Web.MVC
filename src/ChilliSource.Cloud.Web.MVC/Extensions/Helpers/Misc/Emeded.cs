@@ -27,14 +27,14 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="theme">The theme defined by Misc.YouTubeTheme.</param>
         /// <returns>An HTML and script element for YoutTube.</returns>
         /// <remarks>https://developers.google.com/youtube/player_parameters</remarks>
-        public static MvcHtmlString YouTubeEmbed(this HtmlHelper helper, string videoId, int width, int? height = null, object htmlAttributes = null, bool allowFullScreen = true, bool showRelatedVideos = false, bool showYouTubeBranding = true, YouTubeWindowMode windowMode = YouTubeWindowMode.None, YouTubeTheme theme = YouTubeTheme.Dark, bool autoPlay = false)
+        public static IHtmlContent YouTubeEmbed(this HtmlHelper helper, string videoId, int width, int? height = null, object htmlAttributes = null, bool allowFullScreen = true, bool showRelatedVideos = false, bool showYouTubeBranding = true, YouTubeWindowMode windowMode = YouTubeWindowMode.None, YouTubeTheme theme = YouTubeTheme.Dark, bool autoPlay = false)
         {
             var attributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
             string format = @"<iframe width=""{0}px"" height=""{1}px"" frameborder=""0"" src=""//www.youtube.com/embed/{2}?fs={3}&rel={4}&modestbranding={5}&wMode={6}&theme={7}&autoplay={8}"" {9}></iframe>";
             return MvcHtmlStringCompatibility.Empty().Format(format, width, height.GetValueOrDefault(width * 9 / 16 + 25), videoId, allowFullScreen.ToInt(), showRelatedVideos.ToInt(), showYouTubeBranding.Toggle().ToInt(), windowMode.GetDescription(), theme.GetDescription(), autoPlay.ToInt(), attributes.ToAttributeString());
         }
 
-        public static MvcHtmlString VimeoEmbed(this HtmlHelper helper, string videoId, int width, int? height = null, object htmlAttributes = null, string color = "", bool autoPlay = false)
+        public static IHtmlContent VimeoEmbed(this HtmlHelper helper, string videoId, int width, int? height = null, object htmlAttributes = null, string color = "", bool autoPlay = false)
         {
             var attributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
             string format = @"<iframe src=""https://player.vimeo.com/video/{0}?color={1}&title=0&byline=0&portrait=0&badge=0&autoplay={2}"" width=""{3}"" height=""{4}"" frameborder=""0"" webkitallowfullscreen mozallowfullscreen allowfullscreen {5}></iframe>";

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -26,7 +27,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="condition">True to use the specified text, otherwise not.</param>
         /// <param name="result">The specified text.</param>
         /// <returns>An HTML string using the specified text</returns>
-        public static MvcHtmlString When(this HtmlHelper htmlHelper, bool condition, string result)
+        public static IHtmlContent When(this HtmlHelper htmlHelper, bool condition, string result)
         {            
             return condition ? MvcHtmlStringCompatibility.Create(result) : MvcHtmlStringCompatibility.Empty();
         }

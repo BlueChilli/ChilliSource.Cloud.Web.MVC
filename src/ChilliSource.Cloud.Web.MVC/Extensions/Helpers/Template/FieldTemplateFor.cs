@@ -14,12 +14,12 @@ namespace ChilliSource.Cloud.Web.MVC
 {
     public static partial class TemplateHelper
     {
-        public static MvcHtmlString FieldTemplateFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
+        public static IHtmlContent FieldTemplateFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
         {
             return FieldTemplateFor(html, expression, new TemplateOptions { Template = template }, new FieldTemplateOptions());
         }
 
-        public static MvcHtmlString FieldTemplateFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null, FieldTemplateOptions fieldOptions = null)
+        public static IHtmlContent FieldTemplateFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null, FieldTemplateOptions fieldOptions = null)
         {
             if (options == null) options = new TemplateOptions();
             if (fieldOptions == null) fieldOptions = new FieldTemplateOptions();
@@ -46,7 +46,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         }
 
-        private static MvcHtmlString FieldTemplateOuterForBegin<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options)
+        private static IHtmlContent FieldTemplateOuterForBegin<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options)
         {
             var member = expression.Body as MemberExpression;
             var isMandatory = member.Member.GetAttribute<RequiredAttribute>(false) != null;
@@ -70,7 +70,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return ContainerTemplateBegin(html, options.Template.ToString(), data, "FieldTemplates");
         }
 
-        private static MvcHtmlString FieldTemplateOuterForEnd<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options)
+        private static IHtmlContent FieldTemplateOuterForEnd<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options)
         {
             var data = new FieldTemplateModel
             {

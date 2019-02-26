@@ -11,6 +11,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -126,9 +127,9 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="url">The specified URL.</param>
         /// <param name="resultWhenTrue">An HTML-encoded string.</param>
         /// <returns>An HTML-encoded string of the specified result string when the specified URL is the current URL in System.Web.Mvc.UrlHelper, otherwise HTML-encoded string of empty string.</returns>
-        public static MvcHtmlString WhenIsCurrent(this UrlHelper urlHelper, string url, string resultWhenTrue)
+        public static IHtmlContent WhenIsCurrent(this UrlHelper urlHelper, string url, string resultWhenTrue)
         {
-            return IsCurrent(urlHelper, url) ? MvcHtmlStringCompatibility.Create(resultWhenTrue) : new MvcHtmlString("");
+            return IsCurrent(urlHelper, url) ? MvcHtmlStringCompatibility.Create(resultWhenTrue) : MvcHtmlStringCompatibility.Empty();
         }
 #endif
 
@@ -175,7 +176,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="controller">The specified controller name.</param>
         /// <param name="resultWhenTrue">An HTML-encoded string.</param>
         /// <returns>An HTML-encoded string of the specified result string when the specified controller name is the current controller name in System.Web.Mvc.UrlHelper, otherwise HTML-encoded string of empty string.</returns>
-        public static MvcHtmlString WhenIsCurrentController(this UrlHelper urlHelper, string controller, string resultWhenTrue)
+        public static IHtmlContent WhenIsCurrentController(this UrlHelper urlHelper, string controller, string resultWhenTrue)
         {
             return IsCurrentController(urlHelper, controller) ? MvcHtmlStringCompatibility.Create(resultWhenTrue) : MvcHtmlStringCompatibility.Create("");
         }

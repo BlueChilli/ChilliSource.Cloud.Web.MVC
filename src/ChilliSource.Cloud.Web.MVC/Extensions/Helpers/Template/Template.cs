@@ -22,7 +22,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="template">Template to render</param>
         /// <param name="model">Depending on template rendered model may be mandatory.</param>
         /// <returns></returns>
-        public static MvcHtmlString Template(this HtmlHelper html, TemplateType template, object model = null)
+        public static IHtmlContent Template(this HtmlHelper html, TemplateType template, object model = null)
         {
             return ContainerTemplateBegin(html, template.ToString(), model);
         }
@@ -41,7 +41,7 @@ namespace ChilliSource.Cloud.Web.MVC
             );
         }
 
-        public static MvcHtmlString ContainerTemplateBegin(HtmlHelper html, string template, object model, string folder = "Templates")
+        public static IHtmlContent ContainerTemplateBegin(HtmlHelper html, string template, object model, string folder = "Templates")
         {
             var content = html.Partial($"{folder}/{template}", model).ToHtmlString();
 
@@ -53,7 +53,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return MvcHtmlStringCompatibility.Create(content);
         }
 
-        public static MvcHtmlString ContainerTemplateEnd(HtmlHelper html, string template, object model, string folder = "Templates")
+        public static IHtmlContent ContainerTemplateEnd(HtmlHelper html, string template, object model, string folder = "Templates")
         {
             var content = html.Partial($"{folder}/{template}", model).ToHtmlString();
 

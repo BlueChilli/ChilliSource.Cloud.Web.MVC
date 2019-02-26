@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -36,7 +37,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <returns>Returns an tag (eg H2) setup as an content editable field, with a hidden field that contains the value to be submitted</returns>
         [Obsolete("No field template replacement at this point")]
-        public static MvcHtmlString ContentEditableFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, string tag, string placeholder = "", string charactersLeftSelector = null, object htmlAttributes = null)
+        public static IHtmlContent ContentEditableFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, string tag, string placeholder = "", string charactersLeftSelector = null, object htmlAttributes = null)
         {
             var member = expression.Body as MemberExpression;
 #if NET_4X

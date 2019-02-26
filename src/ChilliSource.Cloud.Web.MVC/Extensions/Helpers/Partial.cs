@@ -21,7 +21,7 @@ namespace ChilliSource.Cloud.Web.MVC
     public static partial class HtmlHelperExtensions
     {
 #if NET_4X
-        public static MvcHtmlString PartialFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, string partialViewName)
+        public static IHtmlContent PartialFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, string partialViewName)
         {
             string name = ExpressionHelper.GetExpressionText(expression);
             object model = ModelMetadata.FromLambdaExpression(expression, helper.ViewData).Model;
@@ -43,7 +43,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 }
             };
             
-            return helper.Partial(partialViewName, model, viewData);
+            return helper.Partial(partialViewName, model, viewData).AsHtmlContent();
         }
 #else
         public static Task<IHtmlContent> PartialForAsync<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, string partialViewName)

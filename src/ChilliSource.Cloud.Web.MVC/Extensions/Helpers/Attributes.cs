@@ -4,6 +4,7 @@ using System.Text;
 using System.Web.Mvc;
 using System.Web.Routing;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -22,7 +23,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <returns>An HTML-encoded string for HTML attributes.</returns>
-        public static MvcHtmlString Attributes<TModel>(this HtmlHelper<TModel> html, object htmlAttributes)
+        public static IHtmlContent Attributes<TModel>(this HtmlHelper<TModel> html, object htmlAttributes)
         {
             var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(htmlAttributes);
             var sb = new StringBuilder();

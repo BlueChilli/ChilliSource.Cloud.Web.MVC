@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -33,7 +34,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="selectList">A collection of System.Web.Mvc.SelectList.</param>
         /// <returns>An HTML string for a group of buttons for enumeration values.</returns>
         /// <remarks>In almost all cases consume this function via FieldFor or FieldInnerFor and place a ButtonGroupAttribute on your property.</remarks>
-        public static MvcHtmlString ButtonGroupForEnum<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, IEnumerable<SelectListItem> selectList = null)
+        public static IHtmlContent ButtonGroupForEnum<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, IEnumerable<SelectListItem> selectList = null)
         {
 #if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
@@ -69,7 +70,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="falseText">Text for the false value.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <returns>An HTML string for a group of buttons for Boolean value.</returns>
-        public static MvcHtmlString ButtonGroupForBool<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string trueText = null, string falseText = null, object htmlAttributes = null)
+        public static IHtmlContent ButtonGroupForBool<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string trueText = null, string falseText = null, object htmlAttributes = null)
         {
             trueText = StringExtensions.DefaultTo(trueText, bool.TrueString);
             falseText = StringExtensions.DefaultTo(falseText, bool.FalseString);
@@ -90,12 +91,12 @@ namespace ChilliSource.Cloud.Web.MVC
         }
 
         //todo process htmlAttributes
-        private static MvcHtmlString MakeButtonGroup<TModel, TProperty>(HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes, ModelMetadata metaData, object model, SelectList list)
+        private static IHtmlContent MakeButtonGroup<TModel, TProperty>(HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes, ModelMetadata metaData, object model, SelectList list)
         {
             var propertyName = htmlHelper.NameFor(expression).ToString();
             var properyId = htmlHelper.IdFor(expression).ToString();
 
-            var result = MvcHtmlStringCompatibility.Create(htmlHelper.HiddenFor(expression));
+            var result = htmlHelper.HiddenFor(expression).AsHtmlContent();
 
             //TODO To support flags uses buttons-checkbox
             result = result.Append(@"<div class=""btn-group"" data-toggle=""buttons-radio"">");

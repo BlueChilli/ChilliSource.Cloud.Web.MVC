@@ -15,7 +15,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// </summary>
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <returns>An HTML-encoded string.</returns>
-        public static MvcHtmlString CurrentWebVersion(this HtmlHelper helper)
+        public static IHtmlContent CurrentWebVersion(this HtmlHelper helper)
         {
             var version = AssemblyHelper.GetWebApplicationAssembly().GetName().Version;
             return MvcHtmlStringCompatibility.Create(version.ToString());

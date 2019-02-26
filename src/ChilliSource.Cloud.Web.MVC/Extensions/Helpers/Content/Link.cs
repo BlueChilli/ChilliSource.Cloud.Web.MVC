@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +43,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="hostName">The host name for the link.</param>
         /// <param name="fragment">A URL fragment identifier (#).</param>
         /// <returns>An HTML-encoded string for the link element.</returns>
-        public static MvcHtmlString Link(UrlHelper urlHelper, string actionName = "", string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string hostName = "", string fragment = "")
+        public static IHtmlContent Link(UrlHelper urlHelper, string actionName = "", string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string hostName = "", string fragment = "")
         {
             displayText = (displayText == String.Empty) ? actionName : displayText;
             TagBuilder tag = new TagBuilder("a");
@@ -79,7 +80,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="iconClasses">The CSS icon class for the link element.</param>
         /// <param name="linkAttributes">An object that contains the HTML attributes to set for the link element.</param>
         /// <returns>The link or if url is empty or null the displayText is emitted as the result.</returns>
-        public static MvcHtmlString LinkExternal(this HtmlHelper html, string absoluteUrl, string displayText, string linkClasses = "", string iconClasses = "", object linkAttributes = null)
+        public static IHtmlContent LinkExternal(this HtmlHelper html, string absoluteUrl, string displayText, string linkClasses = "", string iconClasses = "", object linkAttributes = null)
         {
             if (String.IsNullOrEmpty(absoluteUrl)) return MvcHtmlStringCompatibility.Create(displayText);
 
@@ -124,7 +125,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="confirmFunction">JavaScript function to confirm before from post.</param>
         /// <returns>An HTML-encoded string for the link element to post form.</returns>
         /// <remarks>Uses jquery.doPost.js</remarks>
-        public static MvcHtmlString LinkPost<TModel>(this HtmlHelper<TModel> htmlHelper, string actionName, string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
+        public static IHtmlContent LinkPost<TModel>(this HtmlHelper<TModel> htmlHelper, string actionName, string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
         {
             var urlHelper = htmlHelper.GetUrlHelper();
             return LinkPost(urlHelper, actionName, controllerName, area, routeName, id, routeValues, displayText, linkClasses, iconClasses, linkAttributes, confirmFunction);
@@ -147,7 +148,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="confirmFunction">JavaScript function to confirm before from post.</param>
         /// <returns>An HTML-encoded string for the link element to post form.</returns>
         /// <remarks>Uses jquery.doPost.js</remarks>
-        public static MvcHtmlString LinkPost(UrlHelper urlHelper, string actionName = "", string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
+        public static IHtmlContent LinkPost(UrlHelper urlHelper, string actionName = "", string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
         {
             var href = urlHelper.DefaultAction(actionName, controllerName, area, routeName);
             var data = RouteValueDictionaryExtensions.Create(routeValues);
@@ -187,7 +188,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="customOnAjaxStart">JavaScript function to execute before Ajax asynchronous request.</param>
         /// <param name="callbackJs">JavaScript function to execute after Ajax asynchronous request succeeded.</param>
         /// <returns>An HTML-encoded string for the link element to perform Ajax asynchronous request.</returns>
-        public static MvcHtmlString LinkAjax(UrlHelper urlHelper, string target, string actionName, string controllerName = "", string area = "", string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string dynamicData = "", string customOnAjaxStart = "", string callbackJs = "")
+        public static IHtmlContent LinkAjax(UrlHelper urlHelper, string target, string actionName, string controllerName = "", string area = "", string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string dynamicData = "", string customOnAjaxStart = "", string callbackJs = "")
         {
             displayText = displayText.DefaultTo(actionName);
             var href = urlHelper.DefaultAction(actionName, controllerName, area, routeName, id, routeValues);

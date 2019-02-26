@@ -24,7 +24,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="expression">An expression that identifies the model.</param>
         /// <returns>An HTML string for a drop down list for enumeration values.</returns>
-        public static MvcHtmlString EnumDropDownListFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TEnum>> expression)
+        public static IHtmlContent EnumDropDownListFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TEnum>> expression)
         {
             return EnumDropDownListFor(htmlHelper, expression, null);
         }
@@ -38,7 +38,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="expression">An expression that identifies the model.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <returns>An HTML string for a drop down list for enumeration values.</returns>
-        public static MvcHtmlString EnumDropDownListFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TEnum>> expression, object htmlAttributes)
+        public static IHtmlContent EnumDropDownListFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TEnum>> expression, object htmlAttributes)
         {
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
 
@@ -80,7 +80,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="expression">An expression that identifies the object that contains the properties to display.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes to set for the element.</param>
         /// <returns>An HTML select element.</returns>
-        public static MvcHtmlString StringArrayListBoxFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, IEnumerable<string> values, Expression<Func<TModel, TEnum>> expression, object htmlAttributes)
+        public static IHtmlContent StringArrayListBoxFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, IEnumerable<string> values, Expression<Func<TModel, TEnum>> expression, object htmlAttributes)
         {
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
 
@@ -105,10 +105,10 @@ namespace ChilliSource.Cloud.Web.MVC
                 attributes["data-conditional-values"] = string.Join(",", (object[])metadata.AdditionalValues()["ConditionalDisplayPropertyValues"]);
             }
 
-            return htmlHelper.ListBoxFor(expression, items, attributes);
+            return htmlHelper.ListBoxFor(expression, items, attributes).AsHtmlContent();
         }
 
-        private static MvcHtmlString CustomDropDownListFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, IList<SelectListItem> selectList, IDictionary<string, object> htmlAttributes)
+        private static IHtmlContent CustomDropDownListFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, IList<SelectListItem> selectList, IDictionary<string, object> htmlAttributes)
         {
             var propertyId = htmlHelper.IdFor(expression).ToString();
             var propertyName = htmlHelper.NameFor(expression).ToString();

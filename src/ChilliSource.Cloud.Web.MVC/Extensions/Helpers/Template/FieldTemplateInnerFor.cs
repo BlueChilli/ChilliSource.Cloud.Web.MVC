@@ -21,12 +21,12 @@ namespace ChilliSource.Cloud.Web.MVC
     {
         private static readonly SelectListItem[] SingleEmptyItem = { new SelectListItem { Text = "", Value = "" } };
 
-        public static MvcHtmlString FieldTemplateInnerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
+        public static IHtmlContent FieldTemplateInnerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
         {
             return FieldTemplateInnerFor(html, expression, new FieldTemplateOptions { HtmlAttributes = htmlAttributes });
         }
 
-        public static MvcHtmlString FieldTemplateInnerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, FieldTemplateOptions fieldOptions = null)
+        public static IHtmlContent FieldTemplateInnerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, FieldTemplateOptions fieldOptions = null)
         {
             var member = expression.Body as MemberExpression;
 
@@ -310,7 +310,7 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 data.Name = data.HtmlAttributes["Name"].ToString();
             }
-            return html.Partial($"FieldTemplates/{data.Options.TemplateType}", data);
+            return html.Partial($"FieldTemplates/{data.Options.TemplateType}", data).AsHtmlContent();
         }
 
         private static void ProcessSelect<TValue>(Type baseType, ModelMetadata metadata, FieldInnerTemplateModel data)

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.WebPages;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -110,7 +111,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="html"></param>
         /// <param name="section">section to output for example "scripts"</param>
         /// <returns></returns>
-        public static MvcHtmlString RenderCustomSection(this HtmlHelper html, string section)
+        public static IHtmlContent RenderCustomSection(this HtmlHelper html, string section)
         {
             var result = new StringBuilder();
 

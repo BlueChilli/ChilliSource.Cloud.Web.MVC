@@ -13,6 +13,7 @@ using System.Web;
 using ChilliSource.Cloud.Core.Images;
 using System.Web.Mvc;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -34,7 +35,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="altText">Optional alt text.</param>
         /// <param name="htmlAttributes">Optional attribute to include in the img tag.</param>
         /// <returns>An image tag with image encoded as base64.</returns>
-        public static MvcHtmlString ImgEmbedded(this HtmlHelper html, byte[] data, string altText = null, object htmlAttributes = null)
+        public static IHtmlContent ImgEmbedded(this HtmlHelper html, byte[] data, string altText = null, object htmlAttributes = null)
         {
             TagBuilder builder = new TagBuilder("img");
 
@@ -82,7 +83,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="htmlAttributes">An object that contains the HTML attributes to set for the image element.</param>
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
         /// <returns>An HTML-encoded string for the image element.</returns>
-        public MvcHtmlString Image(string filename, int? width = null, int? height = null, string altText = null, object htmlAttributes = null, string alternativeImage = "")
+        public IHtmlContent Image(string filename, int? width = null, int? height = null, string altText = null, object htmlAttributes = null, string alternativeImage = "")
         {
             return Image(filename, new ImageResizerCommand { Width = width, Height = height }, altText, htmlAttributes, alternativeImage);
         }
@@ -97,7 +98,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
         /// <param name="ensureSize">Specifies whether width and height attributes should be generated in the 'img' tag. Defaults to true (compatibility).</param>
         /// <returns>An HTML-encoded string for image element.</returns>
-        public MvcHtmlString Image(string filename, ImageResizerCommand cmd, string altText = null, object htmlAttributes = null, string alternativeImage = "", bool ensureSize = true)
+        public IHtmlContent Image(string filename, ImageResizerCommand cmd, string altText = null, object htmlAttributes = null, string alternativeImage = "", bool ensureSize = true)
         {
             return ImageLocal(ImageUrl(filename), cmd, altText, htmlAttributes, alternativeImage, ensureSize);
         }
@@ -111,7 +112,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="htmlAttributes">An object that contains the HTML attributes to set for the image element.</param>
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
         /// <returns>An HTML-encoded string for the image element.</returns>
-        public MvcHtmlString ImageLocal(string filename, ImageResizerCommand cmd, string altText = null, object htmlAttributes = null, string alternativeImage = "", bool ensureSize = true)
+        public IHtmlContent ImageLocal(string filename, ImageResizerCommand cmd, string altText = null, object htmlAttributes = null, string alternativeImage = "", bool ensureSize = true)
         {
             var url = ImageResizerQuery(ResolveFilenameToUrl(filename, alternativeImage, isLocal: true), cmd);
 
@@ -128,12 +129,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (!String.IsNullOrEmpty(altText)) builder.Attributes.Add("alt", altText);
             if (htmlAttributes != null) builder.MergeAttributes(HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes));
 
-#if NET_4X
             return MvcHtmlStringCompatibility.Create(builder, TagRenderMode.SelfClosing);
-#else
-            builder.TagRenderMode = TagRenderMode.SelfClosing;
-            return MvcHtmlStringCompatibility.Create(builder);
-#endif
         }
 
         /// <summary>
@@ -189,7 +185,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="norepeat">True to set "no-repeat" value in CSS property, otherwise not.</param>
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
         /// <returns>An HTML-encoded string for CSS background property.</returns>
-        public MvcHtmlString BackgroundImage(string filename, int? width, int? height, bool norepeat = true, string alternativeImage = null)
+        public IHtmlContent BackgroundImage(string filename, int? width, int? height, bool norepeat = true, string alternativeImage = null)
         {
             return BackgroundImage(filename, new ImageResizerCommand { Width = width, Height = height }, norepeat, alternativeImage);
         }
@@ -202,7 +198,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="norepeat">True to set "no-repeat" value in CSS property, otherwise not.</param>
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
         /// <returns>An HTML-encoded string for CSS background property.</returns>
-        public MvcHtmlString BackgroundImage(string filename, ImageResizerCommand cmd, bool norepeat = true, string alternativeImage = null)
+        public IHtmlContent BackgroundImage(string filename, ImageResizerCommand cmd, bool norepeat = true, string alternativeImage = null)
         {
             var url = ImageUrl(filename, cmd, alternativeImage);
             return MvcHtmlStringCompatibility.Empty().Format("background: url('{0}'){1}; height: {2}px; width: {3}px;", url, norepeat ? " no-repeat" : "", cmd.Height, cmd.Width);

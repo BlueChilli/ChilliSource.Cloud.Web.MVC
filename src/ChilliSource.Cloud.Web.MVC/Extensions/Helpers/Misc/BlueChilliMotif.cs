@@ -2,6 +2,7 @@
 #if NET_4X
 using System.Web.Mvc;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -21,7 +22,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// </summary>
         /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <returns>An HTML-encoded string.</returns>
-        public static MvcHtmlString BlueChilliAsciiMotif(this HtmlHelper html)
+        public static IHtmlContent BlueChilliAsciiMotif(this HtmlHelper html)
         {
             var sb = new StringBuilder();
             sb.AppendLine("<!--");

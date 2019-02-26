@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -29,7 +30,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="showClose">True to display close button, otherwise not.</param>
         /// <param name="showPrint">True to display print button, otherwise not.</param>
         /// <returns>An HTML string for the modal window.</returns>
-        public static MvcHtmlString ModalContainer(this HtmlHelper helper, string id, string title = "", bool showClose = true, bool showPrint = false)
+        public static IHtmlContent ModalContainer(this HtmlHelper helper, string id, string title = "", bool showClose = true, bool showPrint = false)
         {
             return MvcHtmlStringCompatibility.Create(ModalContainer(id, title, showClose, showPrint));
         }

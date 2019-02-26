@@ -6,6 +6,7 @@ using System.IO;
 #if NET_4X
 using System.Web.Mvc;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -27,7 +28,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </param>
         /// <param name="size">The file size defined by IconFileTypeSize</param>
         /// <returns>An HTML string for the icon element.</returns>
-        public static MvcHtmlString IconFileType(this HtmlHelper html, string filename, IconFileTypeSize size = IconFileTypeSize.Medium)
+        public static IHtmlContent IconFileType(this HtmlHelper html, string filename, IconFileTypeSize size = IconFileTypeSize.Medium)
         {
             var format = @"<i class=""icon-file-{0}{1}""></i>";
             var ext = Path.GetExtension(filename).TrimStart('.').ToLower();

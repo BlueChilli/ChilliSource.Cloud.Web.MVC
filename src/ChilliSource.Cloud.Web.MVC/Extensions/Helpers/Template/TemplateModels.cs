@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 #if NET_4X
 using System.Web.Mvc;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -38,8 +39,8 @@ namespace ChilliSource.Cloud.Web.MVC
         public Template_PageButtons()
         {
             SaveMenuText = "Save";
-            Actions = new List<MvcHtmlString>();
-            Buttons = new List<MvcHtmlString>();
+            Actions = new List<IHtmlContent>();
+            Buttons = new List<IHtmlContent>();
         }
 
         public string SaveMenuText { get; set; }
@@ -48,11 +49,11 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public bool? ShowButtons { get; set; }
 
-        public List<MvcHtmlString> Buttons { get; set; }
+        public List<IHtmlContent> Buttons { get; set; }
 
         public bool ShowActions { get; set; }
 
-        public List<MvcHtmlString> Actions { get; set; }
+        public List<IHtmlContent> Actions { get; set; }
 
         public bool Dropup { get; set; }
     }

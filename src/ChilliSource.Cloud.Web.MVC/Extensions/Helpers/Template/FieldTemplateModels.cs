@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Routing;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
@@ -63,16 +64,16 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public object CustomOptions { get; set; }
 
-        public MvcHtmlString PreAddOn { get; set; }
+        public IHtmlContent PreAddOn { get; set; }
 
-        public MvcHtmlString PostAddOn { get; set; }
+        public IHtmlContent PostAddOn { get; set; }
 
-        public static MvcHtmlString AddOn(string text)
+        public static IHtmlContent AddOn(string text)
         {
             return MvcHtmlStringCompatibility.Create($"<span class=\"input-group-addon\">{text}</span>");
         }
 
-        public static MvcHtmlString ButtonAddOn(string text, string classes = "")
+        public static IHtmlContent ButtonAddOn(string text, string classes = "")
         {
             return MvcHtmlStringCompatibility.Create($"<span class=\"input-group-btn\"><button type=\"button\" class=\"btn {classes}\">{text}</button></span>");
         }
@@ -165,7 +166,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public bool IsInModal { get; set; }
 
-        public MvcHtmlString ToolbarJson()
+        public IHtmlContent ToolbarJson()
         {
             var items = Toolbar.Select(g => $"['{g.Key}', [{g.Value.Select(i => $"'{i}'").ToDelimitedString(",")}]]").ToList();
             return MvcHtmlStringCompatibility.Create($"[{items.ToDelimitedString(",")}]");

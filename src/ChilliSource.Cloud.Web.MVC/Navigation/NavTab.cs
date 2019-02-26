@@ -44,7 +44,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="items">The list of NavTabItem.</param>
         /// <param name="menuOptions">Tab options defined by NavMenuOptions</param>
         /// <returns>An HTML string for responsive tabs.</returns>
-        public static MvcHtmlString NavTabResponsive(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions menuOptions)
+        public static IHtmlContent NavTabResponsive(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions menuOptions)
         {
             menuOptions.NavCssClasses = "visible-desktop";
             var result = NavTabs(htmlHelper, items, menuOptions).ToHtmlString() + Environment.NewLine;
@@ -62,7 +62,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="items">The list of NavTabItem.</param>
         /// <param name="menuOptions">Tab options defined by NavMenuOptions</param>
         /// <returns>An HTML string for navigation tabs.</returns>
-        public static MvcHtmlString NavTabs(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions menuOptions = null)
+        public static IHtmlContent NavTabs(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions menuOptions = null)
         {
             if (menuOptions == null) menuOptions = new NavMenuOptions();
             NavTabSetDefaults(items, menuOptions);
@@ -85,7 +85,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="items">The list of NavTabItem.</param>
         /// <param name="menuOptions">Tab options defined by NavMenuOptions</param>
         /// <returns>An HTML string for navigation pills.</returns>
-        public static MvcHtmlString NavPills(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions menuOptions = null)
+        public static IHtmlContent NavPills(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions menuOptions = null)
         {
             if (menuOptions == null) menuOptions = new NavMenuOptions();
             NavTabSetDefaults(items, menuOptions);
@@ -165,7 +165,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="items">The list of NavTabItem.</param>
         /// <param name="menuOptions">Tab options defined by NavMenuOptions</param>
         /// <returns>An HTML string for the active navigation tab.</returns>
-        public static MvcHtmlString NavActiveAction(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions navOptions = null)
+        public static IHtmlContent NavActiveAction(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions navOptions = null)
         {
             if (items == null || items.Count == 0) return MvcHtmlStringCompatibility.Empty();
             if (navOptions == null) navOptions = new NavMenuOptions();
@@ -181,11 +181,11 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 if (item.RouteValues is RouteValueDictionary)
                 {
-                    return htmlHelper.Action(item.Action, item.Controller, item.RouteValues as RouteValueDictionary);
+                    return htmlHelper.Action(item.Action, item.Controller, item.RouteValues as RouteValueDictionary).AsHtmlContent();
                 }
                 else
                 {
-                    return htmlHelper.Action(item.Action, item.Controller, item.RouteValues);
+                    return htmlHelper.Action(item.Action, item.Controller, item.RouteValues).AsHtmlContent();
                 }
             }
         }

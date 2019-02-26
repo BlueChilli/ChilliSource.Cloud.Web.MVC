@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -27,10 +28,9 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="html">An object that contains the HTML attributes.</param>
         /// <param name="validationMessage">Validation message.</param>
         /// <returns>An HTML string for validation summary message.</returns>
-        public static MvcHtmlString ValidationSummaryHtml(this HtmlHelper html, string validationMessage)
+        public static IHtmlContent ValidationSummaryHtml(this HtmlHelper html, string validationMessage)
         {
-            var code = html.ValidationSummary(validationMessage);
-            return MvcHtmlStringCompatibility.Create(code);
+            return html.ValidationSummary(validationMessage).AsHtmlContent();
         }
     }
 }

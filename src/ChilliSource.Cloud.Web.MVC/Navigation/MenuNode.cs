@@ -504,8 +504,8 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Creates an HTML-encoded string using the specified result for current node.
         /// </summary>
         /// <param name="resultWhenTrue">The specified result for current node.</param>
-        /// <returns>An object of MvcHtmlString.</returns>
-        public MvcHtmlString WhenCurrent(string resultWhenTrue)
+        /// <returns>An object of IHtmlContent.</returns>
+        public IHtmlContent WhenCurrent(string resultWhenTrue)
         {
             return IsCurrent() ? MvcHtmlStringCompatibility.Create(resultWhenTrue) : MvcHtmlStringCompatibility.Empty();
         }
@@ -545,7 +545,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="iconClasses">The CSS icon class for the link element.</param>
         /// <param name="linkAttributes">An object that contains the HTML attributes to set for the link element.</param>
         /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString Link(string title = "", string id = "", object routeValues = null, string linkClasses = "", string iconClasses = "", object linkAttributes = null)
+        public IHtmlContent Link(string title = "", string id = "", object routeValues = null, string linkClasses = "", string iconClasses = "", object linkAttributes = null)
         {
             return Link(new HtmlLinkFieldOptions { Title = title, Id = id, RouteValues = routeValues, LinkClasses = linkClasses, IconClasses = iconClasses, HtmlAttributes = linkAttributes });
         }
@@ -555,7 +555,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         /// <param name="options">The link html attributes.</param>
         /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString Link(HtmlLinkFieldOptions options)
+        public IHtmlContent Link(HtmlLinkFieldOptions options)
         {
             UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
             var menu = ReturnMe();
@@ -573,7 +573,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="linkAttributes">An object that contains the HTML attributes to set for the link element.</param>
         /// <param name="confirmFunction">JavaScript function to confirm before from post.</param>
         /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString LinkPost(int id, string title = "", object routeValues = null, string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
+        public IHtmlContent LinkPost(int id, string title = "", object routeValues = null, string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
         {
             return LinkPost(title, id.ToString(), routeValues, linkClasses, iconClasses, linkAttributes, confirmFunction);
         }
@@ -589,7 +589,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="linkAttributes">An object that contains the HTML attributes to set for the link element.</param>
         /// <param name="confirmFunction">JavaScript function to confirm before from post.</param>
         /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString LinkPost(string title = "", string id = "", object routeValues = null, string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
+        public IHtmlContent LinkPost(string title = "", string id = "", object routeValues = null, string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
         {
             UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
             var menu = ReturnMe();
@@ -609,7 +609,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="target">The ID of the HTML element to be rendered after Ajax asynchronous request succeeded.</param>
         /// <param name="callbackJs">JavaScript function to execute after Ajax asynchronous request succeeded.</param>
         /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString LinkAjax(int id, object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string dynamicData = "", string target = null, string callbackJs = "")
+        public IHtmlContent LinkAjax(int id, object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string dynamicData = "", string target = null, string callbackJs = "")
         {
             return LinkAjax(id.ToString(), routeValues, displayText, linkClasses, iconClasses, linkAttributes, dynamicData, target: target, callbackJs: callbackJs);
         }
@@ -627,7 +627,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="target">The ID of the HTML element to be rendered after Ajax asynchronous request succeeded.</param>
         /// <param name="callbackJs">JavaScript function to execute after Ajax asynchronous request succeeded.</param>
         /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString LinkAjax(string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string dynamicData = "", string target = null, string callbackJs = "")
+        public IHtmlContent LinkAjax(string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string dynamicData = "", string target = null, string callbackJs = "")
         {
             UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
             return HtmlHelperExtensions.LinkAjax(url, target.DefaultTo(this.Target), this.Action, this.Controller, this.Area, this.RouteName, id, routeValues, displayText == String.Empty ? this.Title : displayText, linkClasses, this.ResolveIcon(iconClasses), linkAttributes, dynamicData, callbackJs: callbackJs);
@@ -645,7 +645,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="pageDataFunction">(Unfortunately named) OBJECT that will add / override query string parameters for the request. Is evaluated when the user clicks.</param>
         /// <param name="successFunction">Call back function on successful load (only if ajax).</param>
         /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString PagerWireUp(object routeValues = null, int? pagerId = null, bool isAjax = false, string pageDataFunction = null, string successFunction = null)
+        public IHtmlContent PagerWireUp(object routeValues = null, int? pagerId = null, bool isAjax = false, string pageDataFunction = null, string successFunction = null)
         {
             var rvd = RouteValueDictionaryExtensions.Create(routeValues);
             rvd.Remove("page");
@@ -683,7 +683,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="isAjax">True to load page via Ajax, otherwise not.</param>
         /// <param name="active">The active command.</param>
         /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString PagerActiveAction(int? pagerId = null, bool isAjax = false, string active = "")
+        public IHtmlContent PagerActiveAction(int? pagerId = null, bool isAjax = false, string active = "")
         {
             var result = MvcHtmlStringCompatibility.Empty();
             var routeValues = MenuNode.GetActiveCommand(active);
@@ -710,7 +710,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="visibility">The menu node visibility.</param>
         /// <param name="routeValues">The route value parameters.</param>
         /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString Menu(string tag = "", string notTag = "", IMenuNodeVisibility visibility = null, object routeValues = null)
+        public IHtmlContent Menu(string tag = "", string notTag = "", IMenuNodeVisibility visibility = null, object routeValues = null)
         {
             List<string> tags = String.IsNullOrEmpty(tag) ? null : new List<string> { tag };
             List<string> notTags = String.IsNullOrEmpty(notTag) ? null : new List<string> { notTag };
@@ -725,7 +725,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="visibility">The menu node visibility.</param>
         /// <param name="routeValues">The route value parameters.</param>
         /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString Menu(List<string> tags, List<string> notTags = null, IMenuNodeVisibility visibility = null, object routeValues = null)
+        public IHtmlContent Menu(List<string> tags, List<string> notTags = null, IMenuNodeVisibility visibility = null, object routeValues = null)
         {
             var sb = new StringBuilder();
             foreach (var child in this.Children)
@@ -745,7 +745,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="linkOptions">The link html attributes.</param>
         /// <param name="listItemOptions">The list item attributes.</param>
         /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString MenuItem(HtmlLinkFieldOptions linkOptions, HtmlListItemFieldOptions listItemOptions = null)
+        public IHtmlContent MenuItem(HtmlLinkFieldOptions linkOptions, HtmlListItemFieldOptions listItemOptions = null)
         {
             if (!Authentication.IsInAnyRole(this.Roles)) return MvcHtmlStringCompatibility.Empty();
 
@@ -775,7 +775,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="visibility">The menu node visibility provider.</param>
         /// <param name="statusProvider">The menu node status provider.</param>
         /// <returns>HTML string for the link.</returns>
-        public MvcHtmlString MenuItem(string title = "", object routeValues = null, string linkClasses = null, IMenuNodeVisibility visibility = null, IMenuNodeStatus statusProvider = null)
+        public IHtmlContent MenuItem(string title = "", object routeValues = null, string linkClasses = null, IMenuNodeVisibility visibility = null, IMenuNodeStatus statusProvider = null)
         {
             if (!Authentication.IsInAnyRole(this.Roles) || !this.IsVisible(visibility))
                 return MvcHtmlStringCompatibility.Empty();
@@ -884,7 +884,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
         /// <param name="confirmFunction">JavaScript function to confirm before from post.</param>
         /// <returns>HTML string for the button.</returns>
-        public MvcHtmlString ButtonPost(string title = "", string id = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, string confirmFunction = "")
+        public IHtmlContent ButtonPost(string title = "", string id = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, string confirmFunction = "")
         {
             UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
             return HtmlHelperExtensions.ButtonPost(url, this.Action, this.Controller, this.Area, this.RouteName, id, routeValues, title == String.Empty ? this.ActionTitle : title, buttonClasses, this.ResolveIcon(iconClasses), buttonAttributes, confirmFunction);
@@ -901,7 +901,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
         /// <param name="confirmFunction">JavaScript function to confirm before from post.</param>
         /// <returns>HTML string for the button.</returns>
-        public MvcHtmlString ButtonPost(int id, string title = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, string confirmFunction = "")
+        public IHtmlContent ButtonPost(int id, string title = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, string confirmFunction = "")
         {
             return ButtonPost(title, id.ToString(), routeValues, buttonClasses, iconClasses, buttonAttributes, confirmFunction);
         }
@@ -915,7 +915,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="iconClasses">The CSS icon class for the disabled button element.</param>
         /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
         /// <returns>HTML string for the disabled button.</returns>
-        public MvcHtmlString ButtonDisabled(string helpText = "", string title = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
+        public IHtmlContent ButtonDisabled(string helpText = "", string title = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
         {
             UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
             return HtmlHelperExtensions.ButtonDisabled(url, title == String.Empty ? this.ActionTitle : title, helpText, buttonClasses, iconClasses, buttonAttributes);
@@ -935,7 +935,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="target">The ID of the HTML element to be rendered after Ajax asynchronous request succeeded.</param>
         /// <param name="callbackJs">JavaScript function to execute after Ajax asynchronous request succeeded.</param>
         /// <returns>HTML string for the button.</returns>
-        public MvcHtmlString ButtonAjax(string title = "", string id = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, bool post = false, string dynamicData = "", string target = null, string callbackJs = "")
+        public IHtmlContent ButtonAjax(string title = "", string id = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, bool post = false, string dynamicData = "", string target = null, string callbackJs = "")
         {
             UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
             return HtmlHelperExtensions.ButtonAjax(url, target.DefaultTo(this.Target), this.Action, this.Controller, this.Area, this.RouteName, id, routeValues, title == String.Empty ? this.ActionTitle : title, buttonClasses, this.ResolveIcon(iconClasses), buttonAttributes, post, dynamicData, callbackJs: callbackJs);
@@ -955,7 +955,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="target">The ID of the HTML element to be rendered after Ajax asynchronous request succeeded.</param>
         /// <param name="callbackJs">JavaScript function to execute after Ajax asynchronous request succeeded.</param>
         /// <returns>HTML string for the button.</returns>
-        public MvcHtmlString ButtonAjax(int id, string title = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, bool post = false, string dynamicData = "", string target = null, string callbackJs = "")
+        public IHtmlContent ButtonAjax(int id, string title = "", object routeValues = null, string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, bool post = false, string dynamicData = "", string target = null, string callbackJs = "")
         {
             return ButtonAjax(title, id.ToString(), routeValues, buttonClasses, iconClasses, buttonAttributes, post, dynamicData, target: target, callbackJs: callbackJs);
         }

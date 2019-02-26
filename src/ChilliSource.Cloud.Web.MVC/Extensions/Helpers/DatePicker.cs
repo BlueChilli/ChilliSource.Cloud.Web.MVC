@@ -23,7 +23,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="expression">An expression that identifies the model.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <returns>An HTML string for date picker.</returns>
-        public static MvcHtmlString DatePickerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object htmlAttributes = null)
+        public static IHtmlContent DatePickerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object htmlAttributes = null)
         {
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
             object model = metadata.Model;
@@ -111,7 +111,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return abbreviate ? info.GetAbbreviatedMonthName(month) : info.GetMonthName(month);
         }
 
-        private static MvcHtmlString GetDropDownHtml(HtmlHelper html, string name, List<SelectListItem> items, object htmlAttributes, string inputSize)
+        private static IHtmlContent GetDropDownHtml(HtmlHelper html, string name, List<SelectListItem> items, object htmlAttributes, string inputSize)
         {
             var wrapper = new TagBuilder("div");
             wrapper.AddCssClass("styled-select");

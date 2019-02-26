@@ -11,6 +11,7 @@ using ChilliSource.Cloud.Core;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 #else
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -34,7 +35,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="inline">True to use field options to specify inline option, otherwise not.</param>
         /// <returns>An HTML string for radio buttons for enumeration values.</returns>
         [Obsolete("no field template replace as of yet")]
-        public static MvcHtmlString RadioButtonForEnum<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, bool inline = false)
+        public static IHtmlContent RadioButtonForEnum<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, bool inline = false)
         {
 #if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
@@ -64,7 +65,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="inline">True to use field options to specify inline option, otherwise not.</param>
         /// <returns>An HTML string for radio buttons for System.Web.Mvc.SelectList.</returns>
         [Obsolete("no field template replace as of yet")]
-        public static MvcHtmlString RadioButtonForList<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, SelectList list, object htmlAttributes = null, bool inline = false)
+        public static IHtmlContent RadioButtonForList<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, SelectList list, object htmlAttributes = null, bool inline = false)
         {
 #if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
@@ -75,7 +76,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return MakeRadio(htmlHelper, expression, htmlAttributes, inline, metadata, list);
         }
 
-        private static MvcHtmlString MakeRadio<TModel, TProperty>(HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes, bool inline, ModelMetadata metaData, SelectList list)
+        private static IHtmlContent MakeRadio<TModel, TProperty>(HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes, bool inline, ModelMetadata metaData, SelectList list)
         {
             var result = MvcHtmlStringCompatibility.Empty();
             for (var i = 0; i < list.Count(); i++)
