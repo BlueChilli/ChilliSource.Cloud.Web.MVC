@@ -58,6 +58,11 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             return thisMvcString.Append(Create(value));
         }
+
+        public static IHtmlContent AppendLine(this IHtmlContent thisMvcString, string value)
+        {
+            return thisMvcString.Append(Create(value)).Append(MvcHtmlStringSimple.NewLine);
+        }
     }
 }
 #else
@@ -120,6 +125,11 @@ namespace ChilliSource.Cloud.Web.MVC
         public static IHtmlContent Append(this IHtmlContent thisMvcString, string value)
         {
             return thisMvcString.Append(Create(value));
+        }
+
+        public static IHtmlContent AppendLine(this IHtmlContent thisMvcString, string value)
+        {
+            return thisMvcString.Append(Create(value)).Append(MvcHtmlStringImpl.NewLine);
         }
     }
 }

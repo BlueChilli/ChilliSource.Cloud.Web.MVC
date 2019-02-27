@@ -87,9 +87,7 @@ namespace ChilliSource.Cloud.Web.MVC
     }
 
     internal class FieldTemplateContent
-    {
-        public const string InnerTemplateMarker = "###InnerTemplate###";
-
+    {        
         IHtmlContent _beginHtmlContent;
         IHtmlContent _endHtmlContent;
 
@@ -111,11 +109,11 @@ namespace ChilliSource.Cloud.Web.MVC
 
             this.ContentLength = htmlContentStr.Length;
 
-            var index = htmlContentStr.IndexOf(InnerTemplateMarker);
+            var index = htmlContentStr.IndexOf(FieldTemplateModel.InnerTemplateMarker);
             if (index >= 0)
             {
                 _beginHtmlContent = MvcHtmlStringCompatibility.Create(htmlContentStr.Substring(0, index));
-                _endHtmlContent = MvcHtmlStringCompatibility.Create(htmlContentStr.Substring(index + InnerTemplateMarker.Length));
+                _endHtmlContent = MvcHtmlStringCompatibility.Create(htmlContentStr.Substring(index + FieldTemplateModel.InnerTemplateMarker.Length));
             }
             else
             {

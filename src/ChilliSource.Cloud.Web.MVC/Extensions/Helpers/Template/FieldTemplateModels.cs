@@ -81,6 +81,8 @@ namespace ChilliSource.Cloud.Web.MVC
 
     public class FieldTemplateModel
     {
+        public const string InnerTemplateMarker = "###InnerTemplate###";
+
         public string ModelName { get; set; }
 
         public string DisplayName { get; set; }

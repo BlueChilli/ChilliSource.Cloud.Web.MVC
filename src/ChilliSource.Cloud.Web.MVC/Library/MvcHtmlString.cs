@@ -22,6 +22,7 @@ namespace ChilliSource.Cloud.Web.MVC
         private class MvcHtmlStringSimple : IHtmlContent
         {
             public static readonly IHtmlContent Empty = new MvcHtmlStringSimple(String.Empty);
+            public static readonly IHtmlContent NewLine = new MvcHtmlStringSimple("\r\n");
 
             private string _htmlString;
 
@@ -102,6 +103,7 @@ namespace ChilliSource.Cloud.Web.MVC
         private class MvcHtmlStringImpl : IHtmlContent
         {
             public static readonly IHtmlContent Empty = new MvcHtmlStringImpl(HtmlString.Empty);
+            public static readonly IHtmlContent NewLine = new MvcHtmlStringImpl(new HtmlString("\r\n"));
 
             IHtmlContent _inner;
             internal MvcHtmlStringImpl(IHtmlContent inner)
