@@ -1,11 +1,21 @@
-﻿#if NET_4X
-using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+
+#if NET_4X
 using System.Web.Mvc;
+#else
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -27,26 +37,37 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             Value = value;
             DisplayAsBlock = displayAsBlock;
-            
+
         }
 
+#if NET_4X
         public void OnMetadataCreated(ModelMetadata metadata)
+#else
+        public void GetDisplayMetadata(DisplayMetadataProviderContext metadata)
+#endif
         {
             metadata.AdditionalValues()["HelpText"] = Value;
             metadata.AdditionalValues()["HelpText-Display"] = (DisplayAsBlock) ? "help-block" : "help-inline";
         }
 
+#if NET_4X
         public static IHtmlContent GetHelpTextFor<TModel, TValue>(HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object transformData = null)
         {
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
-            string helpText = (metadata.AdditionalValues.SingleOrDefault(m => m.Key == "HelpText").Value as string);
+#else
+        public static IHtmlContent GetHelpTextFor<TModel, TValue>(IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object transformData = null)
+        {
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+            ModelMetadata metadata = explorer.Metadata;
+#endif
+
+            string helpText = (metadata.AdditionalValues.SingleOrDefault(m => (string)m.Key == "HelpText").Value as string);
             if (string.IsNullOrEmpty(helpText)) return MvcHtmlStringCompatibility.Create("");
 
-            string helpTextDisplay = (metadata.AdditionalValues.SingleOrDefault(m => m.Key == "HelpText-Display").Value as string);
+            string helpTextDisplay = (metadata.AdditionalValues.SingleOrDefault(m => (string)m.Key == "HelpText-Display").Value as string);
             if (transformData != null) helpText = helpText.TransformWith(transformData);
 
             return MvcHtmlStringCompatibility.Create(string.Format(@"<p class=""{0}"">{1}</p>", helpTextDisplay, helpText));
         }
     }
 }
-#endif

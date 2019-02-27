@@ -57,7 +57,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public static IHtmlContent Append(this IHtmlContent thisMvcString, string value)
         {
             return thisMvcString.Append(Create(value));
-        }               
+        }
     }
 }
 #else

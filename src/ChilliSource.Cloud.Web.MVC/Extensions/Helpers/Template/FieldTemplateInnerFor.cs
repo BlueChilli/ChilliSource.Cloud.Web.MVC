@@ -37,9 +37,9 @@ namespace ChilliSource.Cloud.Web.MVC
             return FieldTemplateInnerFor(html, expression, new FieldTemplateOptions { HtmlAttributes = htmlAttributes });
         }
 #else        
-        public static IHtmlContent FieldTemplateInnerFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
+        public static Task<IHtmlContent> FieldTemplateInnerForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
         {
-            return FieldTemplateInnerFor(html, expression, new FieldTemplateOptions { HtmlAttributes = htmlAttributes });
+            return FieldTemplateInnerForAsync(html, expression, new FieldTemplateOptions { HtmlAttributes = htmlAttributes });
         }
 #endif
 
@@ -49,7 +49,7 @@ namespace ChilliSource.Cloud.Web.MVC
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
             object model = metadata.Model;
 #else
-        public static IHtmlContent FieldTemplateInnerFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, FieldTemplateOptions fieldOptions = null)
+        public static Task<IHtmlContent> FieldTemplateInnerForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, FieldTemplateOptions fieldOptions = null)
         {
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
             ModelMetadata metadata = explorer.Metadata;
@@ -349,7 +349,12 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 data.Name = data.HtmlAttributes["Name"].ToString();
             }
+
+#if NET_4X
             return html.Partial($"FieldTemplates/{data.Options.TemplateType}", data).AsHtmlContent();
+#else
+            return html.PartialAsync($"FieldTemplates/{data.Options.TemplateType}", data);
+#endif
         }
 
         private static void ProcessSelect<TValue>(Type baseType, ModelMetadata metadata, FieldInnerTemplateModel data)

@@ -1,53 +1,36 @@
-﻿#if NET_4X
-using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+
+#if NET_4X
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
+#else
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
     public static partial class TemplateHelper
     {
-        public static IHtmlContent FieldTemplateFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
+#if NET_4X
+        private static FieldTemplateContent CreateTemplateContent<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null)
+#else
+        private static Task<FieldTemplateContent> CreateTemplateContentAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null)
+#endif        
         {
-            return FieldTemplateFor(html, expression, new TemplateOptions { Template = template }, new FieldTemplateOptions());
-        }
+            if (options == null)
+                options = new TemplateOptions();
 
-        public static IHtmlContent FieldTemplateFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null, FieldTemplateOptions fieldOptions = null)
-        {
-            if (options == null) options = new TemplateOptions();
-            if (fieldOptions == null) fieldOptions = new FieldTemplateOptions();
-
-            var templateStart = html.FieldTemplateOuterForBegin<TModel, TValue>(expression, options);
-            var templateInner = html.FieldTemplateInnerFor<TModel, TValue>(expression, fieldOptions);
-            var templateEnd = html.FieldTemplateOuterForEnd<TModel, TValue>(expression, options);
-            var template = MvcHtmlStringCompatibility.Empty().Format("{0}{1}{2}", templateStart, templateInner, templateEnd);
-            return template;
-        }
-
-        public static IDisposable FieldTemplateOuterFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
-        {
-            return FieldTemplateOuterFor(html, expression, new TemplateOptions { Template = template });
-        }
-
-        public static IDisposable FieldTemplateOuterFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null)
-        {
-            if (options == null) options = new TemplateOptions();
-            return new DisposableWrapper(
-                () => html.ViewContext.Writer.Write(html.FieldTemplateOuterForBegin<TModel, TValue>(expression, options)),
-                () => html.ViewContext.Writer.Write(html.FieldTemplateOuterForEnd<TModel, TValue>(expression, options))
-            );
-
-        }
-
-        private static IHtmlContent FieldTemplateOuterForBegin<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options)
-        {
             var member = expression.Body as MemberExpression;
             var isMandatory = member.Member.GetAttribute<RequiredAttribute>(false) != null;
 
@@ -67,20 +50,91 @@ namespace ChilliSource.Cloud.Web.MVC
                 FieldSize = options.FieldSize
             };
 
-            return ContainerTemplateBegin(html, options.Template.ToString(), data, "FieldTemplates");
+#if NET_4X
+            return CreateTemplateContent(html, options.Template.ToString(), data, "FieldTemplates");
+#else
+            return CreateTemplateContentAsync(html, options.Template.ToString(), data, "FieldTemplates");
+#endif
+        }
+
+#if NET_4X
+        public static IHtmlContent FieldTemplateFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
+        {
+            return FieldTemplateFor(html, expression, new TemplateOptions { Template = template }, new FieldTemplateOptions());
+        }
+
+        public static IHtmlContent FieldTemplateFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null, FieldTemplateOptions fieldOptions = null)
+        {
+            if (options == null) options = new TemplateOptions();
+            if (fieldOptions == null) fieldOptions = new FieldTemplateOptions();
+
+            var templateContent = CreateTemplateContent(html, expression, options);
+            var templateInner = html.FieldTemplateInnerFor<TModel, TValue>(expression, fieldOptions);
+
+            return new FieldTemplateHtmlContent(templateContent, templateInner);
+        }
+
+        public static IDisposable FieldTemplateOuterFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
+        {
+            return FieldTemplateOuterFor(html, expression, new TemplateOptions { Template = template });
+        }
+
+        public static IDisposable FieldTemplateOuterFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null)
+        {
+            var templateContent = CreateTemplateContent(html, expression, options);
+
+            return new DisposableWrapper(
+             () => html.ViewContext.Writer.Write(templateContent.BeginContent().ToHtmlString()),
+             () => html.ViewContext.Writer.Write(templateContent.EndContent().ToHtmlString()));
+        }
+
+        private static IHtmlContent FieldTemplateOuterForBegin<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options)
+        {
+            return CreateTemplateContent(html, expression, options).BeginContent();
         }
 
         private static IHtmlContent FieldTemplateOuterForEnd<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options)
         {
-            var data = new FieldTemplateModel
-            {
-                ModelName = html.NameFor(expression).ToString(),
-                HelpText = options.HelpText
-            };
-
-            return ContainerTemplateEnd(html, options.Template.ToString(), data, "FieldTemplates");
+            return CreateTemplateContent(html, expression, options).EndContent();
+        }
+#else
+        public static Task<IHtmlContent> FieldTemplateFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
+        {
+            return FieldTemplateForAsync(html, expression, new TemplateOptions { Template = template }, new FieldTemplateOptions());
         }
 
+        public static async Task<IHtmlContent> FieldTemplateForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null, FieldTemplateOptions fieldOptions = null)
+        {
+            if (options == null) options = new TemplateOptions();
+            if (fieldOptions == null) fieldOptions = new FieldTemplateOptions();
+
+            var templateContent = await CreateTemplateContentAsync(html, expression, options);
+            var templateInner = await html.FieldTemplateInnerForAsync<TModel, TValue>(expression, fieldOptions);
+
+            return new FieldTemplateHtmlContent(templateContent, templateInner);
+        }
+
+        public static Task<IDisposable> FieldTemplateOuterForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
+        {
+            return FieldTemplateOuterForAsync(html, expression, new TemplateOptions { Template = template });
+        }
+
+        public static async Task<IDisposable> FieldTemplateOuterForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null)
+        {
+            var templateContent = await CreateTemplateContentAsync(html, expression, options);
+
+            return new DisposableWrapper(html, () => templateContent.BeginContent(), () => templateContent.EndContent());
+        }
+
+        private static async Task<IHtmlContent> FieldTemplateOuterForBeginAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options)
+        {
+            return (await CreateTemplateContentAsync(html, expression, options)).BeginContent();
+        }
+
+        private static async Task<IHtmlContent> FieldTemplateOuterForEndAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options)
+        {
+            return (await CreateTemplateContentAsync(html, expression, options)).EndContent();
+        }
+#endif
     }
 }
-#endif

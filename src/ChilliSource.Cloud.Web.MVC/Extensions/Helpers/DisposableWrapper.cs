@@ -72,7 +72,7 @@ namespace ChilliSource.Cloud.Web.MVC
         HtmlEncoder _htmlEncoder;
         Func<IHtmlContent> _endContent;
 
-        public DisposableWrapper(HtmlHelper htmlHelper, Func<IHtmlContent> beginContent, Func<IHtmlContent> endContent)
+        public DisposableWrapper(IHtmlHelper htmlHelper, Func<IHtmlContent> beginContent, Func<IHtmlContent> endContent)
             : this(htmlHelper.ViewContext, HtmlEncoder.Default, beginContent, endContent)
         {
         }
