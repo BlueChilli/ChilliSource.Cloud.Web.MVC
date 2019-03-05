@@ -21,7 +21,7 @@ using Microsoft.AspNetCore.DataProtection;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
- 
+
     public class TemplateOptions
     {
         public TemplateOptions()
@@ -138,7 +138,7 @@ namespace ChilliSource.Cloud.Web.MVC
     }
 
     public class FieldInnerTemplateModel
-    {        
+    {
         public string Id { get; set; }
 
         public string Name { get; set; }
@@ -149,7 +149,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public FieldTemplateOptions Options { get; set; }
 
-        public RouteValueDictionary HtmlAttributes { get; set; }
+        public IDictionary<string, object> HtmlAttributes { get; set; }
     }
 
     public class Html_CustomOptions

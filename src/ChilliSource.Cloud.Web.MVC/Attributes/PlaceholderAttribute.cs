@@ -44,7 +44,7 @@ namespace ChilliSource.Cloud.Web.MVC
             metadata.AdditionalValues()["Placeholder"] = Value;
         }
 
-        public static string Resolve(ModelMetadata metadata, RouteValueDictionary attributes)
+        public static string Resolve(ModelMetadata metadata, IDictionary<string, object> attributes)
         {
             if (metadata.AdditionalValues.ContainsKey(Key))
             {

@@ -71,7 +71,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return String.Format("The {0} field contains an invalid phone number.", name);
         }
 
-        public static void Resolve(MemberExpression member, ModelMetadata metadata, RouteValueDictionary attributes)
+        public static void Resolve(MemberExpression member, ModelMetadata metadata, IDictionary<string, object> attributes)
         {
             var phoneNumberAttribute = member.Member.GetAttribute<PhoneNumberAttribute>(false);
             if (phoneNumberAttribute != null || metadata.DataTypeName == "PhoneNumber")

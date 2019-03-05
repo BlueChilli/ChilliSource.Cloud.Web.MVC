@@ -1,5 +1,4 @@
-﻿#if NET_4X
-using ChilliSource.Core.Extensions;
+﻿using ChilliSource.Core.Extensions;
 using ChilliSource.Cloud.Core;
 using System;
 using System.Collections.Generic;
@@ -8,8 +7,20 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
+#if NET_4X
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
+#else
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+using Microsoft.AspNetCore.DataProtection;
+#endif
 
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -40,11 +51,18 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML string for a drop down list for enumeration values.</returns>
         public static IHtmlContent EnumDropDownListFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TEnum>> expression, object htmlAttributes)
         {
+#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+            object model = metadata.Model;
+#else
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
+            ModelMetadata metadata = explorer.Metadata;
+            object model = explorer.Model;
+#endif
 
             Type enumType = Nullable.GetUnderlyingType(metadata.ModelType) ?? metadata.ModelType;
             var values = EnumExtensions.GetValues(enumType).Cast<Enum>();
-            var modelValues = metadata.Model == null ? new string[0] : metadata.Model.ToString().Split(',');
+            var modelValues = model == null ? new string[0] : model.ToString().Split(',');
             for (var i = 0; i < modelValues.Count(); i++) modelValues[i] = modelValues[i].Trim();
 
             var items = from value in values
@@ -82,14 +100,21 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>An HTML select element.</returns>
         public static IHtmlContent StringArrayListBoxFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, IEnumerable<string> values, Expression<Func<TModel, TEnum>> expression, object htmlAttributes)
         {
+#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+            object model = metadata.Model;
+#else
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
+            ModelMetadata metadata = explorer.Metadata;
+            object model = explorer.Model;
+#endif
 
             IEnumerable<SelectListItem> items = from value in values
                                                 select new SelectListItem
                                                 {
                                                     Text = value,
                                                     Value = value,
-                                                    Selected = value.Equals(metadata.Model)
+                                                    Selected = value.Equals(model)
                                                 };
 
             // If the enum is nullable, add an 'empty' item to the collection
@@ -110,15 +135,28 @@ namespace ChilliSource.Cloud.Web.MVC
 
         private static IHtmlContent CustomDropDownListFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, IList<SelectListItem> selectList, IDictionary<string, object> htmlAttributes)
         {
+#if NET_4X
+            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+            object model = metadata.Model;            
+#else
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
+            ModelMetadata metadata = explorer.Metadata;
+            object model = explorer.Model;
+#endif
             var propertyId = htmlHelper.IdFor(expression).ToString();
             var propertyName = htmlHelper.NameFor(expression).ToString();
 
-            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
-
+#if NET_4X
             var validationAttributes = htmlHelper.GetUnobtrusiveValidationAttributes(propertyName, metadata);
+#else
+            var validator = htmlHelper.ViewContext.HttpContext.RequestServices.GetService<ValidationHtmlAttributeProvider>();
+            var validationAttributes = new Dictionary<string, string>();
+            validator?.AddAndTrackValidationAttributes(htmlHelper.ViewContext, explorer, propertyName, validationAttributes);
+#endif
 
             var wrapper = new TagBuilder("div");
             wrapper.AddCssClass("styled-select");
+
             var select = new TagBuilder("select");
             select.MergeAttribute("id", propertyId);
             select.MergeAttribute("name", propertyName);
@@ -130,7 +168,7 @@ namespace ChilliSource.Cloud.Web.MVC
             var flags = type.GetCustomAttribute<FlagsAttribute>();
             if (flags != null) select.MergeAttribute("multiple", "multiple");
 
-            var options = new StringBuilder();
+            var options = MvcHtmlStringCompatibility.Empty();
             foreach (var item in selectList)
             {
                 var itemIndex = selectList.IndexOf(item);
@@ -139,33 +177,34 @@ namespace ChilliSource.Cloud.Web.MVC
                 {
                     if (!String.IsNullOrEmpty(previousGroup))
                     {
-                        options.Append(@"</optgroup>");
+                        options = options.Append(@"</optgroup>");
                     }
-                    options.Append($@"<optgroup label=""{item.Group.Name}"">");
+                    options = options.Append($@"<optgroup label=""{item.Group.Name}"">");
                 }
 
                 var option = new TagBuilder("option");
                 option.SetInnerText(item.Text);
                 option.MergeAttribute("value", item.Value);
-                var model = metadata.Model;
+
                 if (item.Selected || (model != null && item.Value.Equals(model.ToString())))
                     option.MergeAttribute("selected", "selected");
-                options.Append(option.ToString(TagRenderMode.Normal));
+                options = options.Append(option.AsHtmlContent(TagRenderMode.Normal));
 
                 if ((item.Group != null && itemIndex == selectList.Count() - 1) ||
                     (!String.IsNullOrEmpty(previousGroup) && (item.Group == null || itemIndex == selectList.Count() - 1)))
                 {
-                    options.Append(@"</optgroup>");
+                    options = options.Append(@"</optgroup>");
                 }
             }
-            select.SetInnerHtml(options.ToString());
-            wrapper.SetInnerHtml(select.ToString(TagRenderMode.Normal) + @"<div class=""arrow""></div>");
 
-            return MvcHtmlStringCompatibility.Create(wrapper, TagRenderMode.Normal);
+            select.SetInnerHtml(options);
+            wrapper.SetInnerHtml(select.AsHtmlContent(TagRenderMode.Normal)
+                                       .Append(@"<div class=""arrow""></div>"));
+
+            return wrapper.AsHtmlContent(TagRenderMode.Normal);
         }
 
         private static readonly SelectListItem[] SingleEmptyItem = { new SelectListItem { Text = "", Value = "" } };
 
     }
 }
-#endif

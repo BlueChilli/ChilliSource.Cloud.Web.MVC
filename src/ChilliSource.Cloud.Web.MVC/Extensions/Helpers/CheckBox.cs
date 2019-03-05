@@ -58,7 +58,7 @@ namespace ChilliSource.Cloud.Web.MVC
             var attributes = htmlAttributes is IDictionary<string, object> ? (IDictionary<string, object>)htmlAttributes : (IDictionary<string, object>)HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
 
             // Create string for Element.
-            var sb = new StringBuilder();
+            var result = MvcHtmlStringCompatibility.Empty();
             foreach (Enum item in Enum.GetValues(enumModelType))
             {
                 if (Convert.ToInt32(item) != 0)
@@ -92,15 +92,14 @@ namespace ChilliSource.Cloud.Web.MVC
                     if ((targetValue & flagValue) == targetValue)
                         checkbox.Attributes["checked"] = "checked";
 
-                    sb.Append(String.Format(
-                            @"<div>{0}{1}</div>",
-                            checkbox.ToString(),
-                            label.ToString()
-                        ));
+                    result = result.Append("<div>")
+                                .Append(checkbox.AsHtmlContent())
+                                .Append(label.AsHtmlContent())
+                                .Append("</div>");
                 }
             }
 
-            return MvcHtmlStringCompatibility.Create(sb.ToString());
+            return result;
         }
     }
 }

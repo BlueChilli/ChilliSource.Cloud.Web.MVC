@@ -19,14 +19,14 @@ namespace ChilliSource.Cloud.Web.MVC
 
     internal static partial class MvcHtmlStringCompatibility
     {
-        private class MvcHtmlStringSimple : IHtmlContent
+        private class SimpleMvcHtmlString : IHtmlContent
         {
-            public static readonly IHtmlContent Empty = new MvcHtmlStringSimple(String.Empty);
-            public static readonly IHtmlContent NewLine = new MvcHtmlStringSimple("\r\n");
+            public static readonly IHtmlContent Empty = new SimpleMvcHtmlString(String.Empty);
+            public static readonly IHtmlContent NewLine = new SimpleMvcHtmlString("\r\n");
 
             private string _htmlString;
 
-            public MvcHtmlStringSimple(string htmlString)
+            public SimpleMvcHtmlString(string htmlString)
             {
                 _htmlString = htmlString ?? String.Empty;
             }
@@ -38,7 +38,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             public override string ToString()
             {
-                throw new ApplicationException("MvcHtmlStringSimple.ToString() is not intended to be used");
+                throw new ApplicationException("SimpleMvcHtmlString.ToString() is not intended to be used");
             }
         }
 
@@ -85,6 +85,11 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 throw new ApplicationException("CompositeMvcHtmlString.ToString() is not intended to be used");
             }
+
+            private string DebuggerToString()
+            {
+                return this.ToHtmlString();
+            }
         }
     }
 }
@@ -92,6 +97,7 @@ namespace ChilliSource.Cloud.Web.MVC
 using Microsoft.AspNetCore.Html;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -100,28 +106,6 @@ namespace ChilliSource.Cloud.Web.MVC
 {
     internal static partial class MvcHtmlStringCompatibility
     {
-        private class MvcHtmlStringImpl : IHtmlContent
-        {
-            public static readonly IHtmlContent Empty = new MvcHtmlStringImpl(HtmlString.Empty);
-            public static readonly IHtmlContent NewLine = new MvcHtmlStringImpl(new HtmlString("\r\n"));
-
-            IHtmlContent _inner;
-            internal MvcHtmlStringImpl(IHtmlContent inner)
-            {
-                _inner = inner;
-            }
-
-            public void WriteTo(TextWriter writer, HtmlEncoder encoder)
-            {
-                _inner.WriteTo(writer, encoder);
-            }
-
-            public override string ToString()
-            {
-                throw new ApplicationException("MvcHtmlStringImpl.ToString() is not intended to be used");
-            }
-        }
-
         private class CompositeMvcHtmlString : IHtmlContent
         {
             private List<IHtmlContent> _contentList = new List<IHtmlContent>();
@@ -161,6 +145,15 @@ namespace ChilliSource.Cloud.Web.MVC
             public override string ToString()
             {
                 throw new ApplicationException("CompositeMvcHtmlString.ToString() is not intended to be used");
+            }
+
+            private string DebuggerToString()
+            {
+                using (var writer = new StringWriter())
+                {
+                    this.WriteTo(writer, HtmlEncoder.Default);
+                    return writer.ToString();
+                }
             }
         }
     }

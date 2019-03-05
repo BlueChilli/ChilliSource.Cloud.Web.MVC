@@ -10,20 +10,25 @@ namespace ChilliSource.Cloud.Web.MVC
     {
         public static IHtmlContent Empty()
         {
-            return MvcHtmlStringSimple.Empty;
+            return SimpleMvcHtmlString.Empty;
         }
 
         public static IHtmlContent Create(string value)
         {
             if (String.IsNullOrEmpty(value))
-                return MvcHtmlStringSimple.Empty;
+                return SimpleMvcHtmlString.Empty;
 
-            return new MvcHtmlStringSimple(value);
+            return new SimpleMvcHtmlString(value);
         }
 
         public static IHtmlContent AsHtmlContent(this IHtmlString content)
-        {                        
+        {
             return content is IHtmlContent ? (content as IHtmlContent) : Create(content.ToHtmlString());
+        }
+
+        public static IHtmlContent AsHtmlContent(this TagBuilder content, TagRenderMode tagRenderMode = TagRenderMode.Normal)
+        {
+            return Create(content, tagRenderMode);
         }
 
         public static IHtmlContent Create(TagBuilder tagBuilder, TagRenderMode tagRenderMode)
@@ -33,12 +38,12 @@ namespace ChilliSource.Cloud.Web.MVC
                
         public static IHtmlContent Append(this IHtmlContent thisMvcString, IHtmlString content)
         {
-            if (content == MvcHtmlStringSimple.Empty)
+            if (content == SimpleMvcHtmlString.Empty)
             {
                 return thisMvcString;
             }
 
-            if (thisMvcString == MvcHtmlStringSimple.Empty)
+            if (thisMvcString == SimpleMvcHtmlString.Empty)
             {
                 return content.AsHtmlContent();
             }
@@ -61,7 +66,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public static IHtmlContent AppendLine(this IHtmlContent thisMvcString, string value)
         {
-            return thisMvcString.Append(Create(value)).Append(MvcHtmlStringSimple.NewLine);
+            return thisMvcString.Append(Create(value)).Append(SimpleMvcHtmlString.NewLine);
         }
     }
 }
@@ -74,9 +79,11 @@ namespace ChilliSource.Cloud.Web.MVC
 {
     internal static partial class MvcHtmlStringCompatibility
     {
+        private static readonly IHtmlContent NewLine = new HtmlString("\r\n");
+
         public static IHtmlContent Empty()
         {
-            return MvcHtmlStringImpl.Empty;
+            return HtmlString.Empty;
         }
 
         //This method is needed due to code targeting .net framework 4.x
@@ -85,12 +92,17 @@ namespace ChilliSource.Cloud.Web.MVC
             return content;
         }
 
+        public static IHtmlContent AsHtmlContent(this TagBuilder content, TagRenderMode tagRenderMode = TagRenderMode.Normal)
+        {
+            return Create(content, tagRenderMode);
+        }
+
         public static IHtmlContent Create(string value)
         {
             if (String.IsNullOrEmpty(value))
-                return MvcHtmlStringImpl.Empty;
+                return HtmlString.Empty;
 
-            return new MvcHtmlStringImpl(new HtmlString(value));
+            return new HtmlString(value);
         }
 
         public static IHtmlContent Create(TagBuilder tagBuilder, TagRenderMode tagRenderMode)
@@ -101,12 +113,12 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public static IHtmlContent Append(this IHtmlContent thisMvcString, IHtmlContent content)
         {
-            if (content == MvcHtmlStringImpl.Empty)
+            if (content == HtmlString.Empty)
             {
                 return thisMvcString;
             }
 
-            if (thisMvcString == MvcHtmlStringImpl.Empty)
+            if (thisMvcString == HtmlString.Empty)
             {
                 return content;
             }
@@ -129,7 +141,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public static IHtmlContent AppendLine(this IHtmlContent thisMvcString, string value)
         {
-            return thisMvcString.Append(Create(value)).Append(MvcHtmlStringImpl.NewLine);
+            return thisMvcString.Append(Create(value)).Append(NewLine);
         }
     }
 }

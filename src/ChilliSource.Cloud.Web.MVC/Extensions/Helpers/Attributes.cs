@@ -26,12 +26,13 @@ namespace ChilliSource.Cloud.Web.MVC
         public static IHtmlContent Attributes<TModel>(this HtmlHelper<TModel> html, object htmlAttributes)
         {
             var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(htmlAttributes);
-            var sb = new StringBuilder();
+            var result = MvcHtmlStringCompatibility.Empty();
             foreach (var key in attributes.Keys)
             {
-                sb.Append(String.Format(@" {0}=""{1}""", key, attributes[key]));
+                result = result.Append(String.Format(@" {0}=""{1}""", key, attributes[key]));
             }
-            return MvcHtmlStringCompatibility.Create(sb.ToString().Trim());
+
+            return result;
         }
     }
 }

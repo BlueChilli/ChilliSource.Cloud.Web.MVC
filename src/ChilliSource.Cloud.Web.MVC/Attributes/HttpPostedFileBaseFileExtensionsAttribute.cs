@@ -89,7 +89,7 @@ namespace ChilliSource.Cloud.Web.MVC
         }
 
 
-        public static void Resolve(ModelMetadata metadata, RouteValueDictionary attributes)
+        public static void Resolve(ModelMetadata metadata, IDictionary<string, object> attributes)
         {
             if (metadata.AdditionalValues.ContainsKey("FileExtensions"))
             {
@@ -97,7 +97,7 @@ namespace ChilliSource.Cloud.Web.MVC
             }
         }
 
-        public static void Resolve(string extensionsData, RouteValueDictionary attributes)
+        public static void Resolve(string extensionsData, IDictionary<string, object> attributes)
         {
             attributes["extensions"] = extensionsData.Replace(" ", "");
             var extensions = attributes["extensions"].ToString().Split(',').Select(s => "." + s).ToList();

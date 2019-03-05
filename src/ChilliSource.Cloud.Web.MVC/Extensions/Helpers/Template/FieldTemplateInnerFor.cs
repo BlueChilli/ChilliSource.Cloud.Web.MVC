@@ -96,17 +96,12 @@ namespace ChilliSource.Cloud.Web.MVC
 
 #if NET_4X
             var validationAttributes = new RouteValueDictionary(html.GetUnobtrusiveValidationAttributes(data.Name, metadata));
-            data.HtmlAttributes.Merge(validationAttributes);
 #else
             var validator = html.ViewContext.HttpContext.RequestServices.GetService<ValidationHtmlAttributeProvider>();
             var validationAttributes = new Dictionary<string, string>();
             validator?.AddAndTrackValidationAttributes(html.ViewContext, explorer, data.Name, validationAttributes);
-            foreach (var att in validationAttributes)
-            {
-                if (!data.HtmlAttributes.ContainsKey(att.Key))
-                    data.HtmlAttributes.Add(att.Key, att.Value);
-            }
 #endif
+            data.HtmlAttributes.Merge(validationAttributes);
 
             string typeName = typeof(TValue).Name;
             Type baseType = typeof(TValue).BaseType;
