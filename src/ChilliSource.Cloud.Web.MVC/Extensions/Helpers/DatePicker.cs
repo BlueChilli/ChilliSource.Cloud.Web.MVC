@@ -123,7 +123,7 @@ namespace ChilliSource.Cloud.Web.MVC
             select.Attributes.Remove("data-val-date");
             if (htmlAttributes != null) select.MergeAttributes(new RouteValueDictionary(htmlAttributes));
 
-            StringBuilder options = new StringBuilder();
+            var options = MvcHtmlStringCompatibility.Empty();
             foreach (SelectListItem item in items)
             {
                 TagBuilder option = new TagBuilder("option");
@@ -132,13 +132,13 @@ namespace ChilliSource.Cloud.Web.MVC
                 if (item.Selected)
                     option.Attributes["selected"] = "selected";
 
-                options.Append(option.ToString(TagRenderMode.Normal));
+                options = options.Append(option.AsHtmlContent(TagRenderMode.Normal));
             }
 
-            select.SetInnerHtml(options.ToString());
-            wrapper.SetInnerHtml(select.ToString(TagRenderMode.Normal) + @"<div class=""arrow""></div>");
+            select.SetInnerHtml(options);
+            wrapper.SetInnerHtml(select.AsHtmlContent(TagRenderMode.Normal).Append(@"<div class=""arrow""></div>"));
 
-            return MvcHtmlStringCompatibility.Create(wrapper, TagRenderMode.Normal);
+            return wrapper.AsHtmlContent(TagRenderMode.Normal);
         }
     }
 }

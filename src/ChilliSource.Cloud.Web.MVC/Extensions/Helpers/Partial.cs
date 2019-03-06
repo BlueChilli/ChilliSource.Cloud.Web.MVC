@@ -26,23 +26,24 @@ namespace ChilliSource.Cloud.Web.MVC
             string name = ExpressionHelper.GetExpressionText(expression);
             object model = ModelMetadata.FromLambdaExpression(expression, helper.ViewData).Model;
 
-            StringBuilder htmlFieldPrefix = new StringBuilder();
+            string htmlFieldPrefix;
             if (helper.ViewData.TemplateInfo.HtmlFieldPrefix != "")
             {
-                htmlFieldPrefix.Append(helper.ViewData.TemplateInfo.HtmlFieldPrefix);
-                htmlFieldPrefix.Append(name == "" ? "" : "." + name);
+                htmlFieldPrefix = $"{helper.ViewData.TemplateInfo.HtmlFieldPrefix}{(name == "" ? "" : "." + name)}";
             }
             else
-                htmlFieldPrefix.Append(name);
+            {
+                htmlFieldPrefix = name;
+            }
 
             var viewData = new ViewDataDictionary(helper.ViewData)
             {
                 TemplateInfo = new System.Web.Mvc.TemplateInfo
                 {
-                    HtmlFieldPrefix = htmlFieldPrefix.ToString()
+                    HtmlFieldPrefix = htmlFieldPrefix
                 }
             };
-            
+
             return helper.Partial(partialViewName, model, viewData).AsHtmlContent();
         }
 #else
@@ -51,19 +52,18 @@ namespace ChilliSource.Cloud.Web.MVC
             string name = ExpressionHelper.GetExpressionText(expression);
             object model = ExpressionMetadataProvider.FromLambdaExpression(expression, helper.ViewData, helper.MetadataProvider).Model;
 
-            StringBuilder htmlFieldPrefix = new StringBuilder();
+            string htmlFieldPrefix;
             if (helper.ViewData.TemplateInfo.HtmlFieldPrefix != "")
             {
-                htmlFieldPrefix.Append(helper.ViewData.TemplateInfo.HtmlFieldPrefix);
-                htmlFieldPrefix.Append(name == "" ? "" : "." + name);
+                htmlFieldPrefix = $"{helper.ViewData.TemplateInfo.HtmlFieldPrefix}{(name == "" ? "" : "." + name)}";
             }
             else
             {
-                htmlFieldPrefix.Append(name);
+                htmlFieldPrefix = name;
             }
 
             var viewData = new ViewDataDictionary(helper.ViewData);
-            viewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix.ToString();
+            viewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix;
 
             return helper.PartialAsync(partialViewName, model, viewData);
         }

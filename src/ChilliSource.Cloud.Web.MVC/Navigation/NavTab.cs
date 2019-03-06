@@ -47,12 +47,12 @@ namespace ChilliSource.Cloud.Web.MVC
         public static IHtmlContent NavTabResponsive(this HtmlHelper htmlHelper, List<NavTabItem> items, NavMenuOptions menuOptions)
         {
             menuOptions.NavCssClasses = "visible-desktop";
-            var result = NavTabs(htmlHelper, items, menuOptions).ToHtmlString() + Environment.NewLine;
+            var result = NavTabs(htmlHelper, items, menuOptions).AppendLine();
 
             menuOptions.NavCssClasses = "hidden-desktop";
-            result += NavPills(htmlHelper, items, menuOptions).ToHtmlString();
+            result = result.Append(NavPills(htmlHelper, items, menuOptions));
 
-            return MvcHtmlStringCompatibility.Create(result);
+            return result;
         }
 
         /// <summary>
@@ -67,15 +67,16 @@ namespace ChilliSource.Cloud.Web.MVC
             if (menuOptions == null) menuOptions = new NavMenuOptions();
             NavTabSetDefaults(items, menuOptions);
 
-            var result = String.Format(@"<ul class=""nav nav-tabs {0}"">", menuOptions.NavCssClasses);
+            var result = MvcHtmlStringCompatibility.Empty();
+            result = result.Append(String.Format(@"<ul class=""nav nav-tabs {0}"">", menuOptions.NavCssClasses));
 
             foreach (var item in items)
             {
-                result += NavTabItemMaker(htmlHelper, item, menuOptions);
+                result = result.Append(NavTabItemMaker(htmlHelper, item, menuOptions));
             }
-            result += "</ul>";
+            result = result.Append("</ul>");
 
-            return MvcHtmlStringCompatibility.Create(result);
+            return result;
         }
 
         /// <summary>
@@ -90,15 +91,16 @@ namespace ChilliSource.Cloud.Web.MVC
             if (menuOptions == null) menuOptions = new NavMenuOptions();
             NavTabSetDefaults(items, menuOptions);
 
-            var result = String.Format(@"<ul class=""nav nav-pills {0}"">", menuOptions.NavCssClasses);
+            var result = MvcHtmlStringCompatibility.Empty();
+            result = result.Append(String.Format(@"<ul class=""nav nav-pills {0}"">", menuOptions.NavCssClasses));
 
             foreach (var item in items)
             {
-                result += NavTabItemMaker(htmlHelper, item, menuOptions, reverseIcon: true);
+                result = result.Append(NavTabItemMaker(htmlHelper, item, menuOptions, reverseIcon: true));
             }
-            result += "</ul>";
+            result = result.Append("</ul>");
 
-            return MvcHtmlStringCompatibility.Create(result);
+            return result;
         }
 
         private static void NavTabSetDefaults(List<NavTabItem> items, NavMenuOptions menuOptions)
@@ -111,7 +113,7 @@ namespace ChilliSource.Cloud.Web.MVC
             }
         }
 
-        private static string NavTabItemMaker(this HtmlHelper htmlHelper, NavTabItem item, NavMenuOptions menuOptions, bool reverseIcon = false)
+        private static IHtmlContent NavTabItemMaker(this HtmlHelper htmlHelper, NavTabItem item, NavMenuOptions menuOptions, bool reverseIcon = false)
         {
             var urlHelper = htmlHelper.GetUrlHelper();
 
@@ -143,19 +145,19 @@ namespace ChilliSource.Cloud.Web.MVC
                 if (reverseIcon && isActive) item.Icon += " icon-white";
             }
 
-            var anchorTag = "";
+            var anchorTag = MvcHtmlStringCompatibility.Empty();
             if (menuOptions.IsAjax)
             {
-                anchorTag = HtmlHelperExtensions.LinkAjax(urlHelper, menuOptions.AjaxTarget, item.Action, item.Controller, item.Area, item.RouteName, "", item.RouteValues, item.LinkText, "", item.Icon, customOnAjaxStart: @"$.onNavTabStart(this);").ToHtmlString();
+                anchorTag = HtmlHelperExtensions.LinkAjax(urlHelper, menuOptions.AjaxTarget, item.Action, item.Controller, item.Area, item.RouteName, "", item.RouteValues, item.LinkText, "", item.Icon, customOnAjaxStart: @"$.onNavTabStart(this);");
             }
             else
             {
-                anchorTag = HtmlHelperExtensions.Link(urlHelper, item.Action, item.Controller, item.Area, item.RouteName, "", item.RouteValues, item.LinkText, "", item.Icon).ToHtmlString();
+                anchorTag = HtmlHelperExtensions.Link(urlHelper, item.Action, item.Controller, item.Area, item.RouteName, "", item.RouteValues, item.LinkText, "", item.Icon);
             }
 
-            liTag.SetInnerHtml(anchorTag.ToString());
+            liTag.SetInnerHtml(anchorTag);
 
-            return liTag.ToString();
+            return liTag.AsHtmlContent();
         }
 
         /// <summary>
@@ -175,7 +177,7 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 var urlHelper = htmlHelper.GetUrlHelper();
                 var url = urlHelper.DefaultAction(item.Action, item.Controller, item.Area, item.RouteName, null, navOptions.RouteValues);
-                return MvcHtmlStringCompatibility.Empty().Format("$('#{0}').load('{1}');", navOptions.AjaxTarget, url);
+                return MvcHtmlStringCompatibility.Empty().AppendFormat("$('#{0}').load('{1}');", navOptions.AjaxTarget, url);
             }
             else
             {

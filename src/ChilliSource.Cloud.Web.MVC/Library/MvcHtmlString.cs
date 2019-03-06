@@ -106,6 +106,22 @@ namespace ChilliSource.Cloud.Web.MVC
 {
     internal static partial class MvcHtmlStringCompatibility
     {
+        private class SimpleMvcHtmlString : HtmlString
+        {
+            public SimpleMvcHtmlString(string value)
+                : base(value ?? String.Empty) { }
+
+            public override string ToString()
+            {
+                throw new ApplicationException("SimpleMvcHtmlString.ToString() is not intended to be used");
+            }
+
+            private string DebuggerToString()
+            {
+                return base.Value;
+            }
+        }
+
         private class CompositeMvcHtmlString : IHtmlContent
         {
             private List<IHtmlContent> _contentList = new List<IHtmlContent>();

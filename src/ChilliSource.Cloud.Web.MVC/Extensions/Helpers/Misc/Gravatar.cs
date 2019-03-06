@@ -86,7 +86,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="emailAddress">Email Address for the Gravatar</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress)
         {
             return GravatarImage(htmlHelper, emailAddress, 80, DefaultImage.Default, string.Empty, false, Rating.G, false);
         }
@@ -98,7 +98,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="emailAddress">Email Address for the Gravatar</param>
         /// <param name="size">Size in pixels (default: 80)</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size)
         {
             return GravatarImage(htmlHelper, emailAddress, size, DefaultImage.Default, string.Empty, false, Rating.G, false);
         }
@@ -111,7 +111,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="size">Size in pixels (default: 80)</param>
         /// <param name="defaultImage">Default image if user hasn't created a Gravatar</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage)
         {
             return GravatarImage(htmlHelper, emailAddress, size, defaultImage, string.Empty, false, Rating.G, false);
         }
@@ -124,7 +124,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="size">Size in pixels (default: 80)</param>
         /// <param name="defaultImageUrl">URL to a custom default image (e.g: 'Url.Content("~/images/no-grvatar.png")' )</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, string defaultImageUrl)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, string defaultImageUrl)
         {
             return GravatarImage(htmlHelper, emailAddress, size, DefaultImage.Default, defaultImageUrl, false, Rating.G, false);
         }
@@ -138,7 +138,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="defaultImage">Default image if user hasn't created a Gravatar</param>
         /// <param name="forceDefaultImage">Prefer the default image over the users own Gravatar</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage, bool forceDefaultImage)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage, bool forceDefaultImage)
         {
             return GravatarImage(htmlHelper, emailAddress, size, defaultImage, string.Empty, forceDefaultImage, Rating.G, false);
         }
@@ -152,7 +152,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="defaultImageUrl">URL to a custom default image (e.g: 'Url.Content("~/images/no-grvatar.png")' )</param>
         /// <param name="forceDefaultImage">Prefer the default image over the users own Gravatar</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, string defaultImageUrl, bool forceDefaultImage)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, string defaultImageUrl, bool forceDefaultImage)
         {
             return GravatarImage(htmlHelper, emailAddress, size, DefaultImage.Default, defaultImageUrl, forceDefaultImage, Rating.G, false);
         }
@@ -166,7 +166,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="defaultImage">Default image if user hasn't created a Gravatar</param>
         /// <param name="rating">Gravatar content rating (note that Gravatars are self-rated)</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage, Rating rating)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage, Rating rating)
         {
             return GravatarImage(htmlHelper, emailAddress, size, defaultImage, string.Empty, false, rating, false);
         }
@@ -180,7 +180,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="defaultImageUrl">URL to a custom default image (e.g: 'Url.Content("~/images/no-grvatar.png")' )</param>
         /// <param name="rating">Gravatar content rating (note that Gravatars are self-rated)</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, string defaultImageUrl, Rating rating)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, string defaultImageUrl, Rating rating)
         {
             return GravatarImage(htmlHelper, emailAddress, size, DefaultImage.Default, defaultImageUrl, false, rating, false);
         }
@@ -195,7 +195,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="forceDefaultImage">Prefer the default image over the users own Gravatar</param>
         /// <param name="rating">Gravatar content rating (note that Gravatars are self-rated)</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage, bool forceDefaultImage, Rating rating)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage, bool forceDefaultImage, Rating rating)
         {
             return GravatarImage(htmlHelper, emailAddress, size, defaultImage, string.Empty, forceDefaultImage, rating, false);
         }
@@ -210,7 +210,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="forceDefaultImage">Prefer the default image over the users own Gravatar</param>
         /// <param name="rating">Gravatar content rating (note that Gravatars are self-rated)</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, string defaultImageUrl, bool forceDefaultImage, Rating rating)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, string defaultImageUrl, bool forceDefaultImage, Rating rating)
         {
             return GravatarImage(htmlHelper, emailAddress, size, DefaultImage.Default, defaultImageUrl, forceDefaultImage, rating, false);
         }
@@ -226,7 +226,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="rating">Gravatar content rating (note that Gravatars are self-rated)</param>
         /// <param name="forceSecureRequest">Always do secure (https) requests</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage, bool forceDefaultImage, Rating rating, bool forceSecureRequest)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage, bool forceDefaultImage, Rating rating, bool forceSecureRequest)
         {
             return GravatarImage(htmlHelper, emailAddress, size, defaultImage, string.Empty, forceDefaultImage, rating, forceSecureRequest);
         }
@@ -242,7 +242,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="rating">Gravatar content rating (note that Gravatars are self-rated)</param>
         /// <param name="forceSecureRequest">Always do secure (https) requests</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, string defaultImageUrl, bool forceDefaultImage, Rating rating, bool forceSecureRequest)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, string defaultImageUrl, bool forceDefaultImage, Rating rating, bool forceSecureRequest)
         {
             return GravatarImage(htmlHelper, emailAddress, size, DefaultImage.Default, defaultImageUrl, forceDefaultImage, rating, forceSecureRequest);
         }
@@ -253,7 +253,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="options">Image options defined by Misc.GravatarOptions.</param>
         /// <returns>An HTML string for the Avatar image element.</returns>
-        public static HtmlString GravatarImage(this HtmlHelper htmlHelper, GravatarOptions options)
+        public static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, GravatarOptions options)
         {
             return GravatarImage(htmlHelper, options.EmailAddress, options.Size, options.DefaultImage, options.DefaultImageUrl, options.ForceDefaultImage, options.Rating, options.ForceSecureRequest, options.HtmlAttributes);
         }
@@ -261,7 +261,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <summary>
         /// Returns a Globally Recognised Avatar as an &lt;img /&gt; - http://gravatar.com
         /// </summary>
-        private static HtmlString GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage, string defaultImageUrl, bool forceDefaultImage, Rating rating, bool forceSecureRequest, object htmlAttributes = null)
+        private static IHtmlContent GravatarImage(this HtmlHelper htmlHelper, string emailAddress, int size, DefaultImage defaultImage, string defaultImageUrl, bool forceDefaultImage, Rating rating, bool forceSecureRequest, object htmlAttributes = null)
         {
             var imgTag = new TagBuilder("img");
 #if NET_4X
@@ -286,7 +286,7 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
             imgTag.MergeAttributes(RouteValueDictionaryHelper.CreateFromHtmlAttributes(htmlAttributes), true);
             imgTag.AddCssClass("gravatar");
 
-            return new HtmlString(imgTag.ToString());
+            return imgTag.AsHtmlContent();
         }
 
         /// <summary>

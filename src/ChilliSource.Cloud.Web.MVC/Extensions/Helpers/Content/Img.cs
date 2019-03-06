@@ -201,7 +201,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public IHtmlContent BackgroundImage(string filename, ImageResizerCommand cmd, bool norepeat = true, string alternativeImage = null)
         {
             var url = ImageUrl(filename, cmd, alternativeImage);
-            return MvcHtmlStringCompatibility.Empty().Format("background: url('{0}'){1}; height: {2}px; width: {3}px;", url, norepeat ? " no-repeat" : "", cmd.Height, cmd.Width);
+            return MvcHtmlStringCompatibility.Empty().AppendFormat("background: url('{0}'){1}; height: {2}px; width: {3}px;", url, norepeat ? " no-repeat" : "", cmd.Height, cmd.Width);
         }
 
         /// <summary>

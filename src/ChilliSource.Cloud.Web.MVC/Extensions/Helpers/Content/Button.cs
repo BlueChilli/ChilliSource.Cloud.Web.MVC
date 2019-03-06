@@ -44,14 +44,17 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             displayText = (displayText == String.Empty) ? actionName : displayText;
             TagBuilder tag = new TagBuilder("button");
-            tag.SetInnerText(displayText);
+            IHtmlContent iconTagContent = MvcHtmlStringCompatibility.Empty();            
 
             if (!String.IsNullOrEmpty(iconClasses))
             {
                 var iconTag = new TagBuilder("i");
                 iconTag.AddCssClass(iconClasses);
-                tag.SetInnerHtml(iconTag.ToString() + " " + tag.InnerHtml);
+
+                iconTagContent = iconTagContent.Append(iconTag.AsHtmlContent().Append(" "));
             }
+
+            tag.SetInnerHtml(iconTagContent.Append(displayText));
 
             var attributes = buttonAttributes as RouteValueDictionary;
             if (attributes == null) attributes = new RouteValueDictionary(buttonAttributes);
@@ -65,7 +68,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 tag.MergeAttribute("onclick", String.Format(@"window.location=""{0}""", href));
             }
 
-            return MvcHtmlStringCompatibility.Create(tag, TagRenderMode.Normal);
+            return tag.AsHtmlContent();
         }
 
         /// <summary>

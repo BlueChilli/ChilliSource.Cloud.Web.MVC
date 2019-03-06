@@ -82,16 +82,15 @@ namespace ChilliSource.Cloud.Web.MVC
             if (!content.ContainsKey(templateKey))
             {
                 var templateResult = template(null);
+                string templateStr;
 #if NET_4X
-                var templateStr = templateResult.ToHtmlString();                
+                templateStr = templateResult.ToHtmlString();
 #else
-                var strBuilder = new StringBuilder();
-                using (var textWriter = new StringWriter(strBuilder))
+                using (var textWriter = new StringWriter())
                 {
                     templateResult.WriteTo(textWriter, HtmlEncoder.Default);
+                    templateStr = textWriter.ToString();
                 }
-
-                var templateStr = strBuilder.ToString();
 #endif
 
                 content.Add(templateKey, templateStr);
@@ -131,7 +130,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public static IHtmlContent RenderCustomSection(this IHtmlHelper html, string section)
 #endif        
         {
-            var result = new StringBuilder();
+            var result = MvcHtmlStringCompatibility.Empty();
 
             var sections = html.ViewContext.HttpContext.Items[_CustomSection] as Dictionary<string, Dictionary<Guid, string>>;
             if (sections != null)
@@ -141,11 +140,11 @@ namespace ChilliSource.Cloud.Web.MVC
                     var content = sections[section];
                     foreach (var item in content)
                     {
-                        result.AppendLine(item.Value);
+                        result = result.AppendLine(item.Value);
                     }
                 }
             }
-            return MvcHtmlStringCompatibility.Create(result.ToString());
+            return result;
         }
     }
 }

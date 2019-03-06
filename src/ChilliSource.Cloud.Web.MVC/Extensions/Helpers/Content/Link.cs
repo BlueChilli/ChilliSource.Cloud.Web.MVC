@@ -47,14 +47,17 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             displayText = (displayText == String.Empty) ? actionName : displayText;
             TagBuilder tag = new TagBuilder("a");
-            tag.SetInnerHtml(displayText);
+            var iconHtmlContent = MvcHtmlStringCompatibility.Empty();
 
             if (!String.IsNullOrEmpty(iconClasses))
             {
                 var iconTag = new TagBuilder("i");
                 iconTag.AddCssClass(iconClasses);
-                tag.SetInnerHtml(iconTag.ToString() + " " + tag.InnerHtml);
+
+                iconHtmlContent = iconHtmlContent.Append(iconTag.AsHtmlContent().Append(" "));
             }
+
+            tag.SetInnerHtml(iconHtmlContent.Append(displayText));
 
             var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(linkAttributes);
 
@@ -67,7 +70,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 tag.MergeAttribute("href", href);
             }
 
-            return MvcHtmlStringCompatibility.Create(tag, TagRenderMode.Normal);
+            return tag.AsHtmlContent();
         }
 
         /// <summary>
@@ -85,14 +88,17 @@ namespace ChilliSource.Cloud.Web.MVC
             if (String.IsNullOrEmpty(absoluteUrl)) return MvcHtmlStringCompatibility.Create(displayText);
 
             TagBuilder tag = new TagBuilder("a");
-            tag.SetInnerHtml(displayText);
+            var iconHtmlContent = MvcHtmlStringCompatibility.Empty();
 
             if (!String.IsNullOrEmpty(iconClasses))
             {
                 var iconTag = new TagBuilder("i");
                 iconTag.AddCssClass(iconClasses);
-                tag.SetInnerHtml(iconTag.ToString() + " " + tag.InnerHtml);
+
+                iconHtmlContent = iconHtmlContent.Append(iconTag.AsHtmlContent().Append(" "));
             }
+
+            tag.SetInnerHtml(iconHtmlContent.Append(displayText));
 
             var attributes = linkAttributes as RouteValueDictionary;
             if (attributes == null) attributes = new RouteValueDictionary(linkAttributes);
@@ -104,7 +110,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (!Uri.IsWellFormedUriString(absoluteUrl, UriKind.Absolute)) absoluteUrl = "//" + absoluteUrl;
             tag.MergeAttribute("href", absoluteUrl);
 
-            return MvcHtmlStringCompatibility.Create(tag, TagRenderMode.Normal);            
+            return MvcHtmlStringCompatibility.Create(tag, TagRenderMode.Normal);
         }
 
         /// <summary>

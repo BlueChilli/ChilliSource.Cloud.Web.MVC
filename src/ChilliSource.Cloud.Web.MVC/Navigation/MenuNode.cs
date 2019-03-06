@@ -691,10 +691,16 @@ namespace ChilliSource.Cloud.Web.MVC
             var selector = pagerId.HasValue ? "pager" + pagerId.Value.ToString() : "pagination a";
             if (isAjax)
             {
-                var setData = new StringBuilder();
-                foreach (var key in routeValues.Keys) if (key != "action" && key != "page") setData.AppendFormat(".data('{0}', '{1}')", key, routeValues[key]);
+                var setData = MvcHtmlStringCompatibility.Empty();
+                foreach (var key in routeValues.Keys) if (key != "action" && key != "page")
+                {
+                    setData = setData.Append(String.Format(".data('{0}', '{1}')", key, routeValues[key]));
+                }
                 if (routeValues["page"] == null) routeValues["page"] = "1";
-                return result.Format("$('.{0}:[data-page={1}]'){2}.click();", selector, routeValues["page"], setData.ToString());
+
+                result = result.Append(String.Format("$('.{0}:[data-page={1}]')", selector, routeValues["page"]))
+                               .Append(setData)
+                               .Append(".click();");
             }
             return result;
         }
@@ -727,16 +733,17 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>HTML string for the link.</returns>
         public IHtmlContent Menu(List<string> tags, List<string> notTags = null, IMenuNodeVisibility visibility = null, object routeValues = null)
         {
-            var sb = new StringBuilder();
+            var result = MvcHtmlStringCompatibility.Empty();
             foreach (var child in this.Children)
             {
                 if (!child.ResolveTags(tags, notTags)) continue;
                 if (!Authentication.IsInAnyRole(child.Roles)) continue;
                 if (!child.IsVisible(visibility)) continue;
 
-                sb.AppendLine(child.MenuItem(routeValues: routeValues).ToHtmlString());
+                result = result.Append(child.MenuItem(routeValues: routeValues))
+                               .AppendLine();
             }
-            return MvcHtmlStringCompatibility.Create(sb.ToString());
+            return result;
         }
 
         /// <summary>
@@ -756,14 +763,14 @@ namespace ChilliSource.Cloud.Web.MVC
             var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(listItemOptions.HtmlAttributes);
             liTag.MergeAttributes(attributes);
 
-            liTag.SetInnerHtml(Link(linkOptions).ToHtmlString());
+            liTag.SetInnerHtml(Link(linkOptions));
 
             if (IsActive(linkOptions.RouteValues))
             {
                 liTag.AddCssClass("active");
             }
 
-            return MvcHtmlStringCompatibility.Create(liTag.ToString());
+            return liTag.AsHtmlContent();
         }
 
         /// <summary>
@@ -782,14 +789,14 @@ namespace ChilliSource.Cloud.Web.MVC
 
             TagBuilder liTag = new TagBuilder("li");
 
-            liTag.SetInnerHtml(Link(title: title, routeValues: routeValues, linkClasses: linkClasses).ToHtmlString());
+            liTag.SetInnerHtml(Link(title: title, routeValues: routeValues, linkClasses: linkClasses));
 
             if ((statusProvider == null && IsActive(routeValues))
               || (statusProvider != null && statusProvider.IsActive(this, routeValues)))
             {
                 liTag.AddCssClass("active");
             }
-            return MvcHtmlStringCompatibility.Create(liTag.ToString());
+            return liTag.AsHtmlContent();
         }
         #endregion
 #endif
