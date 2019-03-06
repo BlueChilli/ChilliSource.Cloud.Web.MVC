@@ -89,7 +89,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="confirm">JavaScript function to confirm before from post.</param>
         /// <returns>An HTML-encoded string for the button element to post form.</returns>
         /// <remarks>Uses jquery.doPost.js</remarks>
+#if NET_4X
         public static IHtmlContent ButtonPost<TModel>(this HtmlHelper<TModel> htmlHelper, string actionName, string controllerName = "", string area = "", string routeName = "", string id = "", object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, string confirm = null)
+#else
+        public static IHtmlContent ButtonPost<TModel>(this IHtmlHelper<TModel> htmlHelper, string actionName, string controllerName = "", string area = "", string routeName = "", string id = "", object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, string confirm = null)
+#endif        
         {
             return ButtonPost(htmlHelper.GetUrlHelper(), actionName, controllerName, area, routeName, id, routeValues, displayText, buttonClasses, iconClasses, buttonAttributes, confirm);
         }
@@ -140,7 +144,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="iconClasses">The CSS icon class for the button element.</param>
         /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
         /// <returns>An HTML-encoded string for the disabled button element.</returns>
+#if NET_4X
         public static IHtmlContent ButtonDisabled<TModel>(this HtmlHelper<TModel> htmlHelper, string displayText, string helpText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
+#else
+        public static IHtmlContent ButtonDisabled<TModel>(this IHtmlHelper<TModel> htmlHelper, string displayText, string helpText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
+#endif        
         {
             return ButtonDisabled(htmlHelper.GetUrlHelper(), displayText, helpText, buttonClasses, iconClasses, buttonAttributes);
         }
@@ -194,7 +202,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="dynamicData">The data to submit for HTTP request in JSON format.</param>
         /// <param name="callbackJs">JavaScript function to execute after Ajax asynchronous request succeeded.</param>
         /// <returns>An HTML-encoded string for the button element to perform Ajax asynchronous request.</returns>
+#if NET_4X
         public static IHtmlContent ButtonAjax<TModel>(this HtmlHelper<TModel> htmlHelper, string target, string actionName, string controllerName = "", string area = "", string routeName = "", string id = "", object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, bool post = false, string dynamicData = "", string callbackJs = "")
+#else
+        public static IHtmlContent ButtonAjax<TModel>(this IHtmlHelper<TModel> htmlHelper, string target, string actionName, string controllerName = "", string area = "", string routeName = "", string id = "", object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, bool post = false, string dynamicData = "", string callbackJs = "")
+#endif        
         {
             return ButtonAjax(htmlHelper.GetUrlHelper(), target, actionName, controllerName, area, routeName, id, routeValues, displayText, buttonClasses, iconClasses, buttonAttributes, post, dynamicData, callbackJs);
         }

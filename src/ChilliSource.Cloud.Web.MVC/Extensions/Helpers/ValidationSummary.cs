@@ -27,8 +27,12 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         /// <param name="html">An object that contains the HTML attributes.</param>
         /// <param name="validationMessage">Validation message.</param>
-        /// <returns>An HTML string for validation summary message.</returns>
+        /// <returns>An HTML string for validation summary message.</returns>\
+#if NET_4X
         public static IHtmlContent ValidationSummaryHtml(this HtmlHelper html, string validationMessage)
+#else
+        public static IHtmlContent ValidationSummaryHtml(this IHtmlHelper html, string validationMessage)
+#endif
         {
             return html.ValidationSummary(validationMessage).AsHtmlContent();
         }

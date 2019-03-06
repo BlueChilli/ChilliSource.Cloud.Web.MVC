@@ -29,7 +29,11 @@ namespace ChilliSource.Cloud.Web.MVC.Misc
         /// <param name="errorCorrectionLevel">The amount of error correction to build into the image. Higher error correction comes at the expense of reduced space for data.</param>
         /// <param name="htmlAttributes">Optional HTML attributes to include on the image element.</param>
         /// <returns>An HTML-encoded string for the QR code image element.</returns>
+#if NET_4X
         public static IHtmlContent QRCode(this HtmlHelper htmlHelper, string data, int size = 80, int margin = 4, QRCodeErrorCorrectionLevel errorCorrectionLevel = QRCodeErrorCorrectionLevel.Medium, object htmlAttributes = null)
+#else
+        public static IHtmlContent QRCode(this IHtmlHelper htmlHelper, string data, int size = 80, int margin = 4, QRCodeErrorCorrectionLevel errorCorrectionLevel = QRCodeErrorCorrectionLevel.Medium, object htmlAttributes = null)
+#endif        
         {
             var url = QRCodeUrl(data, size, margin, errorCorrectionLevel);
 

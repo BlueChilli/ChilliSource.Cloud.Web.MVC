@@ -161,7 +161,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="menuNode">The menu node to get the form Id, action and controller.</param>
         /// <param name="htmlAttributes">The specified html attribute object.</param>
         /// <returns>An instance of MvcForm object.</returns>
+#if NET_4X
         public static MvcForm BeginForm<TModel>(this HtmlHelper<TModel> htmlHelper, MenuNode menuNode, object htmlAttributes = null)
+#else
+        public static MvcForm BeginForm<TModel>(this IHtmlHelper<TModel> htmlHelper, MenuNode menuNode, object htmlAttributes = null)
+#endif        
         {
             var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(htmlAttributes);
             if (!attributes.ContainsKey("id")) attributes["id"] = menuNode.GetIdAs(MenuIdType.Form).ToCssClass();

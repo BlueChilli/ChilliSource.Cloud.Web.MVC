@@ -1,9 +1,11 @@
-﻿using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System;
 
 #if NET_4X
 using System.Web.Mvc;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -16,13 +18,17 @@ namespace ChilliSource.Cloud.Web.MVC
 {
     public static partial class HtmlHelperExtensions
     {
-        //TODO consider replacing this with a template helper, so html code is not in the library.
+        //TODO: consider replacing this with a template helper, so html code is not in the library.
         /// <summary>
         /// Returns HTML string for the script element of Google map API with key and library parameters from ChilliSource web project configuration file.
         /// </summary>
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <returns>An HTML string for the script element of Google map API.</returns>
+#if NET_4X
         public static IHtmlContent ScriptGoogleMapApi(this HtmlHelper htmlHelper)
+#else
+        public static IHtmlContent ScriptGoogleMapApi(this IHtmlHelper htmlHelper)
+#endif
         {
             var libraries = GlobalMVCConfiguration.Instance.GoogleApis?.Libraries;
             var librariesParam = "";

@@ -34,12 +34,14 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="selectList">A collection of System.Web.Mvc.SelectList.</param>
         /// <returns>An HTML string for a group of buttons for enumeration values.</returns>
         /// <remarks>In almost all cases consume this function via FieldFor or FieldInnerFor and place a ButtonGroupAttribute on your property.</remarks>
+#if NET_4X
         public static IHtmlContent ButtonGroupForEnum<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, IEnumerable<SelectListItem> selectList = null)
         {
-#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
             object model = metadata.Model;
 #else
+        public static IHtmlContent ButtonGroupForEnum<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, IEnumerable<SelectListItem> selectList = null)
+        {
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
             ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;
@@ -70,7 +72,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="falseText">Text for the false value.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <returns>An HTML string for a group of buttons for Boolean value.</returns>
+#if NET_4X
         public static IHtmlContent ButtonGroupForBool<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string trueText = null, string falseText = null, object htmlAttributes = null)
+#else
+        public static IHtmlContent ButtonGroupForBool<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string trueText = null, string falseText = null, object htmlAttributes = null)
+#endif        
         {
             trueText = StringExtensions.DefaultTo(trueText, bool.TrueString);
             falseText = StringExtensions.DefaultTo(falseText, bool.FalseString);
@@ -91,7 +97,12 @@ namespace ChilliSource.Cloud.Web.MVC
         }
 
         //todo process htmlAttributes
+
+#if NET_4X
         private static IHtmlContent MakeButtonGroup<TModel, TProperty>(HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes, ModelMetadata metaData, object model, SelectList list)
+#else
+        private static IHtmlContent MakeButtonGroup<TModel, TProperty>(IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes, ModelMetadata metaData, object model, SelectList list)
+#endif        
         {
             var propertyName = htmlHelper.NameFor(expression).ToString();
             var properyId = htmlHelper.IdFor(expression).ToString();

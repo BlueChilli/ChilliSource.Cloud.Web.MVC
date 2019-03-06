@@ -35,11 +35,13 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="inline">True to use field options to specify inline option, otherwise not.</param>
         /// <returns>An HTML string for radio buttons for enumeration values.</returns>
         [Obsolete("no field template replace as of yet")]
+#if NET_4X
         public static IHtmlContent RadioButtonForEnum<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, bool inline = false)
         {
-#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
 #else
+        public static IHtmlContent RadioButtonForEnum<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, bool inline = false)
+        {
             ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
 #endif
 
@@ -65,18 +67,24 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="inline">True to use field options to specify inline option, otherwise not.</param>
         /// <returns>An HTML string for radio buttons for System.Web.Mvc.SelectList.</returns>
         [Obsolete("no field template replace as of yet")]
+#if NET_4X
         public static IHtmlContent RadioButtonForList<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, SelectList list, object htmlAttributes = null, bool inline = false)
         {
-#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
 #else
+        public static IHtmlContent RadioButtonForList<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, SelectList list, object htmlAttributes = null, bool inline = false)
+        {
             ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider).Metadata;
 #endif
 
             return MakeRadio(htmlHelper, expression, htmlAttributes, inline, metadata, list);
         }
 
+#if NET_4X
         private static IHtmlContent MakeRadio<TModel, TProperty>(HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes, bool inline, ModelMetadata metaData, SelectList list)
+#else
+        private static IHtmlContent MakeRadio<TModel, TProperty>(IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes, bool inline, ModelMetadata metaData, SelectList list)
+#endif        
         {
             var result = MvcHtmlStringCompatibility.Empty();
             for (var i = 0; i < list.Count(); i++)
@@ -95,7 +103,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
                 result = result.Append(String.Format(@"<label class=""radio{0}"">", inline ? " inline" : ""))
                             .Append(radio)
-                            .Append(String.Format(@"{0}</label>", item.Text));                
+                            .Append(String.Format(@"{0}</label>", item.Text));
             }
 
             return result;

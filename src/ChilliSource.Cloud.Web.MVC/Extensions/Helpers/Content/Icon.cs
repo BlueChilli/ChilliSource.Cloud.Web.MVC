@@ -1,17 +1,14 @@
-﻿
-using ChilliSource.Core.Extensions; using ChilliSource.Cloud.Core;
+﻿using ChilliSource.Core.Extensions;
+using ChilliSource.Cloud.Core;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+
 #if NET_4X
 using System.Web.Mvc;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.DataProtection;
 #endif
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -28,7 +25,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </param>
         /// <param name="size">The file size defined by IconFileTypeSize</param>
         /// <returns>An HTML string for the icon element.</returns>
+#if NET_4X
         public static IHtmlContent IconFileType(this HtmlHelper html, string filename, IconFileTypeSize size = IconFileTypeSize.Medium)
+#else
+        public static IHtmlContent IconFileType(this IHtmlHelper html, string filename, IconFileTypeSize size = IconFileTypeSize.Medium)
+#endif        
         {
             var format = @"<i class=""icon-file-{0}{1}""></i>";
             var ext = Path.GetExtension(filename).TrimStart('.').ToLower();
@@ -46,14 +47,14 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Small icon image with dimensions of 20 * 26
         /// </summary>
-        [Description("small-")]Small,  //20*26
+        [Description("small-")] Small,  //20*26
         /// <summary>
         /// Medium icon image with dimensions of 31 * 40
         /// </summary>
-        [Description("")]Medium,       //31*40
+        [Description("")] Medium,       //31*40
         /// <summary>
         /// Large icon image with dimensions of 62 * 80
         /// </summary>
-        [Description("large-")]Large   //62*80
+        [Description("large-")] Large   //62*80
     }
 }

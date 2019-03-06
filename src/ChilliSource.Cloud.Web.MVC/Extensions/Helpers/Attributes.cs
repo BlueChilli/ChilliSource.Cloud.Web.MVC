@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Text;
+
 #if NET_4X
 using System.Web.Mvc;
 using System.Web.Routing;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.DataProtection;
 #endif
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -23,7 +20,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <returns>An HTML-encoded string for HTML attributes.</returns>
+#if NET_4X
         public static IHtmlContent Attributes<TModel>(this HtmlHelper<TModel> html, object htmlAttributes)
+#else
+        public static IHtmlContent Attributes<TModel>(this IHtmlHelper<TModel> html, object htmlAttributes)
+#endif        
         {
             var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(htmlAttributes);
             var result = MvcHtmlStringCompatibility.Empty();

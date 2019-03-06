@@ -35,7 +35,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="expression">An expression that identifies the model.</param>
         /// <returns>An HTML string for a drop down list for enumeration values.</returns>
+#if NET_4X
         public static IHtmlContent EnumDropDownListFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TEnum>> expression)
+#else
+        public static IHtmlContent EnumDropDownListFor<TModel, TEnum>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TEnum>> expression)
+#endif
         {
             return EnumDropDownListFor(htmlHelper, expression, null);
         }
@@ -48,13 +52,15 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="expression">An expression that identifies the model.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
-        /// <returns>An HTML string for a drop down list for enumeration values.</returns>
+        /// <returns>An HTML string for a drop down list for enumeration values.</returns>        
+#if NET_4X
         public static IHtmlContent EnumDropDownListFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TEnum>> expression, object htmlAttributes)
         {
-#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
             object model = metadata.Model;
 #else
+        public static IHtmlContent EnumDropDownListFor<TModel, TEnum>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TEnum>> expression, object htmlAttributes)
+        {
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
             ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;
@@ -97,13 +103,15 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="values">A collection of System.Collections.Generic.IEnumerable&lt;string&gt; objects that are used to populate the drop-down list.</param>
         /// <param name="expression">An expression that identifies the object that contains the properties to display.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes to set for the element.</param>
-        /// <returns>An HTML select element.</returns>
+        /// <returns>An HTML select element.</returns>        
+#if NET_4X
         public static IHtmlContent StringArrayListBoxFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper, IEnumerable<string> values, Expression<Func<TModel, TEnum>> expression, object htmlAttributes)
         {
-#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
             object model = metadata.Model;
 #else
+        public static IHtmlContent StringArrayListBoxFor<TModel, TEnum>(this IHtmlHelper<TModel> htmlHelper, IEnumerable<string> values, Expression<Func<TModel, TEnum>> expression, object htmlAttributes)
+        {
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
             ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;
@@ -133,12 +141,14 @@ namespace ChilliSource.Cloud.Web.MVC
             return htmlHelper.ListBoxFor(expression, items, attributes).AsHtmlContent();
         }
 
+#if NET_4X
         private static IHtmlContent CustomDropDownListFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, IList<SelectListItem> selectList, IDictionary<string, object> htmlAttributes)
         {
-#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
             object model = metadata.Model;            
 #else
+        private static IHtmlContent CustomDropDownListFor<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, IList<SelectListItem> selectList, IDictionary<string, object> htmlAttributes)
+        {
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
             ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;

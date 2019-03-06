@@ -37,17 +37,20 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <returns>Returns an tag (eg H2) setup as an content editable field, with a hidden field that contains the value to be submitted</returns>
         [Obsolete("No field template replacement at this point")]
-        public static IHtmlContent ContentEditableFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, string tag, string placeholder = "", string charactersLeftSelector = null, object htmlAttributes = null)
-        {
-            var member = expression.Body as MemberExpression;
 #if NET_4X
+        public static IHtmlContent ContentEditableFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, string tag, string placeholder = "", string charactersLeftSelector = null, object htmlAttributes = null)
+        {            
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
             object model = metadata.Model;
 #else
+        public static IHtmlContent ContentEditableFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, string tag, string placeholder = "", string charactersLeftSelector = null, object htmlAttributes = null)
+        {
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
             ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;
 #endif
+
+            var member = expression.Body as MemberExpression;
 
             var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(htmlAttributes);
             attributes["contenteditable"] = Boolean.TrueString.ToLower();

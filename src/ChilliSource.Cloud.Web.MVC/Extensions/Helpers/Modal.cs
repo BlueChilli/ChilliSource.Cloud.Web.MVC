@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+
 #if NET_4X
 using System.Web.Mvc;
 using System.Web.Routing;
 #else
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.DataProtection;
 #endif
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -30,7 +27,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="showClose">True to display close button, otherwise not.</param>
         /// <param name="showPrint">True to display print button, otherwise not.</param>
         /// <returns>An HTML string for the modal window.</returns>
+#if NET_4X
         public static IHtmlContent ModalContainer(this HtmlHelper helper, string id, string title = "", bool showClose = true, bool showPrint = false)
+#else
+        public static IHtmlContent ModalContainer(this IHtmlHelper helper, string id, string title = "", bool showClose = true, bool showPrint = false)
+#endif        
         {
             return MvcHtmlStringCompatibility.Create(ModalContainer(id, title, showClose, showPrint));
         }

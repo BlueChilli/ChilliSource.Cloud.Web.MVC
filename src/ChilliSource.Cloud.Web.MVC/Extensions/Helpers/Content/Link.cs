@@ -83,7 +83,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="iconClasses">The CSS icon class for the link element.</param>
         /// <param name="linkAttributes">An object that contains the HTML attributes to set for the link element.</param>
         /// <returns>The link or if url is empty or null the displayText is emitted as the result.</returns>
+#if NET_4X
         public static IHtmlContent LinkExternal(this HtmlHelper html, string absoluteUrl, string displayText, string linkClasses = "", string iconClasses = "", object linkAttributes = null)
+#else
+        public static IHtmlContent LinkExternal(this IHtmlHelper html, string absoluteUrl, string displayText, string linkClasses = "", string iconClasses = "", object linkAttributes = null)
+#endif        
         {
             if (String.IsNullOrEmpty(absoluteUrl)) return MvcHtmlStringCompatibility.Create(displayText);
 
@@ -131,7 +135,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="confirmFunction">JavaScript function to confirm before from post.</param>
         /// <returns>An HTML-encoded string for the link element to post form.</returns>
         /// <remarks>Uses jquery.doPost.js</remarks>
+#if NET_4X
         public static IHtmlContent LinkPost<TModel>(this HtmlHelper<TModel> htmlHelper, string actionName, string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
+#else
+        public static IHtmlContent LinkPost<TModel>(this IHtmlHelper<TModel> htmlHelper, string actionName, string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
+#endif        
         {
             var urlHelper = htmlHelper.GetUrlHelper();
             return LinkPost(urlHelper, actionName, controllerName, area, routeName, id, routeValues, displayText, linkClasses, iconClasses, linkAttributes, confirmFunction);

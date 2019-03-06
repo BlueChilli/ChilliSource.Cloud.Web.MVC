@@ -36,12 +36,15 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <returns>An HTML string for checkboxes for enumeration values with flag attribute.</returns>
         [Obsolete("no field template replace as of yet")]
+
+#if NET_4X
         public static IHtmlContent CheckBoxForFlagEnum<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null)
         {
-#if NET_4X
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
             object model = metadata.Model;
 #else
+        public static IHtmlContent CheckBoxForFlagEnum<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null)
+        {
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
             ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;
