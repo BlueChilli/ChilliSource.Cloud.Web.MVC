@@ -19,7 +19,7 @@ namespace ChilliSource.Cloud.Web.MVC
     /// <summary>
     /// Defines methods to run when object created or disposed.
     /// </summary>
-    internal class DisposableWrapper : IDisposable
+    public class DisposableWrapper : IDisposable
     {
         private Action end;
 
@@ -66,7 +66,7 @@ namespace ChilliSource.Cloud.Web.MVC
     /// <summary>
     /// Defines methods to run when object created or disposed.
     /// </summary>
-    internal class DisposableWrapper : IDisposable
+    public class DisposableWrapper : IDisposable
     {
         ViewContext _viewContext;
         HtmlEncoder _htmlEncoder;

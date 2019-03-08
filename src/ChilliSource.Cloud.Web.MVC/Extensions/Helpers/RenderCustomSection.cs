@@ -60,40 +60,29 @@ namespace ChilliSource.Cloud.Web.MVC
         public static HelperResult RegisterCustomSection(this IHtmlHelper html, string section, Guid templateKey, Func<object, HelperResult> template)
 #endif
         {
-            var sections = html.ViewContext.HttpContext.Items[_CustomSection] as Dictionary<string, Dictionary<Guid, string>>;
+            var sections = html.ViewContext.HttpContext.Items[_CustomSection] as Dictionary<string, Dictionary<Guid, IHtmlContent>>;
 
             if (sections == null)
             {
-                sections = new Dictionary<string, Dictionary<Guid, string>>();
+                sections = new Dictionary<string, Dictionary<Guid, IHtmlContent>>();
                 html.ViewContext.HttpContext.Items.Add(_CustomSection, sections);
             }
 
-            Dictionary<Guid, string> content = null;
+            Dictionary<Guid, IHtmlContent> content = null;
             if (sections.ContainsKey(section))
             {
                 content = sections[section];
             }
             else
             {
-                content = new Dictionary<Guid, string>();
+                content = new Dictionary<Guid, IHtmlContent>();
                 sections.Add(section, content);
             }
 
             if (!content.ContainsKey(templateKey))
             {
-                var templateResult = template(null);
-                string templateStr;
-#if NET_4X
-                templateStr = templateResult.ToHtmlString();
-#else
-                using (var textWriter = new StringWriter())
-                {
-                    templateResult.WriteTo(textWriter, HtmlEncoder.Default);
-                    templateStr = textWriter.ToString();
-                }
-#endif
-
-                content.Add(templateKey, templateStr);
+                var templateResult = template(null).AsHtmlContent();
+                content.Add(templateKey, templateResult);
             }
 
 #if NET_4X
@@ -132,7 +121,7 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             var result = MvcHtmlStringCompatibility.Empty();
 
-            var sections = html.ViewContext.HttpContext.Items[_CustomSection] as Dictionary<string, Dictionary<Guid, string>>;
+            var sections = html.ViewContext.HttpContext.Items[_CustomSection] as Dictionary<string, Dictionary<Guid, IHtmlContent>>;
             if (sections != null)
             {
                 if (sections.ContainsKey(section))
@@ -140,7 +129,7 @@ namespace ChilliSource.Cloud.Web.MVC
                     var content = sections[section];
                     foreach (var item in content)
                     {
-                        result = result.AppendLine(item.Value);
+                        result = result.Append(item.Value).AppendLine();
                     }
                 }
             }

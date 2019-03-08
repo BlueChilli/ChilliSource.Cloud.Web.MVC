@@ -149,7 +149,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public FieldTemplateOptions Options { get; set; }
 
-        public IDictionary<string, object> HtmlAttributes { get; set; }
+        public RouteValueDictionary HtmlAttributes { get; set; }
     }
 
     public class Html_CustomOptions

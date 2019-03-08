@@ -30,10 +30,10 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>A System.Web.Routing.RouteValueDictionary.</returns>
         public static RouteValueDictionary CreateFromHtmlAttributes(object htmlAttributes)
         {
-            var result = new RouteValueDictionary();
+            RouteValueDictionary result;
 
             if (htmlAttributes == null)
-                return result;
+                return new RouteValueDictionary();
 
             if (htmlAttributes is RouteValueDictionary)
                 result = htmlAttributes as RouteValueDictionary;
@@ -47,6 +47,8 @@ namespace ChilliSource.Cloud.Web.MVC
                 result = new RouteValueDictionary(HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes));
 #endif
             }
+
+            result = result ?? new RouteValueDictionary();
 
             if (result.ContainsKey("disabled") && result["disabled"] is Boolean && ((bool)result["disabled"]) == false)
             {

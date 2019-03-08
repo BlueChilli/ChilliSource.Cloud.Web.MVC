@@ -98,7 +98,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return CreateTemplateContent(html, expression, options).EndContent();
         }
 #else
-        public static Task<IHtmlContent> FieldTemplateFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
+        public static Task<IHtmlContent> FieldTemplateForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
         {
             return FieldTemplateForAsync(html, expression, new TemplateOptions { Template = template }, new FieldTemplateOptions());
         }

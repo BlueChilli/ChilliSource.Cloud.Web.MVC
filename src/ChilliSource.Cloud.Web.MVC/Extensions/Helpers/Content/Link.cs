@@ -1,5 +1,4 @@
-﻿
-using ChilliSource.Core.Extensions;
+﻿using ChilliSource.Core.Extensions;
 using ChilliSource.Cloud.Core;
 using ChilliSource.Cloud.Web;
 using System;
@@ -9,14 +8,11 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 #else
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-using Microsoft.AspNetCore.DataProtection;
 #endif
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -43,9 +39,13 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="hostName">The host name for the link.</param>
         /// <param name="fragment">A URL fragment identifier (#).</param>
         /// <returns>An HTML-encoded string for the link element.</returns>
+#if NET_4X
         public static IHtmlContent Link(UrlHelper urlHelper, string actionName = "", string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string hostName = "", string fragment = "")
+#else
+        public static IHtmlContent Link(IUrlHelper urlHelper, string actionName = "", string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string hostName = "", string fragment = "")
+#endif        
         {
-            displayText = (displayText == String.Empty) ? actionName : displayText;
+            displayText = String.IsNullOrEmpty(displayText) ? actionName : displayText;
             TagBuilder tag = new TagBuilder("a");
             var iconHtmlContent = MvcHtmlStringCompatibility.Empty();
 
@@ -66,7 +66,30 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (attributes["onclick"] == null)
             {
+#if NET_4X
                 var href = urlHelper.DefaultAction(actionName, controllerName, area, routeName, id, routeValues, hostName: hostName, fragment: fragment);
+#else
+                var routeDict = new RouteValueDictionary(routeValues);
+                if (!String.IsNullOrEmpty(area))
+                {
+                    routeDict["area"] = area;
+                }
+                if (!String.IsNullOrEmpty(id))
+                {
+                    routeDict["id"] = id;
+                }
+
+                var href = urlHelper.Action(new UrlActionContext()
+                {
+                    Action = actionName,
+                    Controller = controllerName,
+                    Values  = routeDict,
+                    Host = hostName,
+                    Fragment = fragment,
+                    Protocol = urlHelper.ActionContext.HttpContext.Request.Scheme
+                });
+#endif
+
                 tag.MergeAttribute("href", href);
             }
 
@@ -162,9 +185,14 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="confirmFunction">JavaScript function to confirm before from post.</param>
         /// <returns>An HTML-encoded string for the link element to post form.</returns>
         /// <remarks>Uses jquery.doPost.js</remarks>
+#if NET_4X
         public static IHtmlContent LinkPost(UrlHelper urlHelper, string actionName = "", string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
+#else
+        public static IHtmlContent LinkPost(IUrlHelper urlHelper, string actionName = "", string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string confirmFunction = "")
+#endif        
         {
             var href = urlHelper.DefaultAction(actionName, controllerName, area, routeName);
+
             var data = RouteValueDictionaryExtensions.Create(routeValues);
             if (!String.IsNullOrEmpty(id)) data["id"] = id;
 

@@ -17,13 +17,10 @@ namespace ChilliSource.Cloud.Web.MVC
 
     }
 
-    internal static partial class MvcHtmlStringCompatibility
+    public static partial class MvcHtmlStringCompatibility
     {
         private class SimpleMvcHtmlString : IHtmlContent
-        {
-            public static readonly IHtmlContent Empty = new SimpleMvcHtmlString(String.Empty);
-            public static readonly IHtmlContent NewLine = new SimpleMvcHtmlString("\r\n");
-
+        {            
             private string _htmlString;
 
             public SimpleMvcHtmlString(string htmlString)
@@ -39,6 +36,11 @@ namespace ChilliSource.Cloud.Web.MVC
             public override string ToString()
             {
                 throw new ApplicationException("SimpleMvcHtmlString.ToString() is not intended to be used");
+            }
+
+            private string DebuggerToString()
+            {
+                return _htmlString;
             }
         }
 
@@ -73,9 +75,9 @@ namespace ChilliSource.Cloud.Web.MVC
             public string ToHtmlString()
             {
                 var sb = new StringBuilder();
-                foreach (var content in _contentList)
+                for (int i = 0; i < _contentList.Count; i++)
                 {
-                    sb.Append(content.ToHtmlString());
+                    sb.Append(_contentList[i].ToHtmlString());
                 }
 
                 return sb.ToString();
@@ -104,7 +106,7 @@ using System.Text.Encodings.Web;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
-    internal static partial class MvcHtmlStringCompatibility
+    public static partial class MvcHtmlStringCompatibility
     {
         private class SimpleMvcHtmlString : HtmlString
         {
@@ -152,9 +154,9 @@ namespace ChilliSource.Cloud.Web.MVC
 
             public void WriteTo(TextWriter writer, HtmlEncoder encoder)
             {
-                foreach (var content in _contentList)
+                for (int i = 0; i < _contentList.Count; i++)
                 {
-                    content.WriteTo(writer, encoder);
+                    _contentList[i].WriteTo(writer, encoder);
                 }
             }
 

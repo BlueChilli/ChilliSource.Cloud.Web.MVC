@@ -145,7 +145,8 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Gets or sets an array of roles.
         /// </summary>
-        public string[] MultipleRoles { get; set; }
+        public string[] MultipleRoles { get; set; }        
+
         /// <summary>
         /// Checks whether the specified authorize attribute has roles.
         /// </summary>
@@ -194,7 +195,7 @@ namespace ChilliSource.Cloud.Web.MVC
             }
 
             return new AuthorizationRedirectResult() { RedirectTo = redirectTo, ReturnUrl = returnUrl };
-        }
+        }        
 
         /// <summary>
         /// Redirects page to the redirectTo URL when authorization failed, also works for Ajax request.

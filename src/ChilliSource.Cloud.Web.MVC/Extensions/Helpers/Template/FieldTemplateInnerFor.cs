@@ -59,12 +59,8 @@ namespace ChilliSource.Cloud.Web.MVC
 
             var httpContext = html.ViewContext.HttpContext;
             var request = httpContext.Request;
-            var name = html.NameFor(expression).ToString();
-
-            //TODO
-            //It is probably better to use the same helpers as MVC source code in http://aspnetwebstack.codeplex.com/SourceControl/changeset/view/5cb74eb3b2f3#src/System.Web.Mvc/Html/InputExtensions.cs
-            //redo if we run into issues
-            //ALSO from will var value = expression.Compile().Invoke(html.ViewData.Model).;
+            var name = html.NameFor(expression).ToString();            
+            
             string attemptedValue = null;
             if (html.ViewContext.ViewData.ModelState.ContainsKey(name))
             {

@@ -26,7 +26,7 @@ namespace ChilliSource.Cloud.Web.MVC
             IServiceProvider serviceProvider = htmlHelper.ViewContext.HttpContext.RequestServices;
             var urlHelperFactory = serviceProvider.GetRequiredService<IUrlHelperFactory>();
 
-            // TODO: should we use GetRequiredService<IActionContextAccessor>().ActionContext ?
+            // should we use GetRequiredService<IActionContextAccessor>().ActionContext ?
             var urlHelper = urlHelperFactory.GetUrlHelper(htmlHelper.ViewContext);
             return new UrlHelper(urlHelper);
         }

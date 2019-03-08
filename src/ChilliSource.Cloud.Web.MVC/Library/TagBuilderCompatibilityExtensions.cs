@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
-    internal static class TagBuilderCompatibilityExtensions
+    public static class TagBuilderCompatibilityExtensions
     {
 #if NET_4X
         public static void SetInnerHtml(this TagBuilder tagBuilder, string innerHtml)

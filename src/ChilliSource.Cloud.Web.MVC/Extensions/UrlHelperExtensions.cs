@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+
 #if NET_4X
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -58,43 +59,54 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Gets action from the HTTP request in the specified System.Web.Mvc.UrlHelper.
         /// </summary>
         /// <param name="urlHelper">The specified System.Web.Mvc.UrlHelper.</param>
-        /// <returns>A string value of action.</returns>
+        /// <returns>A string value of action.</returns>        
+#if NET_4X
         public static string CurrentAction(this UrlHelper urlHelper)
         {
-#if NET_4X
             return RouteHelper.CurrentAction(urlHelper.RequestContext);
-#else
-            return RouteHelper.CurrentAction(urlHelper.ActionContext.RouteData.Values);
-#endif
         }
+#else
+        public static string CurrentAction(this IUrlHelper urlHelper)
+        {
+            return RouteHelper.CurrentAction(urlHelper.ActionContext.RouteData.Values);
+        }
+#endif
 
         /// <summary>
         /// Gets controller from the HTTP request in the specified System.Web.Mvc.UrlHelper.
         /// </summary>
         /// <param name="urlHelper">The specified System.Web.Mvc.UrlHelper.</param>
-        /// <returns>A string value of controller.</returns>
+        /// <returns>A string value of controller.</returns>        
+#if NET_4X
         public static string CurrentController(this UrlHelper urlHelper)
         {
-#if NET_4X
             return RouteHelper.CurrentController(urlHelper.RequestContext);
-#else
-            return RouteHelper.CurrentController(urlHelper.ActionContext.RouteData.Values);
-#endif
         }
+#else
+        public static string CurrentController(this IUrlHelper urlHelper)
+        {
+            return RouteHelper.CurrentController(urlHelper.ActionContext.RouteData.Values);
+        }
+#endif
+
 
         /// <summary>
         /// Gets area from the HTTP request in the specified System.Web.Mvc.UrlHelper.
         /// </summary>
         /// <param name="urlHelper">The specified System.Web.Mvc.UrlHelper.</param>
         /// <returns>A string value of area.</returns>
+#if NET_4X
         public static string CurrentArea(this UrlHelper urlHelper)
         {
-#if NET_4X
             return RouteHelper.CurrentArea(urlHelper.RequestContext);
-#else
-            return RouteHelper.CurrentArea(urlHelper.ActionContext.RouteData.Values);
-#endif
         }
+#else
+        public static string CurrentArea(this IUrlHelper urlHelper)
+        {
+            return RouteHelper.CurrentArea(urlHelper.ActionContext.RouteData.Values);
+        }
+#endif
+
 
 #if NET_4X
         /// <summary>
@@ -196,7 +208,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="hostName">The host name for the URL.</param>
         /// <param name="fragment">A fragment identifier (%23).</param>
         /// <returns>The fully qualified URL to an action method.</returns>
+#if NET_4X
         public static string DefaultAction(this UrlHelper urlHelper, string actionName, string controllerName = "", string areaName = null, string routeName = "", string id = null, object routeValues = null, string protocol = "", string hostName = "", string fragment = "")
+#else
+        public static string DefaultAction(this IUrlHelper urlHelper, string actionName, string controllerName = "", string areaName = null, string routeName = "", string id = null, object routeValues = null, string protocol = "", string hostName = "", string fragment = "")
+#endif        
         {
             controllerName = controllerName.DefaultTo(urlHelper.CurrentController());
             areaName = (areaName == null) ? urlHelper.CurrentArea() : areaName; //String.Empty will remove area

@@ -29,14 +29,24 @@ namespace ChilliSource.Cloud.Web.MVC
             return new FieldTemplateContent(content);
         }
 
-        public static IDisposable ContainerTemplate(this HtmlHelper html, TemplateType template, object model = null)
+        public static IHtmlContent Template(this HtmlHelper html, TemplateType template, object model = null, string folder = "Templates")
         {
-            return ContainerTemplate(html, template.ToString(), model);
+            return html.Template(template.ToString(), model, folder);
         }
 
-        public static IDisposable ContainerTemplate(this HtmlHelper html, string template, object model = null)
+        public static IHtmlContent Template(this HtmlHelper html, string template, object model = null, string folder = "Templates")
         {
-            var templateContent = CreateTemplateContent(html, template, model);
+            return html.Partial($"{folder}/{template}", model).AsHtmlContent();
+        }
+
+        public static IDisposable ContainerTemplate(this HtmlHelper html, TemplateType template, object model = null, string folder = "Templates")
+        {
+            return html.ContainerTemplate(template.ToString(), model, folder);
+        }
+
+        public static IDisposable ContainerTemplate(this HtmlHelper html, string template, object model = null, string folder = "Templates")
+        {
+            var templateContent = CreateTemplateContent(html, template, model, folder);
 
             return new DisposableWrapper(
                 () => html.ViewContext.Writer.Write(templateContent.BeginContent().ToHtmlString()),
@@ -61,14 +71,24 @@ namespace ChilliSource.Cloud.Web.MVC
             return new FieldTemplateContent(content);
         }
 
-        public static IDisposable ContainerTemplate(this IHtmlHelper html, TemplateType template, object model = null)
+        public static Task<IHtmlContent> TemplateAsync(this IHtmlHelper html, TemplateType template, object model = null, string folder = "Templates")
         {
-            return ContainerTemplateAsync(html, template.ToString(), model);
+            return html.TemplateAsync(template.ToString(), model, folder);
         }
 
-        public static async Task<IDisposable> ContainerTemplateAsync(this IHtmlHelper html, string template, object model = null)
+        public static Task<IHtmlContent> TemplateAsync(this IHtmlHelper html, string template, object model = null, string folder = "Templates")
         {
-            var templateContent = await CreateTemplateContentAsync(html, template, model);
+            return html.PartialAsync($"{folder}/{template}", model);
+        }
+
+        public static Task<IDisposable> ContainerTemplateAsync(this IHtmlHelper html, TemplateType template, object model = null, string folder = "Templates")
+        {
+            return html.ContainerTemplateAsync(template.ToString(), model, folder);
+        }
+
+        public static async Task<IDisposable> ContainerTemplateAsync(this IHtmlHelper html, string template, object model = null, string folder = "Templates")
+        {
+            var templateContent = await CreateTemplateContentAsync(html, template, model, folder);
 
             return new DisposableWrapper(html, () => templateContent.BeginContent(), () => templateContent.EndContent());
         }

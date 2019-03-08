@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
-    internal static class DictionaryExtensions
+    public static class DictionaryExtensions
     {
         public static bool AddOrSkipIfExists<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
