@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -35,10 +36,27 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 
-    // see http://blog.emikek.com/reinstating-imetadataaware-in-asp-net-5-vnext-mvc-6/
+    // Modified from http://blog.emikek.com/reinstating-imetadataaware-in-asp-net-5-vnext-mvc-6/
     public interface IMetadataAware
     {
         void GetDisplayMetadata(DisplayMetadataProviderContext metadata);
+    }
+
+    // Modified from http://blog.emikek.com/reinstating-imetadataaware-in-asp-net-5-vnext-mvc-6/
+    public class MetadataAwareProvider : IDisplayMetadataProvider
+    {
+        public void CreateDisplayMetadata(DisplayMetadataProviderContext context)
+        {
+            if (context == null || context.Attributes.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var att in context.Attributes.OfType<IMetadataAware>())
+            {
+                att.GetDisplayMetadata(context);
+            }
+        }
     }
 }
 #endif

@@ -75,6 +75,15 @@ namespace ChilliSource.Cloud.Web.MVC
                     }
                 }
             }
+
+            private string DebuggerToString()
+            {
+                using (var writer = new StringWriter())
+                {
+                    this.WriteTo(writer, HtmlEncoder.Default);
+                    return writer.ToString();
+                }
+            }
         }
 #endif
     }    

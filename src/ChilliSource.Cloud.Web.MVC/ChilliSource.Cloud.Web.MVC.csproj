@@ -53,7 +53,8 @@
 
     <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="ChilliSource.Cloud.Web" Version="2.0.0-alpha0021" />
     <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-    <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.2" />    
+    <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.2" />
+    <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0007" />    
   </ItemGroup>
 
   <ItemGroup>

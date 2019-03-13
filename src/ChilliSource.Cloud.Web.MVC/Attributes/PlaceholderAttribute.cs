@@ -30,7 +30,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         public string Value { get; set; }
 
-        public PlaceholderAttribute(string value = Key)
+        public PlaceholderAttribute(string value = null)
         {
             Value = value;
         }
@@ -41,7 +41,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public void GetDisplayMetadata(DisplayMetadataProviderContext metadata)
 #endif 
         {
-            metadata.AdditionalValues()["Placeholder"] = Value;
+            metadata.AdditionalValues()[Key] = Value;
         }
 
         public static string Resolve(ModelMetadata metadata, IDictionary<string, object> attributes)
@@ -49,7 +49,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (metadata.AdditionalValues.ContainsKey(Key))
             {
                 var value = metadata.AdditionalValues()[Key] as string;
-                var placeholderText = value == Key ? metadata.GetDisplayName() : value;
+                var placeholderText = value == null ? metadata.GetDisplayName() : value;
                 attributes.AddOrSkipIfExists("placeholder", placeholderText);
                 return placeholderText;
             }
