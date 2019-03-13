@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Web;
+using System.Diagnostics;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -19,6 +20,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
     public static partial class MvcHtmlStringCompatibility
     {
+        [DebuggerDisplay("{DebuggerToString()}")]
         private class SimpleMvcHtmlString : IHtmlContent
         {            
             private string _htmlString;
@@ -108,6 +110,7 @@ namespace ChilliSource.Cloud.Web.MVC
 {
     public static partial class MvcHtmlStringCompatibility
     {
+        [DebuggerDisplay("{DebuggerToString()}")]
         private class SimpleMvcHtmlString : HtmlString
         {
             public SimpleMvcHtmlString(string value)
@@ -124,6 +127,7 @@ namespace ChilliSource.Cloud.Web.MVC
             }
         }
 
+        [DebuggerDisplay("{DebuggerToString()}")]
         private class CompositeMvcHtmlString : IHtmlContent
         {
             private List<IHtmlContent> _contentList = new List<IHtmlContent>();

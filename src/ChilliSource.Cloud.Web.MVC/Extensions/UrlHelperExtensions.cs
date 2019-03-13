@@ -152,7 +152,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="controller">The specified controller name.</param>
         /// <param name="area">The specified area name.</param>
         /// <returns>Trhe when the specified area and controller names are same as area and controller names in System.Web.Mvc.UrlHelper, otherwise false.</returns>
+#if NET_4X
         public static bool IsCurrent(this UrlHelper urlHelper, string controller, string area)
+#else
+        public static bool IsCurrent(this IUrlHelper urlHelper, string controller, string area)
+#endif        
         {
             return IsCurrentArea(urlHelper, area) && IsCurrentController(urlHelper, controller);
         }
@@ -163,7 +167,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="urlHelper">The specified System.Web.Mvc.UrlHelper.</param>
         /// <param name="areaName">>The specified area name.</param>
         /// <returns>True when the specified area name is same as area name in System.Web.Mvc.UrlHelper, otherwise false.</returns>
+#if NET_4X
         public static bool IsCurrentArea(this UrlHelper urlHelper, string areaName)
+#else
+        public static bool IsCurrentArea(this IUrlHelper urlHelper, string areaName)
+#endif        
         {
             if (areaName == null) areaName = "";
             return areaName.Equals(CurrentArea(urlHelper), StringComparison.OrdinalIgnoreCase);
@@ -175,7 +183,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="urlHelper">The specified System.Web.Mvc.UrlHelper.</param>
         /// <param name="controller">The specified controller name.</param>
         /// <returns>True when the specified controller name is same as controller name in System.Web.Mvc.UrlHelper, otherwise false.</returns>
+#if NET_4X
         public static bool IsCurrentController(this UrlHelper urlHelper, string controller)
+#else
+        public static bool IsCurrentController(this IUrlHelper urlHelper, string controller)
+#endif        
         {
             if (controller == null) controller = "";
             return controller.Equals(CurrentController(urlHelper), StringComparison.OrdinalIgnoreCase);
@@ -188,7 +200,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="controller">The specified controller name.</param>
         /// <param name="resultWhenTrue">An HTML-encoded string.</param>
         /// <returns>An HTML-encoded string of the specified result string when the specified controller name is the current controller name in System.Web.Mvc.UrlHelper, otherwise HTML-encoded string of empty string.</returns>
+#if NET_4X
         public static IHtmlContent WhenIsCurrentController(this UrlHelper urlHelper, string controller, string resultWhenTrue)
+#else
+        public static IHtmlContent WhenIsCurrentController(this IUrlHelper urlHelper, string controller, string resultWhenTrue)
+#endif        
         {
             return IsCurrentController(urlHelper, controller) ? MvcHtmlStringCompatibility.Create(resultWhenTrue) : MvcHtmlStringCompatibility.Create("");
         }
@@ -276,7 +292,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return result;
         }
 
-
+#if NET_4X
         /// <summary>
         /// Generates a System.Uri for an action method by using the specified action name, controller name, route values and protocol or generates the System.Uri for the specified route values by using the specified route name and protocol.
         /// </summary>
@@ -294,7 +310,6 @@ namespace ChilliSource.Cloud.Web.MVC
             return UriExtensions.Parse(DefaultAction(urlHelper, actionName, controllerName, areaName, routeName, id, routeValues, protocol));
         }
 
-#if NET_4X
         /// <summary>
         /// Generates a fully qualified URL by using URI schema and authority segments from the specified System.Web.Mvc.UrlHelper, URL string and protocol. 
         /// </summary>
@@ -313,6 +328,38 @@ namespace ChilliSource.Cloud.Web.MVC
             url = urlHelper.RequestContext.HttpContext.Request.Url.GetLeftPart(UriPartial.Authority) + url;
             if (!String.IsNullOrEmpty(protocol)) url = url.Replace(urlHelper.RequestContext.HttpContext.Request.Url.Scheme, protocol);
             return url;
+        }
+#else
+        /// <summary>
+        /// Generates a System.Uri for an action method by using the specified action name, controller name, route values and protocol or generates the System.Uri for the specified route values by using the specified route name and protocol.
+        /// </summary>
+        /// <param name="urlHelper">The specified System.Web.Mvc.UrlHelper.</param>
+        /// <param name="actionName">The name of the action method.</param>
+        /// <param name="controllerName">The name of the controller.</param>
+        /// <param name="areaName">The name of the area.</param>
+        /// <param name="routeName">The name of the route.</param>
+        /// <param name="id">The value of ID in the route values.</param>
+        /// <param name="routeValues">An object that contains the parameters for a route.</param>
+        /// <param name="protocol">The protocol for the URL, such as "http" or "https".</param>
+        /// <returns>A System.Uri.</returns>
+#if NET_4X
+        public static Uri DefaultUri(this UrlHelper urlHelper, string actionName, string controllerName = "", string areaName = null, string routeName = "", string id = null, object routeValues = null, string protocol = "")
+#else
+        public static Uri DefaultUri(this IUrlHelper urlHelper, string actionName, string controllerName = "", string areaName = null, string routeName = "", string id = null, object routeValues = null, string protocol = "")
+#endif        
+        {
+            return urlHelper.ParseUri(DefaultAction(urlHelper, actionName, controllerName, areaName, routeName, id, routeValues, protocol));
+        }
+
+        public static Uri ParseUri(this IUrlHelper urlHelper, string partialUrl)
+        {
+            if (Uri.IsWellFormedUriString(partialUrl, UriKind.Absolute))
+                return new Uri(partialUrl);
+
+            var request = urlHelper.ActionContext.HttpContext.Request;
+            var relativeUri = urlHelper.Content(partialUrl);
+            var uri = new Uri(new Uri(request.Scheme + "://" + request.Host.Value), relativeUri);
+            return uri;
         }
 #endif
     }

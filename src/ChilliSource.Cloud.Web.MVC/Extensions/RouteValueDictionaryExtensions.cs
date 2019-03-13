@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -33,6 +34,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return new DictionaryAttributeHtmlContent<string, object>(dictionary);
         }
 
+        [DebuggerDisplay("{DebuggerToString()}")]
         internal class DictionaryAttributeHtmlContent<TKey, TValue> : IHtmlContent
         {
             IDictionary<TKey, TValue> _routes;
@@ -86,5 +88,5 @@ namespace ChilliSource.Cloud.Web.MVC
             }
         }
 #endif
-    }    
+    }
 }

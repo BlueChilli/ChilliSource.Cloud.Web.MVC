@@ -21,53 +21,15 @@ namespace ChilliSource.Cloud.Web.MVC
             return new UrlHelper(htmlHelper.ViewContext.RequestContext);
         }
 #else
-        public static UrlHelper GetUrlHelper(this IHtmlHelper htmlHelper)
+        public static IUrlHelper GetUrlHelper(this IHtmlHelper htmlHelper)
         {
             IServiceProvider serviceProvider = htmlHelper.ViewContext.HttpContext.RequestServices;
             var urlHelperFactory = serviceProvider.GetRequiredService<IUrlHelperFactory>();
 
             // should we use GetRequiredService<IActionContextAccessor>().ActionContext ?
             var urlHelper = urlHelperFactory.GetUrlHelper(htmlHelper.ViewContext);
-            return new UrlHelper(urlHelper);
+            return urlHelper;
         }
 #endif
     }
-
-#if !NET_4X
-    public class UrlHelper : IUrlHelper
-    {
-        IUrlHelper _inner;
-        internal UrlHelper(IUrlHelper inner)
-        {
-            _inner = inner;
-        }
-
-        public ActionContext ActionContext => _inner.ActionContext;
-
-        public string Action(UrlActionContext actionContext)
-        {
-            return _inner.Action(actionContext);
-        }
-
-        public string Content(string contentPath)
-        {
-            return _inner.Content(contentPath);
-        }
-
-        public bool IsLocalUrl(string url)
-        {
-            return _inner.IsLocalUrl(url);
-        }
-
-        public string Link(string routeName, object values)
-        {
-            return _inner.Link(routeName, values);
-        }
-
-        public string RouteUrl(UrlRouteContext routeContext)
-        {
-            return _inner.RouteUrl(routeContext);
-        }
-    }
-#endif
 }

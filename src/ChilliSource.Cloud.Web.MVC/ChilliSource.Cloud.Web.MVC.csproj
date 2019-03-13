@@ -41,17 +41,14 @@
   <ItemGroup>
     <Compile Condition="'$(TargetFramework)'!='netstandard2.0'" Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
     <PackageReference Include="ChilliSource.Core.Extensions" Version="2.0.2" />
-
-    <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="ChilliSource.Cloud.Web" Version="1.0.1" />
-    <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="ChilliSource.Cloud.Core" Version="1.0.1" />
+    <PackageReference Include="ChilliSource.Cloud.Web" Version="2.0.0-alpha0027" />    
 
     <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="ImageResizer" Version="3.4.3" />
     <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="Microsoft.AspNet.Mvc" Version="5.2.7" />
     <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="Microsoft.AspNet.Razor" Version="3.2.7" />
     <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="Microsoft.AspNet.WebPages" Version="3.2.7" />    
     <PackageReference Condition="'$(TargetFramework)'!='netstandard2.0'" Include="Microsoft.Web.Infrastructure" Version="1.0.0.0" />
-
-    <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="ChilliSource.Cloud.Web" Version="2.0.0-alpha0021" />
+    
     <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.2" />
     <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0007" />    

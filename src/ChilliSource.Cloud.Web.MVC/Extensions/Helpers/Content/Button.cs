@@ -10,7 +10,6 @@ using System.Web.Routing;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -40,11 +39,15 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="iconClasses">The CSS icon class for the button element.</param>
         /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
         /// <returns>An HTML-encoded string for the button element.</returns>
+#if NET_4X
         private static IHtmlContent Button(UrlHelper urlHelper, string actionName, string controllerName = "", string area = "", string routeName = "", string id = null, object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
+#else
+        private static IHtmlContent Button(IUrlHelper urlHelper, string actionName, string controllerName = "", string area = "", string routeName = "", string id = null, object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
+#endif        
         {
             displayText = (displayText == String.Empty) ? actionName : displayText;
             TagBuilder tag = new TagBuilder("button");
-            IHtmlContent iconTagContent = MvcHtmlStringCompatibility.Empty();            
+            IHtmlContent iconTagContent = MvcHtmlStringCompatibility.Empty();
 
             if (!String.IsNullOrEmpty(iconClasses))
             {
@@ -115,7 +118,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="confirm">JavaScript function to confirm before from post.</param>
         /// <returns>An HTML-encoded string for the button element to post form.</returns>
         /// <remarks>Uses jquery.doPost.js</remarks>
+#if NET_4X
         public static IHtmlContent ButtonPost(UrlHelper urlHelper, string actionName, string controllerName = "", string area = "", string routeName = "", string id = "", object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, string confirm = null)
+#else
+        public static IHtmlContent ButtonPost(IUrlHelper urlHelper, string actionName, string controllerName = "", string area = "", string routeName = "", string id = "", object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, string confirm = null)
+#endif        
         {
             displayText = (displayText == String.Empty) ? actionName : displayText;
             var href = urlHelper.DefaultAction(actionName, controllerName, area, routeName, id, routeValues);
@@ -163,7 +170,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="iconClasses">The CSS icon class for the button element.</param>
         /// <param name="buttonAttributes">An object that contains the HTML attributes to set for the button element.</param>
         /// <returns>An HTML-encoded string for the disabled button element.</returns>
+#if NET_4X
         public static IHtmlContent ButtonDisabled(UrlHelper urlHelper, string displayText, string helpText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
+#else
+        public static IHtmlContent ButtonDisabled(IUrlHelper urlHelper, string displayText, string helpText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null)
+#endif        
         {
             var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(buttonAttributes);
 
@@ -230,7 +241,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="dynamicData">The data to submit for HTTP request in JSON format.</param>
         /// <param name="callbackJs">JavaScript function to execute after Ajax asynchronous request succeeded.</param>
         /// <returns>An HTML-encoded string for the button element to perform Ajax asynchronous request.</returns>
+#if NET_4X
         public static IHtmlContent ButtonAjax(UrlHelper urlHelper, string target, string actionName, string controllerName = "", string area = "", string routeName = "", string id = "", object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, bool post = false, string dynamicData = "", string callbackJs= "")
+#else
+        public static IHtmlContent ButtonAjax(IUrlHelper urlHelper, string target, string actionName, string controllerName = "", string area = "", string routeName = "", string id = "", object routeValues = null, string displayText = "", string buttonClasses = "", string iconClasses = "", object buttonAttributes = null, bool post = false, string dynamicData = "", string callbackJs = "")
+#endif        
         {
             callbackJs = !String.IsNullOrEmpty(callbackJs) ? callbackJs.Trim() : String.Empty;
             callbackJs = (callbackJs.Length > 0 && !callbackJs.EndsWith(";")) ? String.Concat(callbackJs, ";") : callbackJs;

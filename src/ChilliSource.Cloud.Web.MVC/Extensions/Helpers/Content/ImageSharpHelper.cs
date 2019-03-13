@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -18,10 +19,12 @@ namespace ChilliSource.Cloud.Web.MVC
     {
         private IRemoteStorage _remoteStorage;
         private string _prefix;
+        IUrlHelper _urlHelper;
 
-        public ImageSharpHelper(IRemoteStorage remoteStorage, string prefix)
+        public ImageSharpHelper(IRemoteStorage remoteStorage, IUrlHelper urlHelper, string prefix)
         {
-            this._remoteStorage = remoteStorage;
+            _remoteStorage = remoteStorage;
+            _urlHelper = urlHelper;
 
             if (String.IsNullOrEmpty(prefix))
             {
@@ -112,13 +115,12 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="filename">The name of the image file.</param>
         /// <param name="cmd">The ImageSharpCommand.</param>
         /// <param name="alternativeImage">The alternate image if filename is empty or null.</param>
-        /// <param name="fullPath">If true returns the absolute uri eg https://www.mysite.com using BaseUrl</param>
+        /// <param name="fullPath">If true returns the absolute uri eg https://www.mysite.com</param>
         /// <returns>A Root-Relative URL with image resize query parameters for the image file in the remote storage.</returns>
         public string ImageUrl(string filename, ImageSharpCommand cmd = null, string alternativeImage = null, bool fullPath = false)
         {
             return ImageSharpQuery(ResolveFilenameToUrl(filename, alternativeImage, fullPath: fullPath), cmd);
         }
-
 
         private string ResolveFilenameToUrl(string filename, string alternativeImage = "", bool isLocal = false, bool fullPath = false)
         {
@@ -127,7 +129,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (filename.StartsWith("~"))
             {
-                return fullPath ? UriExtensions.Parse(filename).AbsoluteUri : UriExtensions.Parse(filename).AbsolutePath;
+                return fullPath ? _urlHelper.ParseUri(filename).AbsoluteUri : _urlHelper.ParseUri(filename).AbsolutePath;
             }
             else if (filename.StartsWith("http://") || filename.StartsWith("https://") || filename.StartsWith("//"))
             {
@@ -135,7 +137,7 @@ namespace ChilliSource.Cloud.Web.MVC
             }
             else
             {
-                var uri = UriExtensions.Parse($"{this._prefix}/{this._remoteStorage.GetPartialFilePath(filename)}");
+                var uri = _urlHelper.ParseUri($"{this._prefix}/{this._remoteStorage.GetPartialFilePath(filename)}");
                 return isLocal ? filename : fullPath ? uri.AbsoluteUri : uri.AbsolutePath;
             }
         }
@@ -199,7 +201,7 @@ namespace ChilliSource.Cloud.Web.MVC
             //if (cmd.AutoRotate) query.Add("autorotate", "true");
 
             //if (cmd.Blur != 0) query.Add("blur", cmd.Blur.ToString());
-            
+
             return String.Format("{0}{1}", filename, query.ToQueryString());
         }
     }
