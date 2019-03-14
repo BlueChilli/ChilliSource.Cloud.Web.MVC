@@ -195,11 +195,12 @@ namespace ChilliSource.Cloud.Web.MVC
             if (cmd.Format != ImageSharpFormat.Original) query.Add("format", cmd.Format.ToString().ToLower());
             if (!String.IsNullOrWhiteSpace(cmd.BgColor)) query.Add("bgcolor", cmd.BgColor);
 
-            //if (cmd.Quality.HasValue && cmd.Quality.Value != 90)
-            //    query.Add("quality", cmd.Quality.Value.ToString());
-            //if (cmd.Rotate.HasValue && cmd.Rotate.Value != 0) query.Add("rotate", cmd.Rotate.Value.ToString());
-            //if (cmd.AutoRotate) query.Add("autorotate", "true");
+            if (cmd.Quality.HasValue) query.Add("quality", cmd.Quality.Value.ToString());
 
+            if (cmd.Rotate.HasValue && cmd.Rotate.Value != 0) query.Add("rotate", cmd.Rotate.Value.ToString());
+            if (cmd.AutoOrient) query.Add("autoorient", "true");
+
+            //TODO: blur parameter (and implement WebProcessor)
             //if (cmd.Blur != 0) query.Add("blur", cmd.Blur.ToString());
 
             return String.Format("{0}{1}", filename, query.ToQueryString());
@@ -252,10 +253,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         public ImageRetinaScale RetinaScale { get; set; }
 
-        //TODO: quality parameter
         public int? Quality { get; set; }
 
-        //public bool AutoRotate { get; set; } = true;        
+        public bool AutoOrient { get; set; } = true;
+
+        public int? Rotate { get; set; }
 
         /// <summary>
         /// Gets the image width for retina screen.
