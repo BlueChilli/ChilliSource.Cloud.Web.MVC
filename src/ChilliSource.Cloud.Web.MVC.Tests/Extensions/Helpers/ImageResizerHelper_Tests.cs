@@ -11,19 +11,15 @@ namespace ChilliSource.Cloud.Web.MVC.Tests
 {
     public class ImageResizerHelper_Tests
     {
-        private FakeRemoteStorage _remoteStorage;
-
         public ImageResizerHelper_Tests()
         {
             GlobalWebConfiguration.Instance.BaseUrl = "https://www.mysite.com";
-            _remoteStorage = new FakeRemoteStorage();
         }
 
         [Fact]
         public void ImageUrl_ReturnsCorrectPath()
         {
-
-            var helper = new ImageResizerHelper(_remoteStorage, "~/storage");
+            var helper = new ImageResizerHelper("~/storage/default");
 
             var url = helper.ImageUrl("~/Images/logo.png");
             Assert.Equal("/Images/logo.png", url);
@@ -48,43 +44,10 @@ namespace ChilliSource.Cloud.Web.MVC.Tests
         [Fact]
         public void Image_ReturnsImageHtml()
         {
-
-            var helper = new ImageResizerHelper(_remoteStorage, "~/storage");
+            var helper = new ImageResizerHelper("~/storage/default");
 
             var image = helper.Image("Assets/123456.jpg", 200, 200);
-            Assert.Equal("<img height=\"200\" src=\"/storage/default/Assets/123456.jpg?h=200&amp;w=200&amp;autorotate=true\" width=\"200\" />", image.ToString());
-
-
-        }
-
-
-    }
-
-    internal class FakeRemoteStorage : IRemoteStorage
-    {
-        public Task DeleteAsync(string fileToDelete)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> ExistsAsync(string fileName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<FileStorageResponse> GetContentAsync(string fileName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetPartialFilePath(string fileName)
-        {
-            return $"default/{fileName}";
-        }
-
-        public Task SaveAsync(Stream stream, string fileName, string contentType)
-        {
-            throw new NotImplementedException();
+            Assert.Equal("<img height=\"200\" src=\"/storage/default/Assets/123456.jpg?h=200&amp;w=200&amp;autorotate=true\" width=\"200\" />", image.ToHtmlString());
         }
     }
 }

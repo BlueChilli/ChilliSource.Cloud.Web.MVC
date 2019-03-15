@@ -10,25 +10,21 @@ namespace ChilliSource.Cloud.Web.MVC
 {
     public class ImageResizerHelper
     {
-        private IRemoteStorage _remoteStorage;
-        private string _prefix;
+        private string _urlPrefix;
 
-        public ImageResizerHelper(IRemoteStorage remoteStorage, string prefix)
+        public ImageResizerHelper(string urlPrefix)
         {
-            this._remoteStorage = remoteStorage;
-
-            if (String.IsNullOrEmpty(prefix))
+            if (String.IsNullOrEmpty(urlPrefix))
             {
                 throw new ArgumentNullException("prefix is required");
             }
 
-            if (!prefix.StartsWith("~"))
+            if (!urlPrefix.StartsWith("~"))
             {
                 throw new ApplicationException("Prefix must be relative and start with ~");
             }
 
-            prefix = prefix.TrimEnd("/");
-            this._prefix = prefix;
+            this._urlPrefix = urlPrefix.TrimEnd("/");
         }
 
         /// <summary>
@@ -129,7 +125,7 @@ namespace ChilliSource.Cloud.Web.MVC
             }
             else
             {
-                var uri = UriExtensions.Parse($"{this._prefix}/{this._remoteStorage.GetPartialFilePath(filename)}");
+                var uri = UriExtensions.Parse($"{this._urlPrefix}/{filename}");
                 return isLocal ? filename : fullPath ? uri.AbsoluteUri : uri.AbsolutePath;
             }
         }
