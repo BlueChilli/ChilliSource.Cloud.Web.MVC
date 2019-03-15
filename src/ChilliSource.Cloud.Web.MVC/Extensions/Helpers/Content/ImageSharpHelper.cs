@@ -17,27 +17,25 @@ namespace ChilliSource.Cloud.Web.MVC
 {
     public class ImageSharpHelper
     {
-        private IRemoteStorage _remoteStorage;
-        private string _prefix;
+        private string _urlPrefix;
         IUrlHelper _urlHelper;
 
-        public ImageSharpHelper(IRemoteStorage remoteStorage, IUrlHelper urlHelper, string prefix)
+        public ImageSharpHelper(IUrlHelper urlHelper, string urlPrefix)
         {
-            _remoteStorage = remoteStorage;
             _urlHelper = urlHelper;
 
-            if (String.IsNullOrEmpty(prefix))
+            if (String.IsNullOrEmpty(urlPrefix))
             {
                 throw new ArgumentNullException("prefix is required");
             }
 
-            if (!prefix.StartsWith("~"))
+            if (!urlPrefix.StartsWith("~"))
             {
                 throw new ApplicationException("Prefix must be relative and start with ~");
             }
 
-            prefix = prefix.TrimEnd("/");
-            this._prefix = prefix;
+            urlPrefix = urlPrefix.TrimEnd("/");
+            this._urlPrefix = urlPrefix;
         }
 
         /// <summary>
@@ -137,7 +135,7 @@ namespace ChilliSource.Cloud.Web.MVC
             }
             else
             {
-                var uri = _urlHelper.ParseUri($"{this._prefix}/{this._remoteStorage.GetPartialFilePath(filename)}");
+                var uri = _urlHelper.ParseUri($"{this._urlPrefix}/{filename}");
                 return isLocal ? filename : fullPath ? uri.AbsoluteUri : uri.AbsolutePath;
             }
         }
