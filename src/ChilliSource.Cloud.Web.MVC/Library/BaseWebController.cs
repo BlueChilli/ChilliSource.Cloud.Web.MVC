@@ -23,10 +23,7 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             return new CookieTempDataProvider(useEncryption: true);
         }
-#else
-    public class BaseWebController : Controller
-    {
-#endif
+
         public BaseWebController() { }
 
         public ViewNamingConvention ViewNamingConvention { get; set; }
@@ -77,13 +74,16 @@ namespace ChilliSource.Cloud.Web.MVC
         Default = 0,
         ControllerPrefix
     }
+#endif
 
     public interface IServiceCallerSyntax<T>
     {
         IServiceCallerSyntax<T> OnSuccess(Func<ActionResult> onSuccess);
         IServiceCallerSyntax<T> OnSuccess(Func<T, ActionResult> onSuccess);
+        IServiceCallerSyntax<T> OnServiceSuccess(Func<ServiceResult<T>, ActionResult> onSuccess);
         IServiceCallerSyntax<T> OnFailure(Func<ActionResult> onFailure);
         IServiceCallerSyntax<T> OnFailure(Func<T, ActionResult> onFailure);
+        IServiceCallerSyntax<T> OnServiceFailure(Func<ServiceResult<T>, ActionResult> onFailure);
         IServiceCallerSyntax<T> Always(Func<ActionResult> always);
         IServiceCallerSyntax<T> Always(Func<T, ActionResult> always);
         ActionResult Call();
@@ -94,11 +94,15 @@ namespace ChilliSource.Cloud.Web.MVC
     {
         private Func<ServiceResult<T>> _action;
 
-        private Func<T, ActionResult> _onFailure;
+        private Func<ServiceResult<T>, ActionResult> _onFailure;
 
-        private Func<T, ActionResult> _onSuccess;
+        private Func<ServiceResult<T>, ActionResult> _onSuccess;
 
+#if NET_4X
         private readonly BaseWebController _controller;
+#else
+        private readonly Controller _controller;
+#endif
 
         private bool IgnoreModelState
         {
@@ -106,24 +110,34 @@ namespace ChilliSource.Cloud.Web.MVC
             set { _controller.HttpContext.Items["ServiceCaller_IsModelStateEvaluated"] = true; }
         }
 
+#if NET_4X
         public ServiceCaller(BaseWebController controller)
-        {
+         {
             _controller = controller;
 
             //default action for success;
             if (controller.ViewNamingConvention == ViewNamingConvention.Default)
             {
-                this.OnSuccess((response) => _controller.View(response));
+                this.OnServiceSuccess((response) => _controller.View(response.Result));
             }
             else if (controller.ViewNamingConvention == ViewNamingConvention.ControllerPrefix)
             {
                 var viewname = controller.RouteData.Values["controller"].ToString() + controller.RouteData.Values["action"].ToString();
-                this.OnSuccess((response) => _controller.View(viewname, response));
+                this.OnServiceSuccess((response) => _controller.View(viewname, response.Result));
             }
 
             //default action for failure;
             _onFailure = _onSuccess;
         }
+#else
+        public ServiceCaller(Controller controller)
+        {
+            _controller = controller;
+            this.OnServiceSuccess((response) => _controller.View(response.Result));
+            //default action for failure;
+            _onFailure = _onSuccess;
+        }
+#endif
 
         [DebuggerNonUserCode]
         public ServiceCaller<T> SetAction(Func<ServiceResult<T>> action)
@@ -142,6 +156,13 @@ namespace ChilliSource.Cloud.Web.MVC
         [DebuggerNonUserCode]
         public IServiceCallerSyntax<T> OnSuccess(Func<T, ActionResult> onSuccess)
         {
+            _onSuccess = (ServiceResult<T> result) => onSuccess(result.Result);
+            return this;
+        }
+
+        [DebuggerNonUserCode]
+        public IServiceCallerSyntax<T> OnServiceSuccess(Func<ServiceResult<T>, ActionResult> onSuccess)
+        {
             _onSuccess = onSuccess;
             return this;
         }
@@ -155,6 +176,13 @@ namespace ChilliSource.Cloud.Web.MVC
 
         [DebuggerNonUserCode]
         public IServiceCallerSyntax<T> OnFailure(Func<T, ActionResult> onFailure)
+        {
+            _onFailure = (ServiceResult<T> result) => onFailure(result.Result);
+            return this;
+        }
+
+        [DebuggerNonUserCode]
+        public IServiceCallerSyntax<T> OnServiceFailure(Func<ServiceResult<T>, ActionResult> onFailure)
         {
             _onFailure = onFailure;
             return this;
@@ -171,8 +199,8 @@ namespace ChilliSource.Cloud.Web.MVC
         [DebuggerNonUserCode]
         public IServiceCallerSyntax<T> Always(Func<T, ActionResult> always)
         {
-            _onSuccess = always;
-            _onFailure = always;
+            this.OnSuccess(always);
+            _onFailure = _onSuccess;
             return this;
         }
 
@@ -186,14 +214,13 @@ namespace ChilliSource.Cloud.Web.MVC
                 throw new ApplicationException("You need to set up the service call, and either Always or OnSuccess and OnFailure actions");
             }
 
-            var responseValue = default(T);
             if (!_controller.ModelState.IsValid && !IgnoreModelState)
             {
                 this.IgnoreModelState = true;
-                return _onFailure(responseValue);
+                return _onFailure(ServiceResult<T>.AsError(result: default(T)));
             }
+
             var response = _action();
-            responseValue = response.Result;
             if (!response.Success)
             {
                 response.AddToModelState(_controller);
@@ -202,15 +229,15 @@ namespace ChilliSource.Cloud.Web.MVC
 #if NET_4X
                     return new HttpNotFoundResult(response.Error);
 #else
-                    return new NotFoundResult();
+                    return _controller.NotFound(response.Error);
 #endif
 
                 }
                 this.IgnoreModelState = true;
-                return _onFailure(response.Result);
+                return _onFailure(response);
             }
 
-            return _onSuccess(response.Result);
+            return _onSuccess(response);
         }
     }
 
@@ -218,8 +245,10 @@ namespace ChilliSource.Cloud.Web.MVC
     {
         IServiceCallerAsyncSyntax<T> OnSuccess(Func<Task<ActionResult>> onSuccess);
         IServiceCallerAsyncSyntax<T> OnSuccess(Func<T, Task<ActionResult>> onSuccess);
+        IServiceCallerAsyncSyntax<T> OnServiceSuccess(Func<ServiceResult<T>, Task<ActionResult>> onSuccess);
         IServiceCallerAsyncSyntax<T> OnFailure(Func<Task<ActionResult>> onFailure);
         IServiceCallerAsyncSyntax<T> OnFailure(Func<T, Task<ActionResult>> onFailure);
+        IServiceCallerAsyncSyntax<T> OnServiceFailure(Func<ServiceResult<T>, Task<ActionResult>> onFailure);
         IServiceCallerAsyncSyntax<T> Always(Func<Task<ActionResult>> always);
         IServiceCallerAsyncSyntax<T> Always(Func<T, Task<ActionResult>> always);
 
@@ -245,6 +274,12 @@ namespace ChilliSource.Cloud.Web.MVC
         }
 
         [DebuggerNonUserCode]
+        public static IServiceCallerAsyncSyntax<T> OnServiceSuccess<T>(this IServiceCallerAsyncSyntax<T> caller, Func<ServiceResult<T>, ActionResult> onSuccess)
+        {
+            return caller.OnServiceSuccess(async (r) => onSuccess(r));
+        }
+
+        [DebuggerNonUserCode]
         public static IServiceCallerAsyncSyntax<T> OnFailure<T>(this IServiceCallerAsyncSyntax<T> caller, Func<ActionResult> onFailure)
         {
             return caller.OnFailure(async () => onFailure());
@@ -254,6 +289,12 @@ namespace ChilliSource.Cloud.Web.MVC
         public static IServiceCallerAsyncSyntax<T> OnFailure<T>(this IServiceCallerAsyncSyntax<T> caller, Func<T, ActionResult> onFailure)
         {
             return caller.OnFailure(async (r) => onFailure(r));
+        }
+
+        [DebuggerNonUserCode]
+        public static IServiceCallerAsyncSyntax<T> OnServiceFailure<T>(this IServiceCallerAsyncSyntax<T> caller, Func<ServiceResult<T>, ActionResult> onFailure)
+        {
+            return caller.OnServiceFailure(async (r) => onFailure(r));
         }
 
         [DebuggerNonUserCode]
@@ -276,11 +317,15 @@ namespace ChilliSource.Cloud.Web.MVC
     {
         private Func<Task<ServiceResult<T>>> _action;
 
-        private Func<T, Task<ActionResult>> _onFailure;
+        private Func<ServiceResult<T>, Task<ActionResult>> _onFailure;
 
-        private Func<T, Task<ActionResult>> _onSuccess;
+        private Func<ServiceResult<T>, Task<ActionResult>> _onSuccess;
 
+#if NET_4X
         private readonly BaseWebController _controller;
+#else
+        private readonly Controller _controller;
+#endif
 
         private bool IgnoreModelState
         {
@@ -288,24 +333,34 @@ namespace ChilliSource.Cloud.Web.MVC
             set { _controller.HttpContext.Items["ServiceCaller_IsModelStateEvaluated"] = true; }
         }
 
+#if NET_4X
         public ServiceCallerAsync(BaseWebController controller)
-        {
+         {
             _controller = controller;
 
             //default action for success;
             if (controller.ViewNamingConvention == ViewNamingConvention.Default)
             {
-                this.OnSuccess((response) => _controller.View(response));
+                this.OnServiceSuccess((response) => Task.FromResult<ActionResult>(_controller.View(response.Result)));
             }
             else if (controller.ViewNamingConvention == ViewNamingConvention.ControllerPrefix)
             {
                 var viewname = controller.RouteData.Values["controller"].ToString() + controller.RouteData.Values["action"].ToString();
-                this.OnSuccess((response) => _controller.View(viewname, response));
+                this.OnServiceSuccess((response) => Task.FromResult<ActionResult>(_controller.View(viewname, response.Result)));
             }
 
             //default action for failure;
             _onFailure = _onSuccess;
         }
+#else
+        public ServiceCallerAsync(Controller controller)
+        {
+            _controller = controller;
+            this.OnServiceSuccess((response) => Task.FromResult<ActionResult>(_controller.View(response.Result)));
+            //default action for failure;
+            _onFailure = _onSuccess;
+        }
+#endif
 
         [DebuggerNonUserCode]
         public ServiceCallerAsync<T> SetAction(Func<Task<ServiceResult<T>>> action)
@@ -324,6 +379,13 @@ namespace ChilliSource.Cloud.Web.MVC
         [DebuggerNonUserCode]
         public IServiceCallerAsyncSyntax<T> OnSuccess(Func<T, Task<ActionResult>> onSuccess)
         {
+            _onSuccess = (ServiceResult<T> result) => onSuccess(result.Result);
+            return this;
+        }
+
+        [DebuggerNonUserCode]
+        public IServiceCallerAsyncSyntax<T> OnServiceSuccess(Func<ServiceResult<T>, Task<ActionResult>> onSuccess)
+        {
             _onSuccess = onSuccess;
             return this;
         }
@@ -337,6 +399,13 @@ namespace ChilliSource.Cloud.Web.MVC
 
         [DebuggerNonUserCode]
         public IServiceCallerAsyncSyntax<T> OnFailure(Func<T, Task<ActionResult>> onFailure)
+        {
+            _onFailure = (ServiceResult<T> result) => onFailure(result.Result);
+            return this;
+        }
+
+        [DebuggerNonUserCode]
+        public IServiceCallerAsyncSyntax<T> OnServiceFailure(Func<ServiceResult<T>, Task<ActionResult>> onFailure)
         {
             _onFailure = onFailure;
             return this;
@@ -353,8 +422,8 @@ namespace ChilliSource.Cloud.Web.MVC
         [DebuggerNonUserCode]
         public IServiceCallerAsyncSyntax<T> Always(Func<T, Task<ActionResult>> always)
         {
-            _onSuccess = always;
-            _onFailure = always;
+            this.OnSuccess(always);
+            _onFailure = _onSuccess;
             return this;
         }
 
@@ -368,14 +437,13 @@ namespace ChilliSource.Cloud.Web.MVC
                 throw new ApplicationException("You need to set up the service call, and either Always or OnSuccess and OnFailure actions");
             }
 
-            var responseValue = default(T);
             if (!_controller.ModelState.IsValid && !IgnoreModelState)
             {
                 this.IgnoreModelState = true;
-                return await _onFailure(responseValue);
+                return await _onFailure(ServiceResult<T>.AsError(result: default(T)));
             }
+
             var response = await _action();
-            responseValue = response.Result;
             if (!response.Success)
             {
                 response.AddToModelState(_controller);
@@ -384,14 +452,14 @@ namespace ChilliSource.Cloud.Web.MVC
 #if NET_4X
                     return new HttpNotFoundResult(response.Error);
 #else
-                    return new NotFoundResult();
+                    return _controller.NotFound(response.Error);
 #endif
                 }
                 this.IgnoreModelState = true;
-                return await _onFailure(response.Result);
+                return await _onFailure(response);
             }
 
-            return await _onSuccess(response.Result);
+            return await _onSuccess(response);
         }
     }
 }
