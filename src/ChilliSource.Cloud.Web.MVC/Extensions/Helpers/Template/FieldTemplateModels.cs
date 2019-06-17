@@ -114,7 +114,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         RouteValueDictionary HtmlAttributes { get; set; }
 
-        IFieldInnerTemplateModel<TOptionsNew> UseOptions<TOptionsNew>(TOptionsNew options = null) where TOptionsNew : FieldTemplateOptionsBase, new();
+        IFieldInnerTemplateModel<TOptionsNew> UseOptions<TOptionsNew>(TOptionsNew options = null) where TOptionsNew : FieldTemplateOptionsBase;
         FieldTemplateOptionsBase GetOptions();
     }
 
@@ -139,23 +139,27 @@ namespace ChilliSource.Cloud.Web.MVC
     }
 
     public interface IFieldInnerTemplateModel<TOptions> : IFieldInnerTemplateModel
-        where TOptions : class, new()
+        where TOptions : class
     {
-        TOptions Options { get; set; }
+        TOptions Options { get; }
     }
 
     internal class FieldInnerTemplateModel<TOptions> : IFieldInnerTemplateModel<TOptions>
-        where TOptions : FieldTemplateOptionsBase, new()
+        where TOptions : FieldTemplateOptionsBase
     {
         FieldInnerTemplateModel _templateModel;
 
         public FieldInnerTemplateModel() : this(null, null) { }
-        public FieldInnerTemplateModel(FieldInnerTemplateModel templateModel, TOptions options = null)
+        public FieldInnerTemplateModel(FieldInnerTemplateModel templateModel, TOptions options)
         {
             _templateModel = templateModel ?? new FieldInnerTemplateModel();
-            this.Options = options ?? new TOptions();
+
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
+            this.Options = options;
         }
-        public TOptions Options { get; set; }
+        public TOptions Options { get; }
         public string Id { get => _templateModel.Id; set => _templateModel.Id = value; }
         public string Name { get => _templateModel.Name; set => _templateModel.Name = value; }
         public object Value { get => _templateModel.Value; set => _templateModel.Value = value; }
@@ -163,9 +167,12 @@ namespace ChilliSource.Cloud.Web.MVC
         public RouteValueDictionary HtmlAttributes { get => _templateModel.HtmlAttributes; set => _templateModel.HtmlAttributes = value; }
         public FieldInnerTemplateMetadata InnerMetadata { get => _templateModel.InnerMetadata; set => _templateModel.InnerMetadata = value; }
 
-        public IFieldInnerTemplateModel<TOptionsNew> UseOptions<TOptionsNew>(TOptionsNew options = null)
-            where TOptionsNew : FieldTemplateOptionsBase, new()
+        public IFieldInnerTemplateModel<TOptionsNew> UseOptions<TOptionsNew>(TOptionsNew options)
+            where TOptionsNew : FieldTemplateOptionsBase
         {
+            if (typeof(TOptions) == typeof(TOptionsNew) && Object.ReferenceEquals(options, this.Options))
+                return (IFieldInnerTemplateModel<TOptionsNew>)this;
+
             return new FieldInnerTemplateModel<TOptionsNew>(_templateModel, options: options);
         }
 
@@ -190,7 +197,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public RouteValueDictionary HtmlAttributes { get; set; }
 
         public IFieldInnerTemplateModel<TOptionsNew> UseOptions<TOptionsNew>(TOptionsNew options = null)
-            where TOptionsNew : FieldTemplateOptionsBase, new()
+            where TOptionsNew : FieldTemplateOptionsBase
         {
             return new FieldInnerTemplateModel<TOptionsNew>(this, options: options);
         }
