@@ -51,70 +51,25 @@ namespace ChilliSource.Cloud.Web.MVC
 #else
         public static Task<IHtmlContent> FieldTemplateInnerForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, FieldTemplateOptionsBase fieldOptions = null)
         {
-            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
-            ModelMetadata metadata = explorer.Metadata;
-            object model = explorer.Model;
 #endif
-            var member = expression.Body as MemberExpression;
+            if (fieldOptions == null)
+                fieldOptions = new FieldTemplateOptions();
 
-            var httpContext = html.ViewContext.HttpContext;
-            var request = httpContext.Request;
-            var name = html.NameFor(expression).ToString();
+            var templateModel = fieldOptions.CreateFieldInnerTemplateModel(html, expression);
 
-            string attemptedValue = null;
-            if (html.ViewContext.ViewData.ModelState.ContainsKey(name))
+            //Options may have changed, calling GetOptions()
+            templateModel = templateModel.GetOptions().ProcessInnerField(templateModel);    
+
+            if (templateModel.HtmlAttributes.ContainsKey("Name"))
             {
-                var kvp = html.ViewContext.ViewData.ModelState[name];
-
-#if NET_4X
-                attemptedValue = kvp.Value?.AttemptedValue;
-#else
-                attemptedValue = kvp.AttemptedValue;
-#endif
+                templateModel.Name = templateModel.HtmlAttributes["Name"].ToString();
             }
 
-            if (fieldOptions == null) fieldOptions = new FieldTemplateOptions();
-            var data = new FieldInnerTemplateModel
-            {
-                Id = html.IdFor(expression).ToString(),
-                Name = name,
-                Value = String.IsNullOrEmpty(attemptedValue) || (model != null && attemptedValue == model.ToString()) ? model : attemptedValue,
-                DisplayName = html.GetLabelTextFor(expression),
-                HtmlAttributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(fieldOptions.HtmlAttributes),
-                MemberType = typeof(TValue),
-                MemberUnderlyingType = metadata.IsNullableValueType ? Nullable.GetUnderlyingType(typeof(TValue)) : typeof(TValue)
-            }.UseOptions(fieldOptions);
-
-            if (data.HtmlAttributes.ContainsKey("Id"))
-            {
-                data.Id = data.HtmlAttributes["Id"].ToString();
-                data.HtmlAttributes.Remove("Id");
-            }
-
+            var partialPath = templateModel.GetOptions().GetViewPath();
 #if NET_4X
-            var validationAttributes = new RouteValueDictionary(html.GetUnobtrusiveValidationAttributes(data.Name, metadata));
+            return html.Partial(partialPath, templateModel).AsHtmlContent();
 #else
-            var validator = html.ViewContext.HttpContext.RequestServices.GetService<ValidationHtmlAttributeProvider>();
-            var validationAttributes = new Dictionary<string, string>();
-            validator?.AddAndTrackValidationAttributes(html.ViewContext, explorer, data.Name, validationAttributes);
-#endif
-            data.HtmlAttributes.Merge(validationAttributes);            
-
-            data = data.GetOptions().PreProcessInnerField(data, html, metadata, model, member);
-
-            //Options may have changed, calling GetOptions again
-            data = data.GetOptions().ProcessInnerField(data, html, metadata, model, member);    
-
-            if (data.HtmlAttributes.ContainsKey("Name"))
-            {
-                data.Name = data.HtmlAttributes["Name"].ToString();
-            }
-
-            var partialPath = data.GetOptions().GetViewPath();
-#if NET_4X
-            return html.Partial(partialPath, data).AsHtmlContent();
-#else
-            return html.PartialAsync(partialPath, data);
+            return html.PartialAsync(partialPath, templateModel);
 #endif
         }        
     }

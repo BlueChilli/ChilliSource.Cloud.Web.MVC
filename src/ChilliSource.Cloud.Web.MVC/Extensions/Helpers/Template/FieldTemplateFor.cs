@@ -51,9 +51,9 @@ namespace ChilliSource.Cloud.Web.MVC
             };
 
 #if NET_4X
-            return CreateTemplateContent(html, options.Template.ToString(), data, "FieldTemplates");
+            return CreateTemplateContent(html, options.Template, data);
 #else
-            return CreateTemplateContentAsync(html, options.Template.ToString(), data, "FieldTemplates");
+            return CreateTemplateContentAsync(html, options.Template, data);
 #endif
         }
 

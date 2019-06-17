@@ -11,8 +11,10 @@ using System.ComponentModel.DataAnnotations;
 using ChilliSource.Cloud.Core;
 
 #if NET_4X
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Mvc.Html;
 #else
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Routing;
@@ -22,19 +24,24 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection;
 #endif
+
 
 namespace ChilliSource.Cloud.Web.MVC
 {
 
     public class TemplateOptions
     {
+        public static TemplateType DefaultTemplateType { get; set; }
+
         public TemplateOptions()
         {
             Initialize();
         }
 
-        public TemplateType Template { get; set; }
+        TemplateType _template;
+        public TemplateType Template { get { return _template; } set { _template = value ?? throw new ArgumentNullException(nameof(Template)); } }
 
         public string Label { get; set; }
 
@@ -48,7 +55,8 @@ namespace ChilliSource.Cloud.Web.MVC
 
         protected void Initialize()
         {
-            Template = TemplateType.StandardField;
+            Template = TemplateOptions.DefaultTemplateType ??
+                        throw new ApplicationException("DefaultTemplateType needs to be set via TemplateOptions.DefaultTemplateType");
         }
     }
 
@@ -92,24 +100,6 @@ namespace ChilliSource.Cloud.Web.MVC
         ExtraLarge  //Full-width
     }
 
-    public enum InnerTemplateType
-    {
-        Default = 0,
-        Input,
-        Select,
-        Html,
-        TextArea,
-        Date,
-        DatePicker,
-        ClockPicker,
-        DateTimePicker,
-        Checkbox,
-        ReadOnly,
-        Radio,
-        RadioList,
-        File
-    }
-
     public interface IFieldInnerTemplateModel
     {
         string Id { get; set; }
@@ -120,13 +110,32 @@ namespace ChilliSource.Cloud.Web.MVC
 
         string DisplayName { get; set; }
 
-        Type MemberType { get; set; }
-        Type MemberUnderlyingType { get; set; }
+        FieldInnerTemplateMetadata InnerMetadata { get; set; }
 
         RouteValueDictionary HtmlAttributes { get; set; }
 
         IFieldInnerTemplateModel<TOptionsNew> UseOptions<TOptionsNew>(TOptionsNew options = null) where TOptionsNew : FieldTemplateOptionsBase, new();
         FieldTemplateOptionsBase GetOptions();
+    }
+
+    public class FieldInnerTemplateMetadata
+    {
+        public FieldInnerTemplateMetadata(ModelMetadata modelMetadata, object modelValue, MemberExpression memberExpression, Type memberType)
+        {
+            this.ModelMetadata = modelMetadata;
+            this.ModelValue = modelValue;
+            this.MemberExpression = memberExpression;
+
+            this.MemberType = memberType;
+            this.MemberUnderlyingType = modelMetadata.IsNullableValueType ? Nullable.GetUnderlyingType(memberType) : memberType;
+        }
+
+        public ModelMetadata ModelMetadata { get; }
+        public object ModelValue { get; }
+        public MemberExpression MemberExpression { get; }
+
+        public Type MemberType { get; }
+        public Type MemberUnderlyingType { get; }
     }
 
     public interface IFieldInnerTemplateModel<TOptions> : IFieldInnerTemplateModel
@@ -139,6 +148,7 @@ namespace ChilliSource.Cloud.Web.MVC
         where TOptions : FieldTemplateOptionsBase, new()
     {
         FieldInnerTemplateModel _templateModel;
+
         public FieldInnerTemplateModel() : this(null, null) { }
         public FieldInnerTemplateModel(FieldInnerTemplateModel templateModel, TOptions options = null)
         {
@@ -151,8 +161,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public object Value { get => _templateModel.Value; set => _templateModel.Value = value; }
         public string DisplayName { get => _templateModel.DisplayName; set => _templateModel.DisplayName = value; }
         public RouteValueDictionary HtmlAttributes { get => _templateModel.HtmlAttributes; set => _templateModel.HtmlAttributes = value; }
-        public Type MemberType { get => _templateModel.MemberType; set => _templateModel.MemberType = value; }
-        public Type MemberUnderlyingType { get => _templateModel.MemberUnderlyingType; set => _templateModel.MemberUnderlyingType = value; }
+        public FieldInnerTemplateMetadata InnerMetadata { get => _templateModel.InnerMetadata; set => _templateModel.InnerMetadata = value; }
 
         public IFieldInnerTemplateModel<TOptionsNew> UseOptions<TOptionsNew>(TOptionsNew options = null)
             where TOptionsNew : FieldTemplateOptionsBase, new()
@@ -166,7 +175,7 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 
-    internal class FieldInnerTemplateModel
+    public class FieldInnerTemplateModel
     {
         public string Id { get; set; }
 
@@ -174,8 +183,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public object Value { get; set; }
 
-        public Type MemberType { get; set; }
-        public Type MemberUnderlyingType { get; set; }
+        public FieldInnerTemplateMetadata InnerMetadata { get; set; }
 
         public string DisplayName { get; set; }
 
@@ -195,6 +203,92 @@ namespace ChilliSource.Cloud.Web.MVC
             var cast = this.UseOptions((dynamic)fieldOptions);
             return (IFieldInnerTemplateModel)cast;
         }
+    }
+
+    public abstract class FieldTemplateOptionsBase
+    {
+        protected FieldTemplateOptionsBase()
+        {
+            AutoWireUpJavascript = true;
+        }
+
+        protected FieldTemplateOptionsBase(FieldTemplateOptionsBase other)
+        {
+            this.HtmlAttributes = other.HtmlAttributes;
+            this.AutoWireUpJavascript = other.AutoWireUpJavascript;
+        }
+
+        public object HtmlAttributes { get; set; }
+
+        public bool AutoWireUpJavascript { get; set; }
+
+#if NET_4X
+        public virtual IFieldInnerTemplateModel CreateFieldInnerTemplateModel<TModel, TValue>(HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
+            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
+            object model = metadata.Model;
+#else
+        public virtual IFieldInnerTemplateModel CreateFieldInnerTemplateModel<TModel, TValue>(IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+            ModelMetadata metadata = explorer.Metadata;
+            object model = explorer.Model;
+#endif
+
+            var member = expression.Body as MemberExpression;
+            var name = html.NameFor(expression).ToString();
+
+            string attemptedValue = null;
+            if (html.ViewContext.ViewData.ModelState.ContainsKey(name))
+            {
+                var kvp = html.ViewContext.ViewData.ModelState[name];
+#if NET_4X
+                attemptedValue = kvp.Value?.AttemptedValue;
+#else
+                attemptedValue = kvp.AttemptedValue;
+#endif
+            }
+
+            var attributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(this.HtmlAttributes);
+            string dataId = null;
+            if (attributes.ContainsKey("Id"))
+            {
+                dataId = attributes["Id"].ToString();
+                attributes.Remove("Id");
+            }
+            dataId = dataId ?? html.IdFor(expression).ToString();
+
+#if NET_4X
+            var validationAttributes = new RouteValueDictionary(html.GetUnobtrusiveValidationAttributes(name, metadata));
+#else
+            var validator = html.ViewContext.HttpContext.RequestServices.GetService<ValidationHtmlAttributeProvider>();
+            var validationAttributes = new Dictionary<string, string>();
+            validator?.AddAndTrackValidationAttributes(html.ViewContext, explorer, name, validationAttributes);
+#endif
+            attributes.Merge(validationAttributes);
+
+            var innerMetadata = new FieldInnerTemplateMetadata(metadata, model, member, typeof(TValue));
+            var data = new FieldInnerTemplateModel
+            {
+                Id = dataId,
+                Name = name,
+                Value = String.IsNullOrEmpty(attemptedValue) || (model != null && attemptedValue == model.ToString()) ? model : attemptedValue,
+                DisplayName = html.GetLabelTextFor(expression),
+                HtmlAttributes = attributes,
+                InnerMetadata = innerMetadata
+            };
+
+            var templateModel = data.UseOptions(this);
+
+            return templateModel;
+        }
+
+        public virtual IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel)
+        {
+            return templateModel;
+        }
+
+        public abstract string GetViewPath();
     }
 
     public class Html_CustomOptions
@@ -219,40 +313,6 @@ namespace ChilliSource.Cloud.Web.MVC
 
     }
 
-    public abstract class FieldTemplateOptionsBase
-    {
-        protected FieldTemplateOptionsBase()
-        {
-            AutoWireUpJavascript = true;
-        }
-
-        protected FieldTemplateOptionsBase(FieldTemplateOptionsBase other)
-        {
-            this.HtmlAttributes = other.HtmlAttributes;
-            this.AutoWireUpJavascript = other.AutoWireUpJavascript;
-            this.PreAddOn = other.PreAddOn;
-            this.PostAddOn = other.PostAddOn;
-        }
-
-        public object HtmlAttributes { get; set; }
-
-        public bool AutoWireUpJavascript { get; set; }
-
-        public IHtmlContent PreAddOn { get; set; }
-
-        public IHtmlContent PostAddOn { get; set; }
-
-        public virtual IFieldInnerTemplateModel PreProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
-        {
-            /* defaults to empty */
-            return templateModel;
-        }
-
-        public abstract IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member);
-
-        public abstract string GetViewPath();
-    }
-
     public class FieldTemplateOptions : FieldTemplateOptionsBase
     {
         public FieldTemplateOptions() { }
@@ -267,10 +327,19 @@ namespace ChilliSource.Cloud.Web.MVC
             return MvcHtmlStringCompatibility.Create($"<span class=\"input-group-btn\"><button type=\"button\" class=\"btn {classes}\">{text}</button></span>");
         }
 
-        public override IFieldInnerTemplateModel PreProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
+#if NET_4X
+        public override IFieldInnerTemplateModel CreateFieldInnerTemplateModel<TModel, TValue>(HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
         {
-            var valueTypeName = templateModel.MemberUnderlyingType.Name;
-            var valueBaseType = templateModel.MemberUnderlyingType.BaseType;
+#else
+        public override IFieldInnerTemplateModel CreateFieldInnerTemplateModel<TModel, TValue>(IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        {
+#endif
+            var templateModel = base.CreateFieldInnerTemplateModel(html, expression);
+
+            var valueTypeName = templateModel.InnerMetadata.MemberUnderlyingType.Name;
+            var valueBaseType = templateModel.InnerMetadata.MemberUnderlyingType.BaseType;
+            var metadata = templateModel.InnerMetadata.ModelMetadata;
+            var member = templateModel.InnerMetadata.MemberExpression;
 
             if (metadata.IsReadOnly)
             {
@@ -335,67 +404,117 @@ namespace ChilliSource.Cloud.Web.MVC
             return templateModel;
         }
 
-        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
-        {
-            throw new NotSupportedException("ProcessInnerField method is not supported in the default FieldTemplateOptions.");
-        }
-
         public override string GetViewPath()
         {
             throw new NotSupportedException("GetViewPath method is not supported in the default FieldTemplateOptions.");
         }
     }
 
-    public class ReadonlyFieldTemplateOptions : FieldTemplateOptionsBase
+    public class InputFieldTemplateOptions : FieldTemplateOptionsBase
     {
-        public static string PartialViewLocation { get; set; } = "FieldTemplates/ReadOnly";
+        public static string PartialViewLocation { get; set; } = "FieldTemplates/Input";
 
-        public ReadonlyFieldTemplateOptions() : base() { }
-        public ReadonlyFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
+        public InputFieldTemplateOptions() : base() { }
+        public InputFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
+
+        public IHtmlContent PreAddOn { get; set; }
+
+        public IHtmlContent PostAddOn { get; set; }
 
         public override string GetViewPath()
         {
             return PartialViewLocation;
         }
 
-        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
+        public static void ResolveInputAttributes(IFieldInnerTemplateModel templateModel, string inputType)
         {
-            if (!String.IsNullOrEmpty(metadata.DisplayFormatString))
+            var metadata = templateModel.InnerMetadata.ModelMetadata;
+            var member = templateModel.InnerMetadata.MemberExpression;
+
+            PlaceholderAttribute.Resolve(metadata, templateModel.HtmlAttributes);
+            HtmlHelperExtensions.ResolveStringLength(member, templateModel.HtmlAttributes);
+            templateModel.HtmlAttributes.AddOrSkipIfExists("type", inputType);
+        }
+
+        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel)
+        {
+            var metadata = templateModel.InnerMetadata.ModelMetadata;
+            var member = templateModel.InnerMetadata.MemberExpression;
+            var modelValue = templateModel.InnerMetadata.ModelValue;
+
+            var inputType = "text";
+
+            switch (templateModel.InnerMetadata.MemberUnderlyingType.Name)
             {
-                templateModel.Value = String.Format("{" + metadata.DisplayFormatString + "}", modelValue);
+                case "Boolean":
+                    {
+                        inputType = metadata.AdditionalValues.ContainsKey("Radio") ? "radio" : "checkbox";
+                        if (HtmlHelperExtensions.ConvertAttemptedValueToBoolean(templateModel.Value))
+                        {
+                            templateModel.HtmlAttributes.AddOrSkipIfExists("checked", "checked");
+                        }
+                        templateModel.Value = Boolean.TrueString;
+                        break;
+                    }
+                case "Int32":
+                    {
+                        if (metadata.DataTypeName == null || metadata.DataTypeName == DataType.Currency.ToString())
+                        {
+                            inputType = "number";
+                        }
+                        break;
+                    }
+                case "Decimal":
+                    {
+                        if (metadata.DataTypeName == null || metadata.DataTypeName == DataType.Currency.ToString())
+                        {
+                            inputType = "number";
+                            templateModel.HtmlAttributes.Add("Step", "any");
+                        }
+                        break;
+                    }
+                default:
+                    {
+                        switch (metadata.DataTypeName)
+                        {
+                            case "Password":
+                                {
+                                    inputType = "password";
+                                    templateModel.Value = "";
+                                    break;
+                                }
+                            case "Html":
+                                {
+                                    return templateModel.UseOptions(new HtmlFieldTemplateOptions(this));
+                                }
+                            case "MultilineText":
+                                {
+                                    return templateModel.UseOptions(new TextAreaFieldTemplateOptions(this));
+                                }
+                            case "EmailAddress":
+                                {
+                                    inputType = "Email";
+                                    break;
+                                }
+                            case "Url":
+                                {
+                                    inputType = "Url";
+                                    break;
+                                }
+                        }
+                        break;
+                    }
             }
 
-            //TODO: select list support ?
-            //else if (data.Options.SelectList != null && data.Options.SelectList.Any(x => x.Value == data.Value?.ToString()))
-            //{
-            //    data.Value = data.Options.SelectList.First(x => x.Value == data.Value.ToString()).Text;
-            //}
-            //else if (data.Options.SelectList != null && data.Options.SelectList.Any(x => x.Value == data.Value.ToString()))
-            //{
-            //    data.Value = data.Options.SelectList.First(x => x.Value == data.Value.ToString()).Text;
-            //}
+            switch (metadata.DataTypeName)
+            {
+                case "Currency":
+                    this.PreAddOn = MvcHtmlStringCompatibility.Create("<span class=\"input-group-addon\">$</span>");
+                    break;
 
-            return templateModel;
-        }
-    }
+            }
 
-    public class FileFieldTemplateOptions : FieldTemplateOptionsBase
-    {
-        public static string PartialViewLocation { get; set; } = "FieldTemplates/File";
-
-        public FileFieldTemplateOptions() : base() { }
-        public FileFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
-
-        public string ButtonText { get; set; } = "Choose";
-
-        public override string GetViewPath()
-        {
-            return PartialViewLocation;
-        }
-
-        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
-        {
-            HttpPostedFileExtensionsAttribute.Resolve(metadata, templateModel.HtmlAttributes);
+            ResolveInputAttributes(templateModel, inputType);
 
             return templateModel;
         }
@@ -473,86 +592,51 @@ namespace ChilliSource.Cloud.Web.MVC
             return PartialViewLocation;
         }
 
-        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
+        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel)
         {
-            base.ProcessSelect(templateModel.MemberUnderlyingType.BaseType, metadata, templateModel);
+            var metadata = templateModel.InnerMetadata.ModelMetadata;
+            var baseType = templateModel.InnerMetadata.MemberUnderlyingType.BaseType;
+            base.ProcessSelect(baseType, metadata, templateModel);
 
             return templateModel;
         }
     }
 
-    public class RadioListFieldTemplateOptions : SelectListFieldTemplateOptionsBase
+    public class HtmlFieldTemplateOptions : FieldTemplateOptionsBase
     {
-        public static string PartialViewLocation { get; set; } = "FieldTemplates/RadioList";
+        public static string PartialViewLocation { get; set; } = "FieldTemplates/Html";
 
-        public RadioListFieldTemplateOptions() : base() { }
-        public RadioListFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
+        public HtmlFieldTemplateOptions() : base() { }
+        public HtmlFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
 
         public override string GetViewPath()
         {
             return PartialViewLocation;
         }
 
-        public RadioAttribute RadioAttribute { get; set; }
-
-        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
+        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel)
         {
-            if (this.RadioAttribute == null)
-                this.RadioAttribute = member.Member.GetCustomAttribute<RadioAttribute>() ?? new RadioAttribute();
-
-            base.ProcessSelect(templateModel.MemberUnderlyingType.BaseType, metadata, templateModel);
+            InputFieldTemplateOptions.ResolveInputAttributes(templateModel, "hidden");
 
             return templateModel;
         }
     }
 
-    public class RadioFieldTemplateOptions : FieldTemplateOptionsBase
+    public class TextAreaFieldTemplateOptions : FieldTemplateOptionsBase
     {
-        public static string PartialViewLocation { get; set; } = "FieldTemplates/Radio";
+        public static string PartialViewLocation { get; set; } = "FieldTemplates/TextArea";
 
-        public RadioFieldTemplateOptions() : base() { }
-        public RadioFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
+        public TextAreaFieldTemplateOptions() : base() { }
+        public TextAreaFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
 
         public override string GetViewPath()
         {
             return PartialViewLocation;
         }
 
-        public RadioAttribute RadioAttribute { get; set; }
-
-        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
+        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel)
         {
-            if (this.RadioAttribute == null)
-                this.RadioAttribute = member.Member.GetCustomAttribute<RadioAttribute>() ?? new RadioAttribute();
-
-            return templateModel;
-        }
-    }
-
-    public class CheckboxFieldTemplateOptions : FieldTemplateOptionsBase
-    {
-        public static string PartialViewLocation { get; set; } = "FieldTemplates/Checkbox";
-
-        public CheckboxFieldTemplateOptions() : base() { }
-        public CheckboxFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
-
-        public override string GetViewPath()
-        {
-            return PartialViewLocation;
-        }
-
-        public CheckBoxAttribute CheckBoxAttribute { get; set; }
-
-        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
-        {
-            if (HtmlHelperExtensions.ConvertAttemptedValueToBoolean(templateModel.Value))
-            {
-                templateModel.HtmlAttributes.AddOrSkipIfExists("checked", "checked");
-            }
-            templateModel.HtmlAttributes.AddOrSkipIfExists("type", "checkbox");
-
-            if (this.CheckBoxAttribute == null)
-                this.CheckBoxAttribute = member.Member.GetCustomAttribute<CheckBoxAttribute>();
+            InputFieldTemplateOptions.ResolveInputAttributes(templateModel, "text");
 
             return templateModel;
         }
@@ -572,8 +656,11 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public DateFormatAttribute DateFormatAttribute { get; set; }
 
-        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
+        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel)
         {
+            var metadata = templateModel.InnerMetadata.ModelMetadata;
+            var member = templateModel.InnerMetadata.MemberExpression;
+
             if (templateModel.Value is String)
             {
                 var dateParts = ((string)templateModel.Value).Split(',');
@@ -635,146 +722,181 @@ namespace ChilliSource.Cloud.Web.MVC
             return PartialViewLocation;
         }
 
-        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
+        public IHtmlContent PreAddOn { get; set; }
+
+        public IHtmlContent PostAddOn { get; set; }
+    }
+
+    public class ClockPickerFieldTemplateOptions : FieldTemplateOptionsBase
+    {
+        public static string PartialViewLocation { get; set; } = "FieldTemplates/ClockPicker";
+
+        public ClockPickerFieldTemplateOptions() : base() { }
+        public ClockPickerFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
+
+        public override string GetViewPath()
         {
-            return templateModel;
+            return PartialViewLocation;
         }
     }
 
-    public class InputFieldTemplateOptions : FieldTemplateOptionsBase
+    public class DateTimePickerFieldTemplateOptions : FieldTemplateOptionsBase
     {
-        public static string PartialViewLocation { get; set; } = "FieldTemplates/Input";
+        public static string PartialViewLocation { get; set; } = "FieldTemplates/DateTimePicker";
 
-        public InputFieldTemplateOptions() : base() { }
-        public InputFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
+        public DateTimePickerFieldTemplateOptions() : base() { }
+        public DateTimePickerFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
 
         public override string GetViewPath()
         {
             return PartialViewLocation;
         }
 
-        public static void ResolveInputAttributes(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member, string inputType)
+        public IHtmlContent PreAddOn { get; set; }
+
+        public IHtmlContent PostAddOn { get; set; }
+    }
+
+    public class CheckboxFieldTemplateOptions : FieldTemplateOptionsBase
+    {
+        public static string PartialViewLocation { get; set; } = "FieldTemplates/Checkbox";
+
+        public CheckboxFieldTemplateOptions() : base() { }
+        public CheckboxFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
+
+        public override string GetViewPath()
         {
-            PlaceholderAttribute.Resolve(metadata, templateModel.HtmlAttributes);
-            HtmlHelperExtensions.ResolveStringLength(member, templateModel.HtmlAttributes);
-            templateModel.HtmlAttributes.AddOrSkipIfExists("type", inputType);
+            return PartialViewLocation;
         }
 
-        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
-        {
-            var inputType = "text";
+        public CheckBoxAttribute CheckBoxAttribute { get; set; }
 
-            switch (templateModel.MemberUnderlyingType.Name)
+        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel)
+        {
+            var member = templateModel.InnerMetadata.MemberExpression;
+
+            if (HtmlHelperExtensions.ConvertAttemptedValueToBoolean(templateModel.Value))
             {
-                case "Boolean":
-                    {
-                        inputType = metadata.AdditionalValues.ContainsKey("Radio") ? "radio" : "checkbox";
-                        if (HtmlHelperExtensions.ConvertAttemptedValueToBoolean(templateModel.Value))
-                        {
-                            templateModel.HtmlAttributes.AddOrSkipIfExists("checked", "checked");
-                        }
-                        templateModel.Value = Boolean.TrueString;
-                        break;
-                    }
-                case "Int32":
-                    {
-                        if (metadata.DataTypeName == null || metadata.DataTypeName == DataType.Currency.ToString())
-                        {
-                            inputType = "number";
-                        }
-                        break;
-                    }
-                case "Decimal":
-                    {
-                        if (metadata.DataTypeName == null || metadata.DataTypeName == DataType.Currency.ToString())
-                        {
-                            inputType = "number";
-                            templateModel.HtmlAttributes.Add("Step", "any");
-                        }
-                        break;
-                    }
-                default:
-                    {
-                        switch (metadata.DataTypeName)
-                        {
-                            case "Password":
-                                {
-                                    inputType = "password";
-                                    templateModel.Value = "";
-                                    break;
-                                }
-                            case "Html":
-                                {
-                                    return templateModel.UseOptions(new HtmlFieldTemplateOptions(this));
-                                }
-                            case "MultilineText":
-                                {
-                                    return templateModel.UseOptions(new TextAreaFieldTemplateOptions(this));
-                                }
-                            case "EmailAddress":
-                                {
-                                    inputType = "Email";
-                                    break;
-                                }
-                            case "Url":
-                                {
-                                    inputType = "Url";
-                                    break;
-                                }
-                        }
-                        break;
-                    }
+                templateModel.HtmlAttributes.AddOrSkipIfExists("checked", "checked");
+            }
+            templateModel.HtmlAttributes.AddOrSkipIfExists("type", "checkbox");
+
+            if (this.CheckBoxAttribute == null)
+                this.CheckBoxAttribute = member.Member.GetCustomAttribute<CheckBoxAttribute>();
+
+            return templateModel;
+        }
+    }
+
+    public class ReadonlyFieldTemplateOptions : FieldTemplateOptionsBase
+    {
+        public static string PartialViewLocation { get; set; } = "FieldTemplates/ReadOnly";
+
+        public ReadonlyFieldTemplateOptions() : base() { }
+        public ReadonlyFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
+
+        public override string GetViewPath()
+        {
+            return PartialViewLocation;
+        }
+
+        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel)
+        {
+            var metadata = templateModel.InnerMetadata.ModelMetadata;
+            var modelValue = templateModel.InnerMetadata.ModelValue;
+
+
+            if (!String.IsNullOrEmpty(metadata.DisplayFormatString))
+            {
+                templateModel.Value = String.Format("{" + metadata.DisplayFormatString + "}", modelValue);
             }
 
-            switch (metadata.DataTypeName)
-            {
-                case "Currency":
-                    this.PreAddOn = MvcHtmlStringCompatibility.Create("<span class=\"input-group-addon\">$</span>");
-                    break;
-
-            }
-
-            ResolveInputAttributes(templateModel, htmlHelper, metadata, modelValue, member, inputType);
+            //TODO: select list support ?
+            //else if (data.Options.SelectList != null && data.Options.SelectList.Any(x => x.Value == data.Value?.ToString()))
+            //{
+            //    data.Value = data.Options.SelectList.First(x => x.Value == data.Value.ToString()).Text;
+            //}
+            //else if (data.Options.SelectList != null && data.Options.SelectList.Any(x => x.Value == data.Value.ToString()))
+            //{
+            //    data.Value = data.Options.SelectList.First(x => x.Value == data.Value.ToString()).Text;
+            //}
 
             return templateModel;
         }
     }
 
-    public class HtmlFieldTemplateOptions : FieldTemplateOptionsBase
+    public class RadioFieldTemplateOptions : FieldTemplateOptionsBase
     {
-        public static string PartialViewLocation { get; set; } = "FieldTemplates/Html";
+        public static string PartialViewLocation { get; set; } = "FieldTemplates/Radio";
 
-        public HtmlFieldTemplateOptions() : base() { }
-        public HtmlFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
+        public RadioFieldTemplateOptions() : base() { }
+        public RadioFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
 
         public override string GetViewPath()
         {
             return PartialViewLocation;
         }
 
-        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
+        public RadioAttribute RadioAttribute { get; set; }
+
+        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel)
         {
-            InputFieldTemplateOptions.ResolveInputAttributes(templateModel, htmlHelper, metadata, modelValue, member, "hidden");
+            var member = templateModel.InnerMetadata.MemberExpression;
+
+            if (this.RadioAttribute == null)
+                this.RadioAttribute = member.Member.GetCustomAttribute<RadioAttribute>() ?? new RadioAttribute();
 
             return templateModel;
         }
     }
 
-    public class TextAreaFieldTemplateOptions : FieldTemplateOptionsBase
+    public class RadioListFieldTemplateOptions : SelectListFieldTemplateOptionsBase
     {
-        public static string PartialViewLocation { get; set; } = "FieldTemplates/TextArea";
+        public static string PartialViewLocation { get; set; } = "FieldTemplates/RadioList";
 
-        public TextAreaFieldTemplateOptions() : base() { }
-        public TextAreaFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
+        public RadioListFieldTemplateOptions() : base() { }
+        public RadioListFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
 
         public override string GetViewPath()
         {
             return PartialViewLocation;
         }
 
-        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel, IHtmlHelper htmlHelper, ModelMetadata metadata, object modelValue, MemberExpression member)
+        public RadioAttribute RadioAttribute { get; set; }
+
+        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel)
         {
-            InputFieldTemplateOptions.ResolveInputAttributes(templateModel, htmlHelper, metadata, modelValue, member, "text");
+            var metadata = templateModel.InnerMetadata.ModelMetadata;
+            var member = templateModel.InnerMetadata.MemberExpression;
+            var baseType = templateModel.InnerMetadata.MemberUnderlyingType.BaseType;
+
+            if (this.RadioAttribute == null)
+                this.RadioAttribute = member.Member.GetCustomAttribute<RadioAttribute>() ?? new RadioAttribute();
+
+            base.ProcessSelect(baseType, metadata, templateModel);
+
+            return templateModel;
+        }
+    }
+
+    public class FileFieldTemplateOptions : FieldTemplateOptionsBase
+    {
+        public static string PartialViewLocation { get; set; } = "FieldTemplates/File";
+
+        public FileFieldTemplateOptions() : base() { }
+        public FileFieldTemplateOptions(FieldTemplateOptionsBase other) : base(other) { }
+
+        public string ButtonText { get; set; } = "Choose";
+
+        public override string GetViewPath()
+        {
+            return PartialViewLocation;
+        }
+
+        public override IFieldInnerTemplateModel ProcessInnerField(IFieldInnerTemplateModel templateModel)
+        {
+            var metadata = templateModel.InnerMetadata.ModelMetadata;
+            HttpPostedFileExtensionsAttribute.Resolve(metadata, templateModel.HtmlAttributes);
 
             return templateModel;
         }
