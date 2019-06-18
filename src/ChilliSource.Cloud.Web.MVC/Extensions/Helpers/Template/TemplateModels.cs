@@ -16,22 +16,30 @@ using Microsoft.AspNetCore.DataProtection;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
-    /// <summary>
-    /// To extend TemplateType create another enum eg MyTemplateType and create helpers for it
-    /// </summary>
-    public enum TemplateType
+    public interface ITemplatePathProvider
     {
-        StandardField = 1,
-        VerticalField,
-        OptionalField,
-        ModalField,
-        HiddenField,
-        PageContainerLeft,
-        PageContainerTop,
-        PageButtons,
-        PageMessage,
-        ValidationSummary,
-        Button
+        string ViewPath { get; }
+    }
+
+    public class TemplateType: ITemplatePathProvider
+    {
+        public TemplateType(string viewPath)
+        {
+            this.ViewPath = viewPath;
+        }
+
+        public virtual string ViewPath { get; }
+
+        public override bool Equals(object obj)
+        {
+            var cast = obj as TemplateType;
+            return (cast != null) && cast.ViewPath == this.ViewPath;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ViewPath?.GetHashCode() ?? 0;
+        }
     }
 
     public class Template_PageButtons

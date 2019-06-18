@@ -25,12 +25,12 @@ namespace ChilliSource.Cloud.Web.MVC
     /// <summary>
     /// Validates the extension of uploaded files.
     /// </summary>
-    public class HttpPostedFileBaseFileExtensionsAttribute : ValidationAttribute, IMetadataAware
+    public class HttpPostedFileExtensionsAttribute : ValidationAttribute, IMetadataAware
     {
         /// <summary>
         /// Validates the extension of uploaded files. Defaults allowedExtensions to jpg, jpeg, png, gif.
         /// </summary>
-        public HttpPostedFileBaseFileExtensionsAttribute()
+        public HttpPostedFileExtensionsAttribute()
         {
             Extensions = "jpg, jpeg, png, gif";
             ErrorMessage = "Field {0} is not a valid image type ({1})";
@@ -40,7 +40,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// Validates the extension of uploaded files.
         /// </summary>
         /// <param name="allowedExtensions">Allowed extensions separated by comma</param>
-        public HttpPostedFileBaseFileExtensionsAttribute(string allowedExtensions)
+        public HttpPostedFileExtensionsAttribute(string allowedExtensions)
         {
             Extensions = allowedExtensions.ToLower();
             ErrorMessage = "Field {0} is not one of following valid extensions ({1})";
@@ -52,8 +52,6 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             return Extensions.Split(',').Select(s => "." + s.Trim()).ToList();
         }
-
-
 
         public override bool IsValid(object value)
         {
@@ -87,7 +85,6 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             metadata.AdditionalValues()["FileExtensions"] = Extensions.Replace(" ", "");
         }
-
 
         public static void Resolve(ModelMetadata metadata, IDictionary<string, object> attributes)
         {

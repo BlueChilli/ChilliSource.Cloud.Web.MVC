@@ -22,92 +22,72 @@ namespace ChilliSource.Cloud.Web.MVC
         #region Container Template
 #if NET_4X
 
-        private static FieldTemplateContent CreateTemplateContent(HtmlHelper html, string template, object model, string folder = "Templates")
+        private static FieldTemplateContent CreateTemplateContent(HtmlHelper html, ITemplatePathProvider template, object model)
         {
-            var content = html.Partial($"{folder}/{template}", model).AsHtmlContent();
+            var content = html.Partial($"{template.ViewPath}", model).AsHtmlContent();
 
             return new FieldTemplateContent(content);
         }
 
-        public static IHtmlContent Template(this HtmlHelper html, TemplateType template, object model = null, string folder = "Templates")
+        public static IHtmlContent Template(this HtmlHelper html, ITemplatePathProvider template, object model = null)
         {
-            return html.Template(template.ToString(), model, folder);
+            return html.Partial($"{template.ViewPath}", model).AsHtmlContent();
         }
 
-        public static IHtmlContent Template(this HtmlHelper html, string template, object model = null, string folder = "Templates")
+        public static IDisposable ContainerTemplate(this HtmlHelper html, ITemplatePathProvider template, object model = null)
         {
-            return html.Partial($"{folder}/{template}", model).AsHtmlContent();
-        }
-
-        public static IDisposable ContainerTemplate(this HtmlHelper html, TemplateType template, object model = null, string folder = "Templates")
-        {
-            return html.ContainerTemplate(template.ToString(), model, folder);
-        }
-
-        public static IDisposable ContainerTemplate(this HtmlHelper html, string template, object model = null, string folder = "Templates")
-        {
-            var templateContent = CreateTemplateContent(html, template, model, folder);
+            var templateContent = CreateTemplateContent(html, template, model);
 
             return new DisposableWrapper(
                 () => html.ViewContext.Writer.Write(templateContent.BeginContent().ToHtmlString()),
                 () => html.ViewContext.Writer.Write(templateContent.EndContent().ToHtmlString()));
         }
 
-        public static IHtmlContent ContainerTemplateBegin(HtmlHelper html, string template, object model, string folder = "Templates")
+        public static IHtmlContent ContainerTemplateBegin(HtmlHelper html, ITemplatePathProvider template, object model)
         {
-            return CreateTemplateContent(html, template, model, folder).BeginContent();
+            return CreateTemplateContent(html, template, model).BeginContent();
         }
 
-        public static IHtmlContent ContainerTemplateEnd(HtmlHelper html, string template, object model, string folder = "Templates")
+        public static IHtmlContent ContainerTemplateEnd(HtmlHelper html, ITemplatePathProvider template, object model)
         {
-            return CreateTemplateContent(html, template, model, folder).EndContent();
+            return CreateTemplateContent(html, template, model).EndContent();
         }
 
 #else
-        private static async Task<FieldTemplateContent> CreateTemplateContentAsync(IHtmlHelper html, string template, object model, string folder = "Templates")
+        private static async Task<FieldTemplateContent> CreateTemplateContentAsync(this IHtmlHelper html, ITemplatePathProvider template, object model)
         {
-            var content = await html.PartialAsync($"{folder}/{template}", model);
+            var content = await html.PartialAsync($"{template.ViewPath}", model);
 
             return new FieldTemplateContent(content);
+        }        
+
+        public static Task<IHtmlContent> TemplateAsync(this IHtmlHelper html, ITemplatePathProvider template, object model = null)
+        {
+            return html.PartialAsync($"{template.ViewPath}", model);
         }
 
-        public static Task<IHtmlContent> TemplateAsync(this IHtmlHelper html, TemplateType template, object model = null, string folder = "Templates")
+        public static async Task<IDisposable> ContainerTemplateAsync(this IHtmlHelper html, ITemplatePathProvider template, object model = null)
         {
-            return html.TemplateAsync(template.ToString(), model, folder);
-        }
-
-        public static Task<IHtmlContent> TemplateAsync(this IHtmlHelper html, string template, object model = null, string folder = "Templates")
-        {
-            return html.PartialAsync($"{folder}/{template}", model);
-        }
-
-        public static Task<IDisposable> ContainerTemplateAsync(this IHtmlHelper html, TemplateType template, object model = null, string folder = "Templates")
-        {
-            return html.ContainerTemplateAsync(template.ToString(), model, folder);
-        }
-
-        public static async Task<IDisposable> ContainerTemplateAsync(this IHtmlHelper html, string template, object model = null, string folder = "Templates")
-        {
-            var templateContent = await CreateTemplateContentAsync(html, template, model, folder);
+            var templateContent = await CreateTemplateContentAsync(html, template, model);
 
             return new DisposableWrapper(html, () => templateContent.BeginContent(), () => templateContent.EndContent());
         }
 
-        public static async Task<IHtmlContent> ContainerTemplateBeginAsync(IHtmlHelper html, string template, object model, string folder = "Templates")
+        public static async Task<IHtmlContent> ContainerTemplateBeginAsync(IHtmlHelper html, ITemplatePathProvider template, object model)
         {
-            return (await CreateTemplateContentAsync(html, template, model, folder)).BeginContent();
+            return (await CreateTemplateContentAsync(html, template, model)).BeginContent();
         }
 
-        public static async Task<IHtmlContent> ContainerTemplateEnd(IHtmlHelper html, string template, object model, string folder = "Templates")
+        public static async Task<IHtmlContent> ContainerTemplateEnd(IHtmlHelper html, ITemplatePathProvider template, object model)
         {
-            return (await CreateTemplateContentAsync(html, template, model, folder)).EndContent();
+            return (await CreateTemplateContentAsync(html, template, model)).EndContent();
         }
 #endif
         #endregion
     }
 
     internal class FieldTemplateContent
-    {        
+    {
         IHtmlContent _beginHtmlContent;
         IHtmlContent _endHtmlContent;
 
