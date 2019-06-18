@@ -22,19 +22,19 @@ namespace ChilliSource.Cloud.Web.MVC
         #region Container Template
 #if NET_4X
 
-        private static FieldTemplateContent CreateTemplateContent(HtmlHelper html, TemplateType template, object model)
+        private static FieldTemplateContent CreateTemplateContent(HtmlHelper html, ITemplatePathProvider template, object model)
         {
             var content = html.Partial($"{template.ViewPath}", model).AsHtmlContent();
 
             return new FieldTemplateContent(content);
         }
 
-        public static IHtmlContent Template(this HtmlHelper html, TemplateType template, object model = null)
+        public static IHtmlContent Template(this HtmlHelper html, ITemplatePathProvider template, object model = null)
         {
             return html.Partial($"{template.ViewPath}", model).AsHtmlContent();
         }
 
-        public static IDisposable ContainerTemplate(this HtmlHelper html, TemplateType template, object model = null)
+        public static IDisposable ContainerTemplate(this HtmlHelper html, ITemplatePathProvider template, object model = null)
         {
             var templateContent = CreateTemplateContent(html, template, model);
 
@@ -43,42 +43,42 @@ namespace ChilliSource.Cloud.Web.MVC
                 () => html.ViewContext.Writer.Write(templateContent.EndContent().ToHtmlString()));
         }
 
-        public static IHtmlContent ContainerTemplateBegin(HtmlHelper html, TemplateType template, object model)
+        public static IHtmlContent ContainerTemplateBegin(HtmlHelper html, ITemplatePathProvider template, object model)
         {
             return CreateTemplateContent(html, template, model).BeginContent();
         }
 
-        public static IHtmlContent ContainerTemplateEnd(HtmlHelper html, TemplateType template, object model)
+        public static IHtmlContent ContainerTemplateEnd(HtmlHelper html, ITemplatePathProvider template, object model)
         {
             return CreateTemplateContent(html, template, model).EndContent();
         }
 
 #else
-        private static async Task<FieldTemplateContent> CreateTemplateContentAsync(this IHtmlHelper html, TemplateType template, object model)
+        private static async Task<FieldTemplateContent> CreateTemplateContentAsync(this IHtmlHelper html, ITemplatePathProvider template, object model)
         {
             var content = await html.PartialAsync($"{template.ViewPath}", model);
 
             return new FieldTemplateContent(content);
         }        
 
-        public static Task<IHtmlContent> TemplateAsync(this IHtmlHelper html, TemplateType template, object model = null)
+        public static Task<IHtmlContent> TemplateAsync(this IHtmlHelper html, ITemplatePathProvider template, object model = null)
         {
             return html.PartialAsync($"{template.ViewPath}", model);
         }
 
-        public static async Task<IDisposable> ContainerTemplateAsync(this IHtmlHelper html, TemplateType template, object model = null)
+        public static async Task<IDisposable> ContainerTemplateAsync(this IHtmlHelper html, ITemplatePathProvider template, object model = null)
         {
             var templateContent = await CreateTemplateContentAsync(html, template, model);
 
             return new DisposableWrapper(html, () => templateContent.BeginContent(), () => templateContent.EndContent());
         }
 
-        public static async Task<IHtmlContent> ContainerTemplateBeginAsync(IHtmlHelper html, TemplateType template, object model)
+        public static async Task<IHtmlContent> ContainerTemplateBeginAsync(IHtmlHelper html, ITemplatePathProvider template, object model)
         {
             return (await CreateTemplateContentAsync(html, template, model)).BeginContent();
         }
 
-        public static async Task<IHtmlContent> ContainerTemplateEnd(IHtmlHelper html, TemplateType template, object model)
+        public static async Task<IHtmlContent> ContainerTemplateEnd(IHtmlHelper html, ITemplatePathProvider template, object model)
         {
             return (await CreateTemplateContentAsync(html, template, model)).EndContent();
         }

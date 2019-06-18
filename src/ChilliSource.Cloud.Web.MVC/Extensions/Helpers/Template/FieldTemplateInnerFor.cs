@@ -34,43 +34,46 @@ namespace ChilliSource.Cloud.Web.MVC
 #if NET_4X
         public static IHtmlContent FieldTemplateInnerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
         {
-            return FieldTemplateInnerFor(html, expression, new FieldTemplateOptions { HtmlAttributes = htmlAttributes });
+            var fieldOptions = TemplateOptions.CreateDefaultFieldTemplateOptions();
+            fieldOptions.HtmlAttributes = htmlAttributes;
+
+            return FieldTemplateInnerFor(html, expression, fieldOptions);
         }
 #else        
         public static Task<IHtmlContent> FieldTemplateInnerForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object htmlAttributes)
         {
-            return FieldTemplateInnerForAsync(html, expression, new FieldTemplateOptions { HtmlAttributes = htmlAttributes });
+            var fieldOptions = TemplateOptions.CreateDefaultFieldTemplateOptions();
+            fieldOptions.HtmlAttributes = htmlAttributes;
+
+            return FieldTemplateInnerForAsync(html, expression, fieldOptions);
         }
 #endif
 
 #if NET_4X
-        public static IHtmlContent FieldTemplateInnerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, FieldTemplateOptionsBase fieldOptions = null)
+        public static IHtmlContent FieldTemplateInnerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, IFieldTemplateOptions fieldOptions = null)
         {
             ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
             object model = metadata.Model;
 #else
-        public static Task<IHtmlContent> FieldTemplateInnerForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, FieldTemplateOptionsBase fieldOptions = null)
+        public static Task<IHtmlContent> FieldTemplateInnerForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, IFieldTemplateOptions fieldOptions = null)
         {
 #endif
             if (fieldOptions == null)
-                fieldOptions = new FieldTemplateOptions();
+                fieldOptions = TemplateOptions.CreateDefaultFieldTemplateOptions();
 
             var templateModel = fieldOptions.CreateFieldInnerTemplateModel(html, expression);
 
             //Options may have changed, calling GetOptions()
-            templateModel = templateModel.GetOptions().ProcessInnerField(templateModel);    
+            templateModel = templateModel.GetOptions().ProcessInnerField(templateModel);
 
-            if (templateModel.HtmlAttributes.ContainsKey("Name"))
-            {
-                templateModel.Name = templateModel.HtmlAttributes["Name"].ToString();
-            }
+            //Options may have changed, calling GetOptions()
+            templateModel = templateModel.GetOptions().PostProcessInnerField(templateModel);
 
-            var partialPath = templateModel.GetOptions().GetViewPath();
 #if NET_4X
-            return html.Partial(partialPath, templateModel).AsHtmlContent();
+            return templateModel.GetOptions().Render(html, templateModel);
 #else
-            return html.PartialAsync(partialPath, templateModel);
+            return templateModel.GetOptions().RenderAsync(html, templateModel);
 #endif
-        }        
+        }
     }
 }

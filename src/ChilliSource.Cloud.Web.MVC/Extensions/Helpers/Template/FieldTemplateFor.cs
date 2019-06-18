@@ -58,15 +58,15 @@ namespace ChilliSource.Cloud.Web.MVC
         }
 
 #if NET_4X
-        public static IHtmlContent FieldTemplateFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
+        public static IHtmlContent FieldTemplateFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, IFieldTemplateLayout template)
         {
-            return FieldTemplateFor(html, expression, new TemplateOptions { Template = template }, new FieldTemplateOptions());
+            return FieldTemplateFor(html, expression, new TemplateOptions { Template = template }, TemplateOptions.CreateDefaultFieldTemplateOptions());
         }
 
-        public static IHtmlContent FieldTemplateFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null, FieldTemplateOptions fieldOptions = null)
+        public static IHtmlContent FieldTemplateFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null, IFieldTemplateOptions fieldOptions = null)
         {
             if (options == null) options = new TemplateOptions();
-            if (fieldOptions == null) fieldOptions = new FieldTemplateOptions();
+            if (fieldOptions == null) fieldOptions = TemplateOptions.CreateDefaultFieldTemplateOptions();
 
             var templateContent = CreateTemplateContent(html, expression, options);
             var templateInner = html.FieldTemplateInnerFor<TModel, TValue>(expression, fieldOptions);
@@ -74,7 +74,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return new FieldTemplateHtmlContent(templateContent, templateInner);
         }
 
-        public static IDisposable FieldTemplateOuterFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
+        public static IDisposable FieldTemplateOuterFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, IFieldTemplateLayout template)
         {
             return FieldTemplateOuterFor(html, expression, new TemplateOptions { Template = template });
         }
@@ -98,15 +98,15 @@ namespace ChilliSource.Cloud.Web.MVC
             return CreateTemplateContent(html, expression, options).EndContent();
         }
 #else
-        public static Task<IHtmlContent> FieldTemplateForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
+        public static Task<IHtmlContent> FieldTemplateForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, IFieldTemplateLayout template)
         {
-            return FieldTemplateForAsync(html, expression, new TemplateOptions { Template = template }, new FieldTemplateOptions());
+            return FieldTemplateForAsync(html, expression, new TemplateOptions { Template = template }, TemplateOptions.CreateDefaultFieldTemplateOptions());
         }
 
-        public static async Task<IHtmlContent> FieldTemplateForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null, FieldTemplateOptions fieldOptions = null)
+        public static async Task<IHtmlContent> FieldTemplateForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateOptions options = null, IFieldTemplateOptions fieldOptions = null)
         {
             if (options == null) options = new TemplateOptions();
-            if (fieldOptions == null) fieldOptions = new FieldTemplateOptions();
+            if (fieldOptions == null) fieldOptions = TemplateOptions.CreateDefaultFieldTemplateOptions();
 
             var templateContent = await CreateTemplateContentAsync(html, expression, options);
             var templateInner = await html.FieldTemplateInnerForAsync<TModel, TValue>(expression, fieldOptions);
@@ -114,7 +114,7 @@ namespace ChilliSource.Cloud.Web.MVC
             return new FieldTemplateHtmlContent(templateContent, templateInner);
         }
 
-        public static Task<IDisposable> FieldTemplateOuterForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, TemplateType template)
+        public static Task<IDisposable> FieldTemplateOuterForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, IFieldTemplateLayout template)
         {
             return FieldTemplateOuterForAsync(html, expression, new TemplateOptions { Template = template });
         }

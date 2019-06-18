@@ -16,31 +16,29 @@ using Microsoft.AspNetCore.DataProtection;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
-    public class TemplateType
+    public interface ITemplatePathProvider
     {
-        public TemplateType(string name, string viewPath)
+        string ViewPath { get; }
+    }
+
+    public class TemplateType: ITemplatePathProvider
+    {
+        public TemplateType(string viewPath)
         {
-            this.Name = name;
             this.ViewPath = viewPath;
         }
 
-        public virtual string Name { get; }
         public virtual string ViewPath { get; }
 
         public override bool Equals(object obj)
         {
             var cast = obj as TemplateType;
-            return (cast != null) && cast.Name == this.Name;
+            return (cast != null) && cast.ViewPath == this.ViewPath;
         }
 
         public override int GetHashCode()
         {
-            return this.Name?.GetHashCode() ?? 0;
-        }
-
-        public override string ToString()
-        {
-            return this.Name;
+            return this.ViewPath?.GetHashCode() ?? 0;
         }
     }
 
