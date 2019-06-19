@@ -52,8 +52,6 @@ namespace ChilliSource.Cloud.Web.MVC
 #if NET_4X
         public static IHtmlContent FieldTemplateInnerFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, IFieldTemplateOptions fieldOptions = null)
         {
-            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
-            object model = metadata.Model;
 #else
         public static Task<IHtmlContent> FieldTemplateInnerForAsync<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, IFieldTemplateOptions fieldOptions = null)
         {
