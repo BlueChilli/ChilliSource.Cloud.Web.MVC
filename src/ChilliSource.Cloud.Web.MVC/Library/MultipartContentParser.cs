@@ -4,6 +4,7 @@
 * License (MIT): https://github.com/aspnet/AspNetCore.Docs/blob/master/LICENSE-CODE
 */
 
+using ChilliSource.Cloud.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -60,7 +61,8 @@ namespace ChilliSource.Cloud.Web.MVC
                         if (HasFileContentDisposition(contentDisposition))
                         {
                             var fileName = HeaderUtilities.RemoveQuotes(!StringSegment.IsNullOrEmpty(contentDisposition.FileName) ? contentDisposition.FileName : contentDisposition.FileNameStar);
-                            var httpFile = new MultipartHttpFile(fileName.ToString(), section.ContentType, sectionStream);
+                            var readonlyStreamWrapper = ReadOnlyStreamWrapper.Create(sectionStream, s => { s?.Dispose(); }, length: null);
+                            var httpFile = new MultipartHttpFile(fileName.ToString(), section.ContentType, readonlyStreamWrapper);
 
                             var actionResult = await fileTask(httpFile, cancellationToken);
                             fileResults.Add(actionResult);
