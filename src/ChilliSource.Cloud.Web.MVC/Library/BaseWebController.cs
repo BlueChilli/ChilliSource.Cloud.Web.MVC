@@ -69,12 +69,13 @@ namespace ChilliSource.Cloud.Web.MVC
         }
     }
 
+#endif
+
     public enum ViewNamingConvention
     {
         Default = 0,
         ControllerPrefix
     }
-#endif
 
     public interface IServiceCallerSyntax<T>
     {
@@ -110,6 +111,16 @@ namespace ChilliSource.Cloud.Web.MVC
             set { _controller.HttpContext.Items["ServiceCaller_IsModelStateEvaluated"] = true; }
         }
 
+        private ViewNamingConvention NamingConvention
+        {
+            get
+            {
+                if (Enum.TryParse<ViewNamingConvention>(_controller.HttpContext.Items["ServiceCaller_ViewNamingConvention"] as string, out var convention))
+                    return convention;
+                return ViewNamingConvention.Default;
+            }
+        }
+
 #if NET_4X
         public ServiceCaller(BaseWebController controller)
          {
@@ -133,7 +144,18 @@ namespace ChilliSource.Cloud.Web.MVC
         public ServiceCaller(Controller controller)
         {
             _controller = controller;
-            this.OnServiceSuccess((response) => _controller.View(response.Result));
+
+            //default action for success;
+            if (this.NamingConvention == ViewNamingConvention.Default)
+            {
+                this.OnServiceSuccess((response) => _controller.View(response.Result));
+            }
+            else if (this.NamingConvention == ViewNamingConvention.ControllerPrefix)
+            {
+                var viewname = controller.RouteData.Values["controller"].ToString() + controller.RouteData.Values["action"].ToString();
+                this.OnServiceSuccess((response) => _controller.View(viewname, response.Result));
+            }
+
             //default action for failure;
             _onFailure = _onSuccess;
         }
@@ -330,7 +352,7 @@ namespace ChilliSource.Cloud.Web.MVC
         private bool IgnoreModelState
         {
             get { return (_controller.HttpContext.Items["ServiceCaller_IsModelStateEvaluated"] as bool?).GetValueOrDefault(false); }
-            set { _controller.HttpContext.Items["ServiceCaller_IsModelStateEvaluated"] = true; }
+            set { _controller.HttpContext.Items["ServiceCaller_IsModelStateEvaluated"] = value; }
         }
 
 #if NET_4X
