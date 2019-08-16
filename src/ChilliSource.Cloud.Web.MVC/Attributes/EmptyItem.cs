@@ -54,6 +54,13 @@ namespace ChilliSource.Cloud.Web.MVC
             }
         }
 
+        /// <summary>
+        /// Adds an empty item to a SelectListItem collection when EmptyItemAttribute is present Or the model property type is nullable.
+        /// </summary>
+        /// <param name="metadata">A ModelMetadata instance.</param>
+        /// <param name="items">A SelectListItem collection.</param>
+        /// <param name="singleEmptyItem">SelectListItem to be used when the model property type is nullable.</param>
+        /// <returns></returns>
         public static IList<SelectListItem> Resolve(ModelMetadata metadata, IEnumerable<SelectListItem> items, IEnumerable<SelectListItem> singleEmptyItem)
         {
             if (items == null) items = ArrayExtensions.EmptyArray<SelectListItem>();
@@ -74,6 +81,26 @@ namespace ChilliSource.Cloud.Web.MVC
             }
 
             return items.ToList();
+        }
+
+        /// <summary>
+        /// Adds an empty item to a SelectListItem collection only when EmptyItemAttribute is present.
+        /// </summary>
+        /// <param name="metadata">A ModelMetadata instance.</param>
+        /// <param name="items">A SelectListItem collection.</param>
+        /// <returns></returns>
+        public static IList<SelectListItem> Resolve(ModelMetadata metadata, IEnumerable<SelectListItem> items)
+        {
+            if (items == null) items = ArrayExtensions.EmptyArray<SelectListItem>();
+
+            if (!metadata.AdditionalValues().ContainsKey("EmptyItem-Text")
+                || (metadata.AdditionalValues().ContainsKey("EmptyItem-SkipSingle") && items.Count() == 1))
+            {
+                return items.ToList();
+            }
+
+            var emptyItem = new[] { new SelectListItem { Text = metadata.AdditionalValues()["EmptyItem-Text"].ToString(), Value = "" } };
+            return emptyItem.Concat(items).ToList();
         }
     }
 }

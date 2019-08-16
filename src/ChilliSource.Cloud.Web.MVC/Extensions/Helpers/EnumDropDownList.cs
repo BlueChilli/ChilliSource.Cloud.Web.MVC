@@ -71,13 +71,13 @@ namespace ChilliSource.Cloud.Web.MVC
             var modelValues = model == null ? new string[0] : model.ToString().Split(',');
             for (var i = 0; i < modelValues.Count(); i++) modelValues[i] = modelValues[i].Trim();
 
-            var items = from value in values
-                        select new SelectListItem
-                        {
-                            Text = EnumExtensions.GetDescription(value),
-                            Value = value.ToString(),
-                            Selected = modelValues.Contains(value.ToString())
-                        };
+            IList<SelectListItem> items = (from value in values
+                                           select new SelectListItem
+                                           {
+                                               Text = EnumExtensions.GetDescription(value),
+                                               Value = value.ToString(),
+                                               Selected = modelValues.Contains(value.ToString())
+                                           }).ToList();
 
             items = EmptyItemAttribute.Resolve(metadata, items, SingleEmptyItem);
             items = RemoveItemAttribute.Resolve(metadata, items);
