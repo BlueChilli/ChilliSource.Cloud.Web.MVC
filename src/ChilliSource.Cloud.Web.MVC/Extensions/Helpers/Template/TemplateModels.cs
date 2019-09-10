@@ -66,6 +66,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public bool Dropup { get; set; }
     }
 
+    [Obsolete]
     public class Template_PageMessage
     {
         public const string Success = "PageMessage_Success";

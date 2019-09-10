@@ -111,16 +111,6 @@ namespace ChilliSource.Cloud.Web.MVC
             set { _controller.HttpContext.Items["ServiceCaller_IsModelStateEvaluated"] = true; }
         }
 
-        private ViewNamingConvention NamingConvention
-        {
-            get
-            {
-                if (Enum.TryParse<ViewNamingConvention>(_controller.HttpContext.Items["ServiceCaller_ViewNamingConvention"] as string, out var convention))
-                    return convention;
-                return ViewNamingConvention.Default;
-            }
-        }
-
 #if NET_4X
         public ServiceCaller(BaseWebController controller)
          {
@@ -146,16 +136,7 @@ namespace ChilliSource.Cloud.Web.MVC
             _controller = controller;
 
             //default action for success;
-            if (this.NamingConvention == ViewNamingConvention.Default)
-            {
-                this.OnServiceSuccess((response) => _controller.View(response.Result));
-            }
-            else if (this.NamingConvention == ViewNamingConvention.ControllerPrefix)
-            {
-                var viewname = controller.RouteData.Values["controller"].ToString() + controller.RouteData.Values["action"].ToString();
-                this.OnServiceSuccess((response) => _controller.View(viewname, response.Result));
-            }
-
+            this.OnServiceSuccess((response) => _controller.View(response.Result));
             //default action for failure;
             _onFailure = _onSuccess;
         }
