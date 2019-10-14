@@ -45,7 +45,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public static IHtmlContent Link(IUrlHelper urlHelper, string actionName = "", string controllerName = "", string area = null, string routeName = "", string id = "", object routeValues = null, string displayText = "", string linkClasses = "", string iconClasses = "", object linkAttributes = null, string hostName = "", string fragment = "")
 #endif        
         {
-            displayText = String.IsNullOrEmpty(displayText) ? actionName : displayText;
+            displayText = String.IsNullOrEmpty(displayText) ? actionName.SplitByUppercase() : displayText;
             TagBuilder tag = new TagBuilder("a");
             var iconHtmlContent = MvcHtmlStringCompatibility.Empty();
 
