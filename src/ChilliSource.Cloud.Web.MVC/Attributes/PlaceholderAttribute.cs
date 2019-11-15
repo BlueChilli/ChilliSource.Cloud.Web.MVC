@@ -44,13 +44,14 @@ namespace ChilliSource.Cloud.Web.MVC
             metadata.AdditionalValues()[Key] = Value;
         }
 
-        public static string Resolve(ModelMetadata metadata, IDictionary<string, object> attributes)
+        public static string Resolve(ModelMetadata metadata, IDictionary<string, object> attributes, bool asDataAttribute = false)
         {
             if (metadata.AdditionalValues.ContainsKey(Key))
             {
                 var value = metadata.AdditionalValues()[Key] as string;
                 var placeholderText = value == null ? metadata.GetDisplayName() : value;
-                attributes.AddOrSkipIfExists("placeholder", placeholderText);
+                var attribute = asDataAttribute ? "data-placeholder" : "placeholder";
+                attributes.AddOrSkipIfExists(attribute, placeholderText);
                 return placeholderText;
             }
             return String.Empty;
