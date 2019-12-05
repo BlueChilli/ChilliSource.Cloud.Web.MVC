@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ChilliSource.Cloud.Web;
+using ChilliSource.Core.Extensions;
 
 #if NET_4X
 using System.Web.Mvc;
@@ -49,7 +50,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (metadata.AdditionalValues.ContainsKey(Key))
             {
                 var value = metadata.AdditionalValues()[Key] as string;
-                var placeholderText = value == null ? metadata.GetDisplayName() : value;
+                var placeholderText = value == null ? metadata.GetDisplayName().SplitByUppercase() : value;
                 var attribute = asDataAttribute ? "data-placeholder" : "placeholder";
                 attributes.AddOrSkipIfExists(attribute, placeholderText);
                 return placeholderText;
