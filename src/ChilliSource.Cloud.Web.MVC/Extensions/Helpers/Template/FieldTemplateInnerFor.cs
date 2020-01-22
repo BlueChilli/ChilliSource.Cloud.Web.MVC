@@ -316,6 +316,7 @@ namespace ChilliSource.Cloud.Web.MVC
                     data.HtmlAttributes.Add("multiple", "multiple");
                     var values = new List<string>();
                     var loop = (data.Value as IEnumerable).GetEnumerator();
+                    if (data.Value is string) loop = ((string)data.Value).Split(',').GetEnumerator();
                     while (loop.MoveNext()) values.Add(loop.Current.ToString());
                     data.Options.SelectList = data.Options.SelectList.ToSelectList(v => v.Value, t => t.Text, values);
                 }
