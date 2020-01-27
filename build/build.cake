@@ -451,10 +451,10 @@ Task("PublishRelease")
 			// only push the package which was created during this build run.
 			var packagePath = artifactDirectory + File(string.Concat(package, ".", nugetVersion, ".nupkg"));
 
-			GitReleaseManagerAddAssets(username, token, githubOwner, githubRepository, majorMinorPatch, packagePath);
+			//GitReleaseManagerAddAssets(username, token, githubOwner, githubRepository, majorMinorPatch, packagePath);
 		}
 
-		GitReleaseManagerClose(username, token, githubOwner, githubRepository, majorMinorPatch);
+		//GitReleaseManagerClose(username, token, githubOwner, githubRepository, majorMinorPatch);
 	}; 
 })
 .OnError(exception => {
@@ -466,7 +466,7 @@ Task("PublishRelease")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("CreateRelease")
+    //.IsDependentOn("CreateRelease")
     .IsDependentOn("PublishPackages")
     .IsDependentOn("PublishRelease")
     .Does (() =>
