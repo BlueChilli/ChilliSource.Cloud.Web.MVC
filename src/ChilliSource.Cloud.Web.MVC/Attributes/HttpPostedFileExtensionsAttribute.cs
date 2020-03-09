@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ChilliSource.Cloud.Core;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 #if NET_4X
 using System.Web.Mvc;
@@ -26,6 +27,9 @@ namespace ChilliSource.Cloud.Web.MVC
     /// Validates the extension of uploaded files.
     /// </summary>
     public class HttpPostedFileExtensionsAttribute : ValidationAttribute, IMetadataAware
+#if !NET_4X
+        , IClientModelValidator
+#endif
     {
         /// <summary>
         /// Validates the extension of uploaded files. Defaults allowedExtensions to jpg, jpeg, png, gif.
@@ -117,5 +121,12 @@ namespace ChilliSource.Cloud.Web.MVC
             }
             attributes["accept"] = String.Join(", ", mimeTypes);
         }
+
+        public void AddValidation(ClientModelValidationContext context)
+        {
+            context.Attributes.AddOrSkipIfExists("data-val", "true");
+            context.Attributes.AddOrSkipIfExists("data-val-extension", FormatErrorMessage(context.ModelMetadata.DisplayName));
+        }
+
     }
 }
