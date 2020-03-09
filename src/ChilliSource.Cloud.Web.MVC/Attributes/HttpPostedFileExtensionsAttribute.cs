@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ChilliSource.Cloud.Core;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 #if NET_4X
 using System.Web.Mvc;
@@ -17,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 #endif
@@ -122,11 +122,13 @@ namespace ChilliSource.Cloud.Web.MVC
             attributes["accept"] = String.Join(", ", mimeTypes);
         }
 
+#if !NET_4X
         public void AddValidation(ClientModelValidationContext context)
         {
             context.Attributes.AddOrSkipIfExists("data-val", "true");
             context.Attributes.AddOrSkipIfExists("data-val-extension", FormatErrorMessage(context.ModelMetadata.DisplayName));
         }
+#endif
 
     }
 }

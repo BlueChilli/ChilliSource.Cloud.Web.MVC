@@ -81,7 +81,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="collection">List of elements</param>
         /// <param name="valueFunc">Anonymous function to get the item value</param>
         /// <param name="textFunc">Anonymous function to get the display value</param>
-        /// <param name="value">Current selected values</param>
+        /// <param name="values">Current selected values</param>
         /// <returns>Converted MultiSelectList object</returns>
         public static MultiSelectList ToSelectList<T, TValue, TText>(this IEnumerable<T> collection, Func<T, TValue> valueFunc, Func<T, TText> textFunc, IEnumerable<TValue> values)
         {

@@ -51,7 +51,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         /// <param name="html"></param>
         /// <param name="section">section to be registered in for example "scripts"</param>
-        /// <param name="templateKey">To register templates that should only be rendered once
+        /// <param name="templateKey">To register templates that should only be rendered once</param>
         /// <param name="template">code template</param>
         /// <returns></returns>
 #if NET_4X
