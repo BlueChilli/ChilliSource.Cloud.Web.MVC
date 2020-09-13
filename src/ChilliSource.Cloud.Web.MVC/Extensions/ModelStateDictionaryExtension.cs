@@ -9,8 +9,11 @@ using System.Text;
 #if NET_4X
 using System.Web.Mvc;
 #else
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+#endif
+#if NETSTANDARD2_0
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 #endif
 
@@ -61,7 +64,12 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 lambdaExpression = Expression.Lambda(((UnaryExpression)lambdaExpression.Body).Operand, lambdaExpression.Parameters);
             }
+#if NETCOREAPP3_1
+            var expressionProvider = new ModelExpressionProvider(new EmptyModelMetadataProvider());
+            string expressionText = expressionProvider.GetExpressionText<TModel, object>((Expression<Func<TModel, object>>)lambdaExpression);
+#else
             string expressionText = ExpressionHelper.GetExpressionText(lambdaExpression);
+#endif
 
             foreach (var msCopy in modelState.ToArray())
             {

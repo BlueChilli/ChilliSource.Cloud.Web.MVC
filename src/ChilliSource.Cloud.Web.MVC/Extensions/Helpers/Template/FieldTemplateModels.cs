@@ -22,11 +22,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
 #endif
-
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -305,7 +306,13 @@ namespace ChilliSource.Cloud.Web.MVC
 #else
         public virtual IFieldInnerTemplateModel CreateFieldInnerTemplateModel<TModel, TValue>(IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
         {
+#if NETSTANDARD2_0
+
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+#else
+            var expressionProvider = new ModelExpressionProvider(html.MetadataProvider);
+            var explorer = expressionProvider.CreateModelExpression(html.ViewData, expression).ModelExplorer;
+#endif
             ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;
 #endif

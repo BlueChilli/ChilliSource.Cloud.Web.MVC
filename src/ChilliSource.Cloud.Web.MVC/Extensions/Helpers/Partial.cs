@@ -13,8 +13,10 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
+#endif
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 #endif
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -48,25 +50,36 @@ namespace ChilliSource.Cloud.Web.MVC
             return helper.Partial(partialViewName, model, viewData).AsHtmlContent();
         }
 #else
-        public static Task<IHtmlContent> PartialForAsync<TModel, TProperty>(this IHtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, string partialViewName)
+        public static Task<IHtmlContent> PartialForAsync<TModel, TProperty>(this IHtmlHelper<TModel> html, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, string partialViewName)
         {
-            string name = ExpressionHelper.GetExpressionText(expression);
-            object model = ExpressionMetadataProvider.FromLambdaExpression(expression, helper.ViewData, helper.MetadataProvider).Model;
+#if NETSTANDARD2_0
+
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+#else
+            var expressionProvider = new ModelExpressionProvider(html.MetadataProvider);
+            var explorer = expressionProvider.CreateModelExpression(html.ViewData, expression).ModelExplorer;
+#endif
+#if NETCOREAPP3_1
+            string htmlFieldName = expressionProvider.GetExpressionText(expression);
+#else
+            string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+#endif
+            object model = explorer.Model;
 
             string htmlFieldPrefix;
-            if (helper.ViewData.TemplateInfo.HtmlFieldPrefix != "")
+            if (html.ViewData.TemplateInfo.HtmlFieldPrefix != "")
             {
-                htmlFieldPrefix = $"{helper.ViewData.TemplateInfo.HtmlFieldPrefix}{(name == "" ? "" : "." + name)}";
+                htmlFieldPrefix = $"{html.ViewData.TemplateInfo.HtmlFieldPrefix}{(htmlFieldName == "" ? "" : "." + htmlFieldName)}";
             }
             else
             {
-                htmlFieldPrefix = name;
+                htmlFieldPrefix = htmlFieldName;
             }
 
-            var viewData = new ViewDataDictionary(helper.ViewData);
+            var viewData = new ViewDataDictionary(html.ViewData);
             viewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix;
 
-            return helper.PartialAsync(partialViewName, model, viewData);
+            return html.PartialAsync(partialViewName, model, viewData);
         }
 #endif
     }

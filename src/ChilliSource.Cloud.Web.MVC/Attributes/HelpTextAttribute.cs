@@ -9,14 +9,16 @@ using System.Text;
 #if NET_4X
 using System.Web.Mvc;
 #else
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 #endif
-
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+#endif
 namespace ChilliSource.Cloud.Web.MVC
 {
     /// <summary>
@@ -57,7 +59,13 @@ namespace ChilliSource.Cloud.Web.MVC
 #else
         public static IHtmlContent GetHelpTextFor<TModel, TValue>(IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, object transformData = null)
         {
+#if NETSTANDARD2_0
+
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+#else
+            var expressionProvider = new ModelExpressionProvider(html.MetadataProvider);
+            var explorer = expressionProvider.CreateModelExpression(html.ViewData, expression).ModelExplorer;
+#endif
             ModelMetadata metadata = explorer.Metadata;
 #endif
 

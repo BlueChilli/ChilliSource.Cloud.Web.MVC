@@ -15,8 +15,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
+#endif
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 #endif
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -45,7 +47,13 @@ namespace ChilliSource.Cloud.Web.MVC
 #else
         public static IHtmlContent ContentEditableFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression, string tag, string placeholder = "", string charactersLeftSelector = null, object htmlAttributes = null)
         {
+#if NETSTANDARD2_0
+
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+#else
+            var expressionProvider = new ModelExpressionProvider(html.MetadataProvider);
+            var explorer = expressionProvider.CreateModelExpression(html.ViewData, expression).ModelExplorer;
+#endif
             ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;
 #endif

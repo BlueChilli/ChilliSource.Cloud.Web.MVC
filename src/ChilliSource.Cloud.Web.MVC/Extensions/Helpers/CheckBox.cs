@@ -18,8 +18,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
+#endif
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 #endif
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -45,7 +47,13 @@ namespace ChilliSource.Cloud.Web.MVC
 #else
         public static IHtmlContent CheckBoxForFlagEnum<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null)
         {
+#if NETSTANDARD2_0
+
             var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
+#else
+            var expressionProvider = new ModelExpressionProvider(htmlHelper.MetadataProvider);
+            var explorer = expressionProvider.CreateModelExpression(htmlHelper.ViewData, expression).ModelExplorer;
+#endif
             ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;
 #endif

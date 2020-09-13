@@ -15,8 +15,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
+#endif
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 #endif
 
 namespace ChilliSource.Cloud.Web.MVC
@@ -28,21 +30,27 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         /// <typeparam name="TModel">The type of the model.</typeparam>
         /// <typeparam name="TProperty">The property of the value.</typeparam>
-        /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
+        /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="expression">An expression that identifies the model.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <param name="selectList">A collection of System.Web.Mvc.SelectList.</param>
         /// <returns>An HTML string for a group of buttons for enumeration values.</returns>
         /// <remarks>In almost all cases consume this function via FieldFor or FieldInnerFor and place a ButtonGroupAttribute on your property.</remarks>
 #if NET_4X
-        public static IHtmlContent ButtonGroupForEnum<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, IEnumerable<SelectListItem> selectList = null)
+        public static IHtmlContent ButtonGroupForEnum<TModel, TProperty>(this HtmlHelper<TModel> html, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, IEnumerable<SelectListItem> selectList = null)
         {
-            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
             object model = metadata.Model;
 #else
-        public static IHtmlContent ButtonGroupForEnum<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, IEnumerable<SelectListItem> selectList = null)
+        public static IHtmlContent ButtonGroupForEnum<TModel, TProperty>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TProperty>> expression, object htmlAttributes = null, IEnumerable<SelectListItem> selectList = null)
         {
-            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
+#if NETSTANDARD2_0
+
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+#else
+            var expressionProvider = new ModelExpressionProvider(html.MetadataProvider);
+            var explorer = expressionProvider.CreateModelExpression(html.ViewData, expression).ModelExplorer;
+#endif
             ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;
 #endif
@@ -58,7 +66,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 list = new SelectList(items, "Value", "Text");
             }
 
-            return MakeButtonGroup(htmlHelper, expression, htmlAttributes, metadata, model, list.ToSelectList());
+            return MakeButtonGroup(html, expression, htmlAttributes, metadata, model, list.ToSelectList());
         }
 
         /// <summary>
@@ -66,16 +74,16 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         /// <typeparam name="TModel">The type of the model.</typeparam>
         /// <typeparam name="TProperty">The property of the value.</typeparam>
-        /// <param name="htmlHelper">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
+        /// <param name="html">The System.Web.Mvc.HtmlHelper instance that this method extends.</param>
         /// <param name="expression">An expression that identifies the model.</param>
         /// <param name="trueText">Text for the true value.</param>
         /// <param name="falseText">Text for the false value.</param>
         /// <param name="htmlAttributes">An object that contains the HTML attributes.</param>
         /// <returns>An HTML string for a group of buttons for Boolean value.</returns>
 #if NET_4X
-        public static IHtmlContent ButtonGroupForBool<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string trueText = null, string falseText = null, object htmlAttributes = null)
+        public static IHtmlContent ButtonGroupForBool<TModel, TProperty>(this HtmlHelper<TModel> html, Expression<Func<TModel, TProperty>> expression, string trueText = null, string falseText = null, object htmlAttributes = null)
 #else
-        public static IHtmlContent ButtonGroupForBool<TModel, TProperty>(this IHtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string trueText = null, string falseText = null, object htmlAttributes = null)
+        public static IHtmlContent ButtonGroupForBool<TModel, TProperty>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TProperty>> expression, string trueText = null, string falseText = null, object htmlAttributes = null)
 #endif        
         {
             trueText = StringExtensions.DefaultTo(trueText, bool.TrueString);
@@ -85,15 +93,21 @@ namespace ChilliSource.Cloud.Web.MVC
             var list = values.ToSelectList(names);
 
 #if NET_4X
-            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
+            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
             object model = metadata.Model;
 #else
-            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, htmlHelper.ViewData, htmlHelper.MetadataProvider);
+#if NETSTANDARD2_0
+
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+#else
+            var expressionProvider = new ModelExpressionProvider(html.MetadataProvider);
+            var explorer = expressionProvider.CreateModelExpression(html.ViewData, expression).ModelExplorer;
+#endif
             ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;
 #endif
 
-            return MakeButtonGroup(htmlHelper, expression, htmlAttributes, metadata, model, list);
+            return MakeButtonGroup(html, expression, htmlAttributes, metadata, model, list);
         }
 
         //todo process htmlAttributes

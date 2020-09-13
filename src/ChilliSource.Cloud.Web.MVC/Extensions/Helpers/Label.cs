@@ -10,8 +10,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.DataProtection;
+#endif
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 #endif
 
 
@@ -33,11 +35,23 @@ namespace ChilliSource.Cloud.Web.MVC
 #else
         public static string GetLabelTextFor<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
         {
-            ModelMetadata metadata = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider).Metadata;
+#if NETSTANDARD2_0
+
+            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+#else
+            var expressionProvider = new ModelExpressionProvider(html.MetadataProvider);
+            var explorer = expressionProvider.CreateModelExpression(html.ViewData, expression).ModelExplorer;
+#endif
+            ModelMetadata metadata = explorer.Metadata;
 #endif
 
             string labelText = (metadata.AdditionalValues.SingleOrDefault(m => (string)m.Key == LabelAttribute.Key).Value as string);
+
+#if NETCOREAPP3_1
+            string htmlFieldName = expressionProvider.GetExpressionText(expression);
+#else
             string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+#endif
             return labelText ?? metadata.DisplayName ?? metadata.PropertyName.ToSentenceCase(true) ?? htmlFieldName.Split('.').Last();
         }
     }
