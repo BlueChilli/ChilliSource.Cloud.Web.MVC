@@ -252,6 +252,7 @@ Setup((context) =>
         }
         else
         {
+			 Information(@"IsLocal: {0}, IsRepository: {1}, projectName: {2}, project: {3}", local, isRepository, projectName, project);
              Information("Not running on TeamCity");
         }		
 
@@ -480,8 +481,11 @@ Task("Default")
 // Used to test Setup / Teardown
 Task("None")
 	.Does(() => {
-		Information(@"IsLocal: {0}, IsRepository: {1}, projectName: {2}, productName: {3}", local, isRepository, projectName, productName);
+		Information("local: " + local); 
 		Information("isPullRequest: " + isPullRequest); 
+		Information("isRepository: " + isRepository); 
+		Information("productName: " + productName); 
+		Information("projectName: " + projectName); 
 	});
 
 //////////////////////////////////////////////////////////////////////
