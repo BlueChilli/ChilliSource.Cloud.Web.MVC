@@ -174,7 +174,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="filename">The name of the image file.</param>
         /// <param name="cmd">The ImageSharpCommand.</param>
         /// <returns>An image file name with image resize query parameters appended.</returns>
-        public string ImageSharpQuery(string filename, ImageSharpCommand cmd)
+        public static string ImageSharpQuery(string filename, ImageSharpCommand cmd)
         {
             if (cmd == null || (cmd.Height == null && cmd.Width == null))
                 return filename;
