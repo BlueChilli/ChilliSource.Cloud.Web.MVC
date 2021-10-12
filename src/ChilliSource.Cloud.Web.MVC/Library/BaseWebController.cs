@@ -71,6 +71,11 @@ namespace ChilliSource.Cloud.Web.MVC
 
 #endif
 
+    public static class ServiceCallerOptions
+    {
+        public static ViewNamingConvention ViewNamingConvention;
+    }
+
     public enum ViewNamingConvention
     {
         Default = 0,
@@ -103,6 +108,7 @@ namespace ChilliSource.Cloud.Web.MVC
         private readonly BaseWebController _controller;
 #else
         private readonly Controller _controller;
+
 #endif
 
         private bool IgnoreModelState
@@ -136,7 +142,15 @@ namespace ChilliSource.Cloud.Web.MVC
             _controller = controller;
 
             //default action for success;
-            this.OnServiceSuccess((response) => _controller.View(response.Result));
+            if (ServiceCallerOptions.ViewNamingConvention == ViewNamingConvention.Default)
+            {
+                this.OnServiceSuccess((response) => _controller.View(response.Result));
+            }
+            else if (ServiceCallerOptions.ViewNamingConvention == ViewNamingConvention.ControllerPrefix)
+            {
+                var viewname = controller.RouteData.Values["controller"].ToString() + controller.RouteData.Values["action"].ToString();
+                this.OnServiceSuccess((response) => _controller.View(viewname, response.Result));
+            }
             //default action for failure;
             _onFailure = _onSuccess;
         }
@@ -338,7 +352,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
 #if NET_4X
         public ServiceCallerAsync(BaseWebController controller)
-         {
+        {
             _controller = controller;
 
             //default action for success;
@@ -359,7 +373,18 @@ namespace ChilliSource.Cloud.Web.MVC
         public ServiceCallerAsync(Controller controller)
         {
             _controller = controller;
-            this.OnServiceSuccess((response) => Task.FromResult<ActionResult>(_controller.View(response.Result)));
+
+            //default action for success;
+            if (ServiceCallerOptions.ViewNamingConvention == ViewNamingConvention.Default)
+            {
+                this.OnServiceSuccess((response) => Task.FromResult<ActionResult>(_controller.View(response.Result)));
+            }
+            else if (ServiceCallerOptions.ViewNamingConvention == ViewNamingConvention.ControllerPrefix)
+            {
+                var viewname = controller.RouteData.Values["controller"].ToString() + controller.RouteData.Values["action"].ToString();
+                this.OnServiceSuccess((response) => Task.FromResult<ActionResult>(_controller.View(viewname, response.Result)));
+            }
+
             //default action for failure;
             _onFailure = _onSuccess;
         }
