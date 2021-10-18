@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ChilliSource.Core.Extensions;
 
 #if NET_4X
 using System.Web.Mvc;

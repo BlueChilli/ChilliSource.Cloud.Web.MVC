@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using EnumHelper = ChilliSource.Core.Extensions.EnumHelper;
 #if NET_4X
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
@@ -174,7 +175,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (!attributes.ContainsKey("data-submitted")) attributes["data-submitted"] = "false";
 
             var method = FormMethod.Post;
-            if (attributes.ContainsKey("method")) method = EnumExtensions.Parse<FormMethod>(attributes["method"].ToString());
+            if (attributes.ContainsKey("method")) method = EnumHelper.Parse<FormMethod>(attributes["method"].ToString());
 
             return htmlHelper.BeginForm(menuNode.Action, menuNode.Controller, method, attributes);
         }

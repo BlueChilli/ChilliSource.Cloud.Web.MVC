@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using ChilliSource.Core.Extensions;
 
 #if NET_4X
 using System.Web.Mvc;

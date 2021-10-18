@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ChilliSource.Cloud.Core;
+using ChilliSource.Core.Extensions;
 
 #if NET_4X
 using System.Web.Mvc;

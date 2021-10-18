@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using EnumHelper = ChilliSource.Core.Extensions.EnumHelper;
 
 #if NET_4X
 using System.Web.Mvc;
@@ -74,14 +75,14 @@ namespace ChilliSource.Cloud.Web.MVC
 #endif
 
             Type enumType = Nullable.GetUnderlyingType(metadata.ModelType) ?? metadata.ModelType;
-            var values = EnumExtensions.GetValues(enumType).Cast<Enum>();
+            var values = EnumHelper.GetValues(enumType).Cast<Enum>();
             var modelValues = model == null ? new string[0] : model.ToString().Split(',');
             for (var i = 0; i < modelValues.Count(); i++) modelValues[i] = modelValues[i].Trim();
 
             IList<SelectListItem> items = (from value in values
                                            select new SelectListItem
                                            {
-                                               Text = EnumExtensions.GetDescription(value),
+                                               Text = value.GetDescription(),
                                                Value = value.ToString(),
                                                Selected = modelValues.Contains(value.ToString())
                                            }).ToList();

@@ -6,6 +6,7 @@ using System.Web;
 using ChilliSource.Cloud.Web;
 using ChilliSource.Core.Extensions;
 using ChilliSource.Cloud.Core;
+using EnumHelper = ChilliSource.Core.Extensions.EnumHelper;
 
 #if NET_4X
 using System.Web.Mvc;
@@ -56,7 +57,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             Type enumType = Nullable.GetUnderlyingType(metadata.ModelType) ?? metadata.ModelType;
             var values = Enum.GetNames(enumType);
-            var names = EnumExtensions.GetDescriptions(enumType);
+            var names = EnumHelper.GetDescriptions(enumType);
             var list = values.ToSelectList(names);
             var items = RemoveItemAttribute.Resolve(metadata, list.ToList());
             list = list.ToSelectList();
