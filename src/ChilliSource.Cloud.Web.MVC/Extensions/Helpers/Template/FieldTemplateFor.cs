@@ -47,7 +47,8 @@ namespace ChilliSource.Cloud.Web.MVC
                 IsMandatory = options.IsMandatory ?? isMandatory,
                 HelpText = options.HelpText,
                 FieldColumnSize = options.FieldColumnSize,
-                FieldSize = options.FieldSize
+                FieldSize = options.FieldSize,
+                HtmlAttributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(options.HtmlAttributes)
             };
 
 #if NET_4X

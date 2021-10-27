@@ -57,7 +57,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Attributes merged into the outer tag of the template
         /// </summary>
-        public RouteValueDictionary HtmlAttributes { get; set; } = new RouteValueDictionary();
+        public object HtmlAttributes { get; set; }
 
         protected void Initialize()
         {
@@ -125,6 +125,8 @@ namespace ChilliSource.Cloud.Web.MVC
         public int? FieldColumnSize { get; set; }
 
         public FieldTemplateSize? FieldSize { get; set; }
+
+        public RouteValueDictionary HtmlAttributes { get; set; }
 
         public static string GetFieldSize(FieldTemplateSize size)
         {
