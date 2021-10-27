@@ -54,6 +54,11 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public bool? IsMandatory { get; set; }
 
+        /// <summary>
+        /// Attributes merged into the outer tag of the template
+        /// </summary>
+        public object HtmlAttributes { get; set; }
+
         protected void Initialize()
         {
             Template = DefaultFieldTemplateLayout?.Invoke() ??
