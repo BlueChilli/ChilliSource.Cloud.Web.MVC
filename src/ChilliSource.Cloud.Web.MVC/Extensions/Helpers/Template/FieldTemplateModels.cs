@@ -57,7 +57,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Attributes merged into the outer tag of the template
         /// </summary>
-        public object HtmlAttributes { get; set; }
+        public object HtmlAttributes { get; set; } = new RouteValueDictionary();
 
         protected void Initialize()
         {
