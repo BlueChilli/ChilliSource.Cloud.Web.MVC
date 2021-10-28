@@ -50,11 +50,13 @@ namespace ChilliSource.Cloud.Web.MVC
                 var count = 0;
                 foreach (var key in keys)
                 {
+                    var value = _routes[key];
+                    if (value == null) continue;
+
                     var keyStr = key.ToString();
                     writer.Write(keyStr);
                     writer.Write("=\"");
 
-                    var value = _routes[key];
                     if (value is IHtmlContent)
                     {
                         (value as IHtmlContent).WriteTo(writer, encoder);
