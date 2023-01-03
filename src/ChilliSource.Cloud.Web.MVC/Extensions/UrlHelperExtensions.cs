@@ -150,7 +150,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="urlHelper">The specified System.Web.Mvc.UrlHelper.</param>
         /// <param name="controller">The specified controller name.</param>
         /// <param name="area">The specified area name.</param>
-        /// <returns>Trhe when the specified area and controller names are same as area and controller names in System.Web.Mvc.UrlHelper, otherwise false.</returns>
+        /// <returns>True when the specified area and controller names are same as area and controller names in System.Web.Mvc.UrlHelper, otherwise false.</returns>
 #if NET_4X
         public static bool IsCurrent(this UrlHelper urlHelper, string controller, string area)
 #else
@@ -159,6 +159,47 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             return IsCurrentArea(urlHelper, area) && IsCurrentController(urlHelper, controller);
         }
+
+#if !NET_4X
+        /// <summary>
+        /// Checks if the route data's area, controller and action names are the same as area, controller and action names in System.Web.Mvc.UrlHelper.
+        /// </summary>
+        /// <param name="urlHelper">The specified System.Web.Mvc.UrlHelper.</param>
+        /// <param name="routeData">The specified route data.</param>
+        /// <returns>True when matching, otherwise false.</returns>
+        public static bool IsCurrent(this IUrlHelper urlHelper, IReadOnlyDictionary<string, object> routeData)
+        {
+            var rvd = new RouteValueDictionary(routeData);
+            var area = RouteHelper.CurrentArea(rvd);
+            var controller = RouteHelper.CurrentController(rvd);
+            var action = RouteHelper.CurrentAction(rvd);
+
+            if (urlHelper.IsCurrentArea(area))
+            {
+                if (urlHelper.IsCurrentController(controller))
+                {
+                    return urlHelper.IsCurrentAction(action);
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the specified action name is same as area name in System.Web.Mvc.UrlHelper.
+        /// </summary>
+        /// <param name="urlHelper">The specified System.Web.Mvc.UrlHelper.</param>
+        /// <param name="actionName">>The specified action name.</param>
+        /// <returns>True when the specified action name is same as action name in System.Web.Mvc.UrlHelper, otherwise false.</returns>
+        public static bool IsCurrentAction(this IUrlHelper urlHelper, string actionName)
+        {
+            if (actionName == null)
+            {
+                actionName = "";
+            }
+            return actionName.Equals(urlHelper.CurrentAction(), StringComparison.OrdinalIgnoreCase);
+        }
+#endif
 
         /// <summary>
         /// Checks if the specified area name is same as area name in System.Web.Mvc.UrlHelper.
