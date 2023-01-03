@@ -28,8 +28,8 @@
 
   <ItemGroup>
     <Compile Condition="'$(TargetFramework)'=='net472'" Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
-    <PackageReference Include="ChilliSource.Core.Extensions" Version="2.0.3-alpha0027" />
-    <PackageReference Include="ChilliSource.Cloud.Web" Version="2.0.0-alpha0036" />    
+    <PackageReference Include="ChilliSource.Core.Extensions" Version="2.0.4-alpha0002" />
+    <PackageReference Include="ChilliSource.Cloud.Web" Version="2.0.0-alpha0042" />    
 
     <PackageReference Condition="'$(TargetFramework)'=='net472'" Include="ImageResizer" Version="3.4.3" />
     <PackageReference Condition="'$(TargetFramework)'=='net472'" Include="Microsoft.AspNet.Mvc" Version="5.2.7" />
@@ -40,9 +40,8 @@
 
     <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="SixLabors.ImageSharp.Web" Version="1.0.0-beta0007" />
-    <PackageReference Condition="'$(TargetFramework)'=='net6.0'" Include="SixLabors.ImageSharp.Web" Version="1.0.0" />
+    <PackageReference Condition="'$(TargetFramework)'=='net6.0'" Include="SixLabors.ImageSharp.Web" Version="2.0.1" />
 
   </ItemGroup>
 
