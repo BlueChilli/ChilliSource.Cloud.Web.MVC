@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 // ADDINS
 //////////////////////////////////////////////////////////////////////
 
-#addin "Cake.FileHelpers"
+#addin "Cake.FileHelpers&version=3.3.0"
 #addin "nuget:?package=Cake.Incubator&version=2.0.2"
 
 #addin "nuget:?package=Newtonsoft.Json"
@@ -214,7 +214,7 @@ Action<string> build = (solution) =>
 			  	.SetVerbosity(Verbosity.Minimal)
 				.SetNodeReuse(false);
 				
-				settings.ToolVersion = MSBuildToolVersion.VS2019;
+				settings.ToolVersion = MSBuildToolVersion.VS2022;
 
 				var msBuildLogger = GetMSBuildLoggerArguments();
 			
@@ -411,7 +411,7 @@ Task("CreateRelease")
 			throw new Exception("The GITHUB_TOKEN environment variable is not defined.");
 		}
 
-		GitReleaseManagerCreate(username, token, githubOwner, githubRepository, new GitReleaseManagerCreateSettings {
+		GitReleaseManagerCreate(token, githubOwner, githubRepository, new GitReleaseManagerCreateSettings {
 			Milestone         = majorMinorPatch,
 			Name              = majorMinorPatch,
 			Prerelease        = true,
@@ -454,10 +454,10 @@ Task("PublishRelease")
 			// only push the package which was created during this build run.
 			var packagePath = artifactDirectory + File(string.Concat(package, ".", nugetVersion, ".nupkg"));
 
-			GitReleaseManagerAddAssets(username, token, githubOwner, githubRepository, majorMinorPatch, packagePath);
+			GitReleaseManagerAddAssets(token, githubOwner, githubRepository, majorMinorPatch, packagePath);
 		}
 
-		GitReleaseManagerClose(username, token, githubOwner, githubRepository, majorMinorPatch);
+		GitReleaseManagerClose(token, githubOwner, githubRepository, majorMinorPatch);
 	}; 
 })
 .OnError(exception => {
