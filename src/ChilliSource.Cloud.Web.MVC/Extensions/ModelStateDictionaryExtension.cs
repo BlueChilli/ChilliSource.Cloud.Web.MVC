@@ -64,7 +64,7 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 lambdaExpression = Expression.Lambda(((UnaryExpression)lambdaExpression.Body).Operand, lambdaExpression.Parameters);
             }
-#if NETCOREAPP3_1
+#if NETCOREAPP
             var expressionProvider = new ModelExpressionProvider(new EmptyModelMetadataProvider());
             string expressionText = expressionProvider.GetExpressionText<TModel, object>((Expression<Func<TModel, object>>)lambdaExpression);
 #else

@@ -47,7 +47,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             string labelText = (metadata.AdditionalValues.SingleOrDefault(m => (string)m.Key == LabelAttribute.Key).Value as string);
 
-#if NETCOREAPP3_1
+#if NETCOREAPP
             string htmlFieldName = expressionProvider.GetExpressionText(expression);
 #else
             string htmlFieldName = ExpressionHelper.GetExpressionText(expression);

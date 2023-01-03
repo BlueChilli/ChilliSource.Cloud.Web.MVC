@@ -5,8 +5,8 @@ using System.Text.RegularExpressions;
 // ADDINS
 //////////////////////////////////////////////////////////////////////
 
-#addin "Cake.FileHelpers&version=3.3.0"
-#addin "nuget:?package=Cake.Incubator&version=2.0.2"
+#addin "Cake.FileHelpers&version=4.0.1"
+#addin "nuget:?package=Cake.Incubator&version=6.0.0"
 
 #addin "nuget:?package=Newtonsoft.Json"
 //////////////////////////////////////////////////////////////////////
@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 //////////////////////////////////////////////////////////////////////
 
 #tool "GitReleaseManager"
-#tool "nuget:?package=GitVersion.CommandLine&version=4.0.0"
+#tool "nuget:?package=GitVersion.CommandLine&version=5.8.1"
 #tool "GitLink"
 using Cake.Common.Build.TeamCity;
 using Cake.Core.IO;

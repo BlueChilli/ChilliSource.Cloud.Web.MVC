@@ -59,7 +59,7 @@ namespace ChilliSource.Cloud.Web.MVC
             var expressionProvider = new ModelExpressionProvider(html.MetadataProvider);
             var explorer = expressionProvider.CreateModelExpression(html.ViewData, expression).ModelExplorer;
 #endif
-#if NETCOREAPP3_1
+#if NETCOREAPP
             string htmlFieldName = expressionProvider.GetExpressionText(expression);
 #else
             string htmlFieldName = ExpressionHelper.GetExpressionText(expression);
