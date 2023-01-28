@@ -1,13 +1,4 @@
-﻿using ChilliSource.Cloud.Core;
-using Moq;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Hosting;
-using Xunit;
-
-namespace ChilliSource.Cloud.Web.MVC.Tests
+﻿namespace ChilliSource.Cloud.Web.MVC.Tests
 {
     public class PhoneNumberAttribute_Tests
     {

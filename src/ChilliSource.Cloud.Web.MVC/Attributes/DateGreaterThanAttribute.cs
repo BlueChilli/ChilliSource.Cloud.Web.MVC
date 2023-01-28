@@ -7,15 +7,7 @@ using System.ComponentModel;
 using ChilliSource.Core.Extensions;
 using ChilliSource.Cloud.Core;
 
-#if NET_4X
-using System.Web.Mvc;
-#else
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -24,11 +16,7 @@ namespace ChilliSource.Cloud.Web.MVC
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
     public class DateGreaterThanAttribute : ValidationAttribute
-#if NET_4X
-        , IClientValidatable
-#else
         , IClientModelValidator
-#endif
     {
         /// <summary>
         /// (Optional) Set this if you want to use the unaltered DisplayName attribute value in the error message
@@ -87,26 +75,11 @@ namespace ChilliSource.Cloud.Web.MVC
             return String.Format("{0} must be greater than {1}", displayName, otherPropertyDisplayName);
         }
 
-#if NET_4X
-        public IEnumerable<ModelClientValidationRule> GetClientValidationRules(ModelMetadata metadata, ControllerContext context)
-        {
-            var rule = new ModelClientValidationRule()
-            {
-                ValidationType = "greaterthan",
-                ErrorMessage = GetErrorMessage(metadata.DisplayName, metadata.ContainerType)
-            };
-
-            rule.ValidationParameters["other"] = OtherProperty;
-            yield return rule;
-        }
-#else
         public void AddValidation(ClientModelValidationContext context)
         {
             context.Attributes.AddOrSkipIfExists("data-val", "true");
             context.Attributes.AddOrSkipIfExists("data-val-greaterthan", GetErrorMessage(context.ModelMetadata.DisplayName, context.ModelMetadata.ContainerType));
             context.Attributes.AddOrSkipIfExists("data-val-greaterthan-other", this.OtherProperty);
         }
-#endif
-
     }
 }
