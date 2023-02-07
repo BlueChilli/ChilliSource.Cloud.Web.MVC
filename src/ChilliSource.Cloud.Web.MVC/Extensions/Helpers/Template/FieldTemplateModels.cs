@@ -132,11 +132,11 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             switch (size)
             {
-                case FieldTemplateSize.ExtraSmall: return "col-lg-2 col-md-3 col-sm-4 col-xs-6";
-                case FieldTemplateSize.Small: return "col-lg-3 col-md-4 col-sm-6";
-                case FieldTemplateSize.Medium: return "col-xl-4 col-lg-6 col-md-6";
-                case FieldTemplateSize.Large: return "col-lg-9";
-                case FieldTemplateSize.ExtraLarge: return "col-lg-12";
+                case FieldTemplateSize.ExtraSmall: return "col-xxl-1 col-md-2 col-sm-3 col-xs-4";
+                case FieldTemplateSize.Small: return "col-xxl-2 col-md-3 col-sm-4 col-xs-6";
+                case FieldTemplateSize.Medium: return "col-xxl-4 col-xl-6 col-sm-8";
+                case FieldTemplateSize.Large: return "col-xxl-8 col-xl-10";
+                case FieldTemplateSize.ExtraLarge: return "col-xxl-10";
             }
             return "";
         }
