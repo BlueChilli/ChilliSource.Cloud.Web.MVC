@@ -299,12 +299,14 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             this.HtmlAttributes = other.HtmlAttributes;
             this.AutoWireUpJavascript = other.AutoWireUpJavascript;
+            this.Roles = other.Roles;
         }
 
         public object HtmlAttributes { get; set; }
 
         public bool AutoWireUpJavascript { get; set; }
 
+        public string[] Roles { get; set; }
 #if NET_4X
         public virtual IFieldInnerTemplateModel CreateFieldInnerTemplateModel<TModel, TValue>(HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
         {
