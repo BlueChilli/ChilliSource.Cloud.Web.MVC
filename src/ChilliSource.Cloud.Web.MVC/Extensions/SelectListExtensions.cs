@@ -63,10 +63,11 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <returns>Converted SelectList object</returns>
         public static SelectList ToSelectList<T, TValue, TText>(this IEnumerable<T> collection, Func<T, TValue> valueFunc, Func<T, TText> textFunc, TValue value = default(TValue))
         {
-            var kvpList = new List<KeyValuePair<string, string>>();
+            var kvpList = new List<KeyValuePair<TValue, string>>();
             foreach (var item in collection)
             {
-                kvpList.Add(new KeyValuePair<string, string>(valueFunc(item).ToString(), textFunc(item).ToString()));
+                var text = textFunc(item) == null ? String.Empty : textFunc(item).ToString();
+                kvpList.Add(new KeyValuePair<TValue, string>(valueFunc(item), text));
             }
             return new SelectList(kvpList, "Key", "Value", value);
         }
@@ -87,7 +88,8 @@ namespace ChilliSource.Cloud.Web.MVC
             var kvpList = new List<KeyValuePair<TValue, string>>();
             foreach (var item in collection)
             {
-                kvpList.Add(new KeyValuePair<TValue, string>(valueFunc(item), textFunc(item).ToString()));
+                var text = textFunc(item) == null ? String.Empty : textFunc(item).ToString();
+                kvpList.Add(new KeyValuePair<TValue, string>(valueFunc(item), text));
             }
             return new MultiSelectList(kvpList, "Key", "Value", values);
         }
