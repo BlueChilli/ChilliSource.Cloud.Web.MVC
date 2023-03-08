@@ -144,12 +144,18 @@ namespace ChilliSource.Cloud.Web.MVC
             //default action for success;
             if (ServiceCallerOptions.ViewNamingConvention == ViewNamingConvention.Default)
             {
-                this.OnServiceSuccess((response) => _controller.View(response.Result));
+                if (_controller.Request.IsAjaxRequest())
+                    this.OnServiceSuccess((response) => _controller.PartialView(response.Result));
+                else
+                    this.OnServiceSuccess((response) => _controller.View(response.Result));
             }
             else if (ServiceCallerOptions.ViewNamingConvention == ViewNamingConvention.ControllerPrefix)
             {
                 var viewname = controller.RouteData.Values["controller"].ToString() + controller.RouteData.Values["action"].ToString();
-                this.OnServiceSuccess((response) => _controller.View(viewname, response.Result));
+                if (_controller.Request.IsAjaxRequest())
+                    this.OnServiceSuccess((response) => _controller.PartialView(viewname, response.Result));
+                else
+                    this.OnServiceSuccess((response) => _controller.View(viewname, response.Result));
             }
             //default action for failure;
             _onFailure = _onSuccess;
