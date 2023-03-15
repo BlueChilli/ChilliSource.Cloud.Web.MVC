@@ -201,11 +201,11 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (String.IsNullOrEmpty(confirmFunction))
             {
-                attributes.Add("onclick", String.Format("$.doPost('{0}', {1});", href, data.ToJsonString()));
+                attributes.Add("onclick", String.Format("$.doPost('{0}', '', {1});", href, data.ToJsonString()));
             }
             else
             {
-                attributes.Add("onclick", String.Format("if ({0}(this)) $.doPost('{1}', {2});", confirmFunction, href, data.ToJsonString()));
+                attributes.Add("onclick", String.Format("if ({0}(this)) $.doPost('{1}', '', {2});", confirmFunction, href, data.ToJsonString()));
             }
 
             return Link(urlHelper, displayText, linkClasses: linkClasses, iconClasses: iconClasses, linkAttributes: attributes);
