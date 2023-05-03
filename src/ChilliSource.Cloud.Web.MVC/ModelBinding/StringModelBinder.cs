@@ -15,7 +15,12 @@ namespace ChilliSource.Cloud.Web.MVC.ModelBinding
     {
         public override string ReadJson(JsonReader reader, Type objectType, string existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
         {
-            return reader.Value == null ? null : (reader.Value as string).Trim();
+            if (reader.Value != null)
+            {
+                if (reader.Value is string) return (reader.Value as string).Trim();
+                return reader.Value.ToString();
+            }
+            return null;
         }
 
         public override void WriteJson(JsonWriter writer, string value, Newtonsoft.Json.JsonSerializer serializer)
