@@ -153,7 +153,8 @@ namespace ChilliSource.Cloud.Web.MVC
         Small,
         Medium,
         Large,
-        ExtraLarge  //Full-width
+        ExtraLarge,
+        Full
     }
 
     public interface IFieldInnerTemplateModel
