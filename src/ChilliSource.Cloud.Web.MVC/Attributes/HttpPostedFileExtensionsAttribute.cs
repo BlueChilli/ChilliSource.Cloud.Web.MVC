@@ -128,6 +128,7 @@ namespace ChilliSource.Cloud.Web.MVC
         {
             context.Attributes.AddOrSkipIfExists("data-val", "true");
             context.Attributes.AddOrSkipIfExists("data-val-extension", FormatErrorMessage(context.ModelMetadata.DisplayName));
+            context.Attributes.AddOrSkipIfExists("data-val-accept", FormatErrorMessage(context.ModelMetadata.DisplayName));
         }
 #endif
 
