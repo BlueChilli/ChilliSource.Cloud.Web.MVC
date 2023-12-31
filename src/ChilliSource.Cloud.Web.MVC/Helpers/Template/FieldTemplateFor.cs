@@ -42,6 +42,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             var data = new FieldTemplateModel
             {
+                ModelId = html.IdFor(expression).ToString(),
                 ModelName = html.NameFor(expression).ToString(),
                 DisplayName = options.Label ?? html.GetLabelTextFor(expression),
                 IsMandatory = options.IsMandatory ?? isMandatory,

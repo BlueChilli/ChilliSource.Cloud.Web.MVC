@@ -114,6 +114,8 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public FieldTemplateModel() { }
 
+        public string ModelId { get; set; }
+
         public string ModelName { get; set; }
 
         public string DisplayName { get; set; }
