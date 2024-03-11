@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -14,7 +10,22 @@ namespace ChilliSource.Cloud.Web.MVC
             var results = new List<ValidationResult>();
             var context = new ValidationContext(value, null, null);
 
-            Validator.TryValidateObject(value, context, results, true);
+            var asEnumerable = value as IEnumerable;
+            if (asEnumerable != null)
+            {
+                foreach (var enumObj in asEnumerable)
+                {
+                    if (enumObj != null)
+                    {
+                        var enumContext = new ValidationContext(enumObj, null, null);
+                        Validator.TryValidateObject(enumObj, enumContext, results, true);
+                    }
+                }
+            }
+            else
+            {
+                Validator.TryValidateObject(value, context, results, true);
+            }
 
             if (results.Count != 0)
             {
