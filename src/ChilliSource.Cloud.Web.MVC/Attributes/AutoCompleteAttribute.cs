@@ -27,7 +27,7 @@ namespace ChilliSource.Cloud.Web.MVC
             {
                 if (bool.TryParse(metadata.AdditionalValues()[Key] as string, out var value))
                 {
-                    if (value)
+                    if (!value)
                     {
                         attributes.AddOrSkipIfExists("autocomplete", "off");
                     }
