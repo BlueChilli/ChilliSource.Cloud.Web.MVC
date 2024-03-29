@@ -21,7 +21,9 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Optionally display a label for this checkbox
         /// </summary>
-        public HtmlString Label { get; set; }
+        public string Label { get; set; }
+
+        public HtmlString LabelHtml => new HtmlString(Label);
 
         public void GetDisplayMetadata(DisplayMetadataProviderContext metadata)
         {
