@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <summary>
         /// Optionally display a label for this checkbox
         /// </summary>
-        public string Label { get; set; }
+        public HtmlString Label { get; set; }
 
         public void GetDisplayMetadata(DisplayMetadataProviderContext metadata)
         {
