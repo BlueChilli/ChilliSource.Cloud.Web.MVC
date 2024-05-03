@@ -59,7 +59,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (metadata.AdditionalValues.ContainsKey("EmptyItem-Text"))
             {
-                var emptyItem = new[] { new SelectListItem { Text = metadata.AdditionalValues()["EmptyItem-Text"].ToString(), Value = "", Disabled = isRequired } };
+                var emptyItem = new[] { new SelectListItem { Text = metadata.AdditionalValues()["EmptyItem-Text"].ToString(), Value = "", Disabled = isRequired, Selected = isRequired } };
                 return emptyItem.Concat(items).ToList();
             }
             else if (metadata.IsNullableValueType)
@@ -89,7 +89,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 return items.ToList();
             }
 
-            var emptyItem = new[] { new SelectListItem { Text = metadata.AdditionalValues()["EmptyItem-Text"].ToString(), Value = "", Disabled = isRequired } };
+            var emptyItem = new[] { new SelectListItem { Text = metadata.AdditionalValues()["EmptyItem-Text"].ToString(), Value = "", Disabled = isRequired, Selected = isRequired } };
             return emptyItem.Concat(items).ToList();
         }
     }
