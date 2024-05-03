@@ -51,7 +51,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="items">A SelectListItem collection.</param>
         /// <param name="singleEmptyItem">SelectListItem to be used when the model property type is nullable.</param>
         /// <returns></returns>
-        public static IList<SelectListItem> Resolve(ModelMetadata metadata, IEnumerable<SelectListItem> items, IEnumerable<SelectListItem> singleEmptyItem)
+        public static IList<SelectListItem> Resolve(ModelMetadata metadata, IEnumerable<SelectListItem> items, IEnumerable<SelectListItem> singleEmptyItem, bool isRequired = false)
         {
             if (items == null) items = ArrayExtensions.EmptyArray<SelectListItem>();
 
@@ -59,7 +59,7 @@ namespace ChilliSource.Cloud.Web.MVC
 
             if (metadata.AdditionalValues.ContainsKey("EmptyItem-Text"))
             {
-                var emptyItem = new[] { new SelectListItem { Text = metadata.AdditionalValues()["EmptyItem-Text"].ToString(), Value = "" } };
+                var emptyItem = new[] { new SelectListItem { Text = metadata.AdditionalValues()["EmptyItem-Text"].ToString(), Value = "", Disabled = isRequired } };
                 return emptyItem.Concat(items).ToList();
             }
             else if (metadata.IsNullableValueType)
@@ -79,7 +79,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="metadata">A ModelMetadata instance.</param>
         /// <param name="items">A SelectListItem collection.</param>
         /// <returns></returns>
-        public static IList<SelectListItem> Resolve(ModelMetadata metadata, IEnumerable<SelectListItem> items)
+        public static IList<SelectListItem> Resolve(ModelMetadata metadata, IEnumerable<SelectListItem> items, bool isRequired = false)
         {
             if (items == null) items = ArrayExtensions.EmptyArray<SelectListItem>();
 
@@ -89,7 +89,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 return items.ToList();
             }
 
-            var emptyItem = new[] { new SelectListItem { Text = metadata.AdditionalValues()["EmptyItem-Text"].ToString(), Value = "" } };
+            var emptyItem = new[] { new SelectListItem { Text = metadata.AdditionalValues()["EmptyItem-Text"].ToString(), Value = "", Disabled = isRequired } };
             return emptyItem.Concat(items).ToList();
         }
     }
