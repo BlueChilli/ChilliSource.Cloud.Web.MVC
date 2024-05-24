@@ -48,7 +48,7 @@ namespace ChilliSource.Cloud.Web.MVC.ModelBinding
 
             var value = valueProviderResult.FirstValue;
 
-            if (value != null && bindingContext.ModelType.GetCustomAttributes(typeof(UrlAttribute), false).Any())
+            if (value != null && bindingContext.ModelMetadata.ValidatorMetadata.Any(x => x is UrlAttribute))
             {
                 value = value.ToLower();
             }
