@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -29,7 +30,7 @@ namespace ChilliSource.Cloud.Web.MVC.ModelBinding
         }
     }
 
-    //Baseed from https://stackoverflow.com/questions/47079791/asp-net-web-api-core-complex-data-model-binder-to-trim-strings
+    //Based from https://stackoverflow.com/questions/47079791/asp-net-web-api-core-complex-data-model-binder-to-trim-strings
     public class StringModelBinder : IModelBinder
     {
         public Task BindModelAsync(ModelBindingContext bindingContext)
@@ -45,8 +46,14 @@ namespace ChilliSource.Cloud.Web.MVC.ModelBinding
             if (valueProviderResult == ValueProviderResult.None)
                 return Task.CompletedTask;
 
-            bindingContext.Result = ModelBindingResult.Success(
-                valueProviderResult.FirstValue.TrimAndNullIfWhiteSpace());
+            var value = valueProviderResult.FirstValue;
+
+            if (value != null && bindingContext.ModelType.GetCustomAttributes(typeof(UrlAttribute), false).Any())
+            {
+                value = value.ToLower();
+            }
+
+            bindingContext.Result = ModelBindingResult.Success(value.TrimAndNullIfWhiteSpace());
 
             return Task.CompletedTask;
         }
