@@ -32,9 +32,14 @@ namespace ChilliSource.Cloud.Web.MVC
         public string TrueText { get; set; }
 
         /// <summary>
-        /// If true render the radio inline (horizontal), default is vertical
+        /// If true render the radio inline (horizontal), default is vertical.
         /// </summary>
         public bool Inline { get; set; }
+
+        /// <summary>
+        /// If true render False option, then True option. Default is True option followed by False option.
+        /// </summary>
+        public bool ReverseOrder { get; set; }
 
         public RadioAttribute()
         {
