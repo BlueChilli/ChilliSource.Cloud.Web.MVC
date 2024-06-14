@@ -46,12 +46,16 @@ namespace ChilliSource.Cloud.Web.MVC.ModelBinding
             if (valueProviderResult == ValueProviderResult.None)
                 return Task.CompletedTask;
 
+            bindingContext.ModelState.SetModelValue(modelName, valueProviderResult);
+
             var value = valueProviderResult.FirstValue;
 
             if (value != null && bindingContext.ModelMetadata.ValidatorMetadata.Any(x => x is UrlAttribute))
             {
                 value = value.ToLower();
             }
+
+
 
             bindingContext.Result = ModelBindingResult.Success(value.TrimAndNullIfWhiteSpace());
 
