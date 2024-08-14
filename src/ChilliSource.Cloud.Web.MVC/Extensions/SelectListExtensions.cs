@@ -29,7 +29,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="list">List of enum values</param>
         /// <param name="value">Select value</param>
         /// <returns>Converted SelectList object</returns>
-        public static SelectList ToSelectList<TEnum>(this List<TEnum> list, TEnum? value = null) where TEnum : struct
+        public static SelectList ToSelectList<TEnum>(this List<TEnum> list, TEnum? value = null) where TEnum : struct, Enum
         {
             var items = new List<SelectListItem>();
             foreach (var item in list)
@@ -48,6 +48,16 @@ namespace ChilliSource.Cloud.Web.MVC
         public static SelectList ToSelectList(this List<string> list)
         {
             return new SelectList(list.Select(x => new KeyValuePair<string, string>(x, x)), "Key", "Value");
+        }
+
+        /// <summary>
+        /// Converts an int collection into a SelectList object
+        /// </summary>
+        /// <param name="collection">collection of ints</param>
+        /// <returns>Converted SelectList object</returns>
+        public static SelectList ToSelectList(this IEnumerable<int> collection)
+        {
+            return new SelectList(collection.Select(x => new KeyValuePair<int, int>(x, x)), "Key", "Value");
         }
 
         /// <summary>

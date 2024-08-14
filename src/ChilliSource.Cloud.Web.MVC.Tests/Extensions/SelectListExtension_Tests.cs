@@ -1,5 +1,12 @@
-﻿namespace ChilliSource.Cloud.Web.MVC.Tests
+﻿using ChilliSource.Core.Extensions;
+
+namespace ChilliSource.Cloud.Web.MVC.Tests
 {
+    public enum TestEnum
+    {
+        Jim, John, Frank, Sam, Harry, [Obsolete]Sue
+    }
+
     public class SelectListExtension_Tests
     {
         public class TestCollection
@@ -32,6 +39,33 @@
             Assert.DoesNotContain(1, multiselectlist.SelectedValues.Cast<int>());
             Assert.Equal(5, multiselectlist.Count());
 
+            var stringList = new List<string> { "1", "2", "3" };
+            var stringSelectList = stringList.ToSelectList();
+            Assert.Null(stringSelectList.SelectedValue);
+
+            for(var i = 0; i < stringList.Count; i++)
+            {
+                Assert.Equal(stringList[i], stringSelectList.Skip(i).First().Value);
+            }
+
+            var intList = new List<int> { 1, 2, 3 };
+            var intSelectList = intList.ToSelectList();
+            Assert.Null(intSelectList.SelectedValue);
+
+            for (var i = 0; i < intList.Count; i++)
+            {
+                Assert.Equal(intList[i], int.Parse(intSelectList.Skip(i).First().Value));
+            }
+
+            var enumList = EnumHelper.ToList<TestEnum>();
+            var enumSelectList = enumList.ToSelectList();
+            Assert.Null(enumSelectList.SelectedValue);
+            Assert.Equal(enumList.Count, enumSelectList.Count());
+
+            for (var i = 0; i < enumList.Count; i++)
+            {
+                Assert.Equal(enumList[i], EnumHelper.Parse<TestEnum>(enumSelectList.Skip(i).First().Value));
+            }
         }
 
     }
