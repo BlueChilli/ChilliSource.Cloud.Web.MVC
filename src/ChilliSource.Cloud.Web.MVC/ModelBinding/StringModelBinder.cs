@@ -50,12 +50,13 @@ namespace ChilliSource.Cloud.Web.MVC.ModelBinding
 
             var value = valueProviderResult.FirstValue;
 
+            //protocol must be lowercase to pass validations
             if (value != null && bindingContext.ModelMetadata.ValidatorMetadata.Any(x => x is UrlAttribute))
             {
-                value = value.ToLower();
+                var parts = value.Split(':');
+                parts[0] = parts[0].ToLower();
+                value = String.Join(':', parts);
             }
-
-
 
             bindingContext.Result = ModelBindingResult.Success(value.TrimAndNullIfWhiteSpace());
 
