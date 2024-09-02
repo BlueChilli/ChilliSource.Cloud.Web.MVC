@@ -46,9 +46,11 @@ namespace ChilliSource.Cloud.Web.MVC.ModelBinding
             if (valueProviderResult == ValueProviderResult.None)
                 return Task.CompletedTask;
 
-            bindingContext.ModelState.SetModelValue(modelName, valueProviderResult);
-
             var value = valueProviderResult.FirstValue;
+            if (value == null || value == String.Empty) return Task.CompletedTask;
+
+            //If a nested collection setting this value gives ModelState unvalidated for the values set.
+            if (!modelName.Contains('[')) bindingContext.ModelState.SetModelValue(modelName, valueProviderResult);
 
             //protocol must be lowercase to pass validations
             if (value != null && bindingContext.ModelMetadata.ValidatorMetadata.Any(x => x is UrlAttribute))
