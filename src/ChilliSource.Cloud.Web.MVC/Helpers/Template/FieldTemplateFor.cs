@@ -48,6 +48,7 @@ namespace ChilliSource.Cloud.Web.MVC
                 DisplayName = options.Label ?? html.GetLabelTextFor(expression),
                 IsMandatory = options.IsMandatory ?? isMandatory,
                 HelpText = options.HelpText,
+                HelpTextAsToolTip = options.HelpTextAsTooltip,
                 FieldColumnSize = options.FieldColumnSize,
                 FieldSize = options.FieldSize,
                 HtmlAttributes = RouteValueDictionaryHelper.CreateFromHtmlAttributes(options.HtmlAttributes)

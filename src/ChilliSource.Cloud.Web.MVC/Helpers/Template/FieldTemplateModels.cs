@@ -125,6 +125,8 @@ namespace ChilliSource.Cloud.Web.MVC
 
         public string HelpText { get; set; }
 
+        public bool HelpTextAsToolTip { get; set; }
+
         public int? FieldColumnSize { get; set; }
 
         public FieldTemplateSize? FieldSize { get; set; }
