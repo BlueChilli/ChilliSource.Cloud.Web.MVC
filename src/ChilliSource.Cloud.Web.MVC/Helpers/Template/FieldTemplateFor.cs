@@ -38,6 +38,7 @@ namespace ChilliSource.Cloud.Web.MVC
             if (String.IsNullOrEmpty(options.HelpText))
             {
                 options.HelpText = helpTextAttribute == null ? "" : helpTextAttribute.Value;
+                options.HelpTextAsTooltip = helpTextAttribute?.DisplayAsTooltip ?? false;
             }
 
             var data = new FieldTemplateModel

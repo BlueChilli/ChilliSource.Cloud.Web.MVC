@@ -47,6 +47,7 @@ namespace ChilliSource.Cloud.Web.MVC
         public string Label { get; set; }
 
         public string HelpText { get; set; }
+        public bool HelpTextAsTooltip { get; set; }
 
         public int? FieldColumnSize { get; set; }
 
