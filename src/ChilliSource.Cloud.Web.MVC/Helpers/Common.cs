@@ -1,24 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-
-#if NET_4X
-using System.Web.Mvc;
-using System.Web.Mvc.Html;
-#else
+﻿using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.DataProtection;
-#endif
-#if NETSTANDARD2_0
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
-#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -31,11 +15,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="condition">True to use the specified text, otherwise not.</param>
         /// <param name="result">The specified text.</param>
         /// <returns>An HTML string using the specified text</returns>
-#if NET_4X
-        public static IHtmlContent When(this HtmlHelper htmlHelper, bool condition, string result)
-#else
         public static IHtmlContent When(this IHtmlHelper htmlHelper, bool condition, string result)
-#endif
         {
             return condition ? MvcHtmlStringCompatibility.Create(result) : MvcHtmlStringCompatibility.Empty();
         }
@@ -45,38 +25,21 @@ namespace ChilliSource.Cloud.Web.MVC
         /// </summary>
         /// <returns>Value of prop taking into account postback value (attempted value)</returns>
 
-#if NET_4X
-        public static TValue GetModelStateValue<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
-        {            
-            ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
-            object model = metadata.Model;
-#else
         public static TValue GetModelStateValue<TModel, TValue>(this IHtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
         {
-#if NETSTANDARD2_0
-
-            var explorer = ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
-#else
             var expressionProvider = new ModelExpressionProvider(html.MetadataProvider);
             var explorer = expressionProvider.CreateModelExpression(html.ViewData, expression).ModelExplorer;
-#endif
-            ModelMetadata metadata = explorer.Metadata;
             object model = explorer.Model;
-#endif
             var name = html.NameFor(expression).ToString();
 
-            string attemptedValue = null;
+            string? attemptedValue = null;
             if (html.ViewContext.ViewData.ModelState.ContainsKey(name))
             {
                 var kvp = html.ViewContext.ViewData.ModelState[name];
-#if NET_4X
-                attemptedValue = kvp.Value?.AttemptedValue;
-#else
                 attemptedValue = kvp.AttemptedValue;
-#endif
             }
             var result = String.IsNullOrEmpty(attemptedValue) || (model != null && attemptedValue == model.ToString()) ? model : attemptedValue;
-            if (result == null) return default(TValue);
+            if (result == null) return default;
 
             Type t = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
             if (t.IsEnum && result is string) return (TValue)Enum.Parse(t, (string)result);
@@ -92,11 +55,11 @@ namespace ChilliSource.Cloud.Web.MVC
         public static bool ConvertAttemptedValueToBoolean(object value)
         {
             if (value == null) return false;
-            if (value is bool) return (bool)value;
-            if (value is string)
+            if (value is bool v) return v;
+            if (value is string s)
             {
-                var s = value as string;
-                return Convert.ToBoolean(s.Split(',')[0]);  // Handle posted values like "true,false"
+                if (bool.TryParse(s.Split(',')[0], out bool result)) return result;
+                return false;
             }
             return false;
         }

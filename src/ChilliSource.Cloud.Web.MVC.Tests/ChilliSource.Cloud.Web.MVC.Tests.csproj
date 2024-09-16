@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Extensions\Helpers\" />
     <Folder Include="Moq\" />
   </ItemGroup>
 
