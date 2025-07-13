@@ -7,18 +7,9 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-#if NET_4X
-using System.Web.Mvc;
-using System.Web.WebPages;
-#else
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.DataProtection;
-#endif
 
 namespace ChilliSource.Cloud.Web.MVC
 {
@@ -36,11 +27,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="section">section to be registered in for example "scripts"</param>
         /// <param name="template">code template</param>
         /// <returns></returns>
-#if NET_4X
-        public static HelperResult RegisterCustomSection(this HtmlHelper html, string section, Func<object, HelperResult> template)
-#else
         public static HelperResult RegisterCustomSection(this IHtmlHelper html, string section, Func<object, HelperResult> template)
-#endif
         {
             return RegisterCustomSection(html, section, Guid.NewGuid(), template);
         }
@@ -53,42 +40,40 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="templateKey">To register templates that should only be rendered once</param>
         /// <param name="template">code template</param>
         /// <returns></returns>
-#if NET_4X
-        public static HelperResult RegisterCustomSection(this HtmlHelper html, string section, Guid templateKey, Func<object, HelperResult> template)
-#else
         public static HelperResult RegisterCustomSection(this IHtmlHelper html, string section, Guid templateKey, Func<object, HelperResult> template)
-#endif
         {
-            var sections = html.ViewContext.HttpContext.Items[_CustomSection] as Dictionary<string, Dictionary<Guid, IHtmlContent>>;
+            var context = html.ViewContext;
 
-            if (sections == null)
-            {
-                sections = new Dictionary<string, Dictionary<Guid, IHtmlContent>>();
-                html.ViewContext.HttpContext.Items.Add(_CustomSection, sections);
-            }
+            var content = template(null).AsHtmlContent();
 
-            Dictionary<Guid, IHtmlContent> content = null;
-            if (sections.ContainsKey(section))
-            {
-                content = sections[section];
-            }
-            else
-            {
-                content = new Dictionary<Guid, IHtmlContent>();
-                sections.Add(section, content);
-            }
+            RegisterCustomSection(context, section, templateKey, content);
 
-            if (!content.ContainsKey(templateKey))
-            {
-                var templateResult = template(null).AsHtmlContent();
-                content.Add(templateKey, templateResult);
-            }
+            //var sections = html.ViewContext.HttpContext.Items[_CustomSection] as Dictionary<string, Dictionary<Guid, IHtmlContent>>;
 
-#if NET_4X
-            return new HelperResult(writer => { });
-#else
+            //if (sections == null)
+            //{
+            //    sections = new Dictionary<string, Dictionary<Guid, IHtmlContent>>();
+            //    html.ViewContext.HttpContext.Items.Add(_CustomSection, sections);
+            //}
+
+            //Dictionary<Guid, IHtmlContent> content = null;
+            //if (sections.ContainsKey(section))
+            //{
+            //    content = sections[section];
+            //}
+            //else
+            //{
+            //    content = new Dictionary<Guid, IHtmlContent>();
+            //    sections.Add(section, content);
+            //}
+
+            //if (!content.ContainsKey(templateKey))
+            //{
+            //    var templateResult = template(null).AsHtmlContent();
+            //    content.Add(templateKey, templateResult);
+            //}
+
             return new HelperResult(writer => Task.CompletedTask);
-#endif
         }
 
         /// <summary>
@@ -97,13 +82,59 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="html"></param>
         /// <param name="template">script template</param>
         /// <returns></returns>
-#if NET_4X
-        public static HelperResult RegisterCustomScripts(this HtmlHelper html, Func<object, HelperResult> template)
-#else
         public static HelperResult RegisterCustomScripts(this IHtmlHelper html, Func<object, HelperResult> template)
-#endif        
         {
             return RegisterCustomSection(html, "scripts", template);
+        }
+
+        /// <summary>
+        /// Registers custom JavaScript code for inclusion in the specified view context.
+        /// </summary>
+        /// <remarks>This method allows you to dynamically add custom JavaScript code to a specific
+        /// section of the view. The script is associated with the provided <paramref name="templateKey"/> to ensure
+        /// proper organization and avoid conflicts.</remarks>
+        /// <param name="context">The <see cref="ViewContext"/> representing the current rendering context of the view.</param>
+        /// <param name="templateKey">A unique identifier for the template to associate the script with.</param>
+        /// <param name="script">The JavaScript code to register. This must be a valid script string.</param>
+        public static void RegisterCustomScripts(ViewContext context, Guid templateKey, string script)
+        {
+            var content = MvcHtmlStringCompatibility.Create(script);
+            RegisterCustomSection(context, "scripts", templateKey, content);
+        }
+
+        /// <summary>
+        /// Registers a custom section for rendering in the specified view context.
+        /// </summary>
+        /// <remarks>This method associates the provided HTML content with the specified section and
+        /// template key. If the section does not already exist, it is created. If the template key is already
+        /// registered for the section, the method does not overwrite the existing content.</remarks>
+        /// <param name="context">The <see cref="ViewContext"/> representing the current rendering context. This parameter cannot be <see
+        /// langword="null"/>.</param>
+        /// <param name="section">The name of the section to register. This value is case-sensitive and cannot be <see langword="null"/> or
+        /// empty.</param>
+        /// <param name="templateKey">A unique identifier for the template associated with the section.</param>
+        /// <param name="html">The HTML content to associate with the specified section and template. This parameter cannot be <see
+        /// langword="null"/>.</param>
+        public static void RegisterCustomSection(ViewContext context, string section, Guid templateKey, IHtmlContent html)
+        {
+            if (context.HttpContext.Items[_CustomSection] is not Dictionary<string, Dictionary<Guid, IHtmlContent>> sections)
+            {
+                sections = [];
+                context.HttpContext.Items.Add(_CustomSection, sections);
+            }
+
+            Dictionary<Guid, IHtmlContent> content;
+            if (sections.TryGetValue(section, out Dictionary<Guid, IHtmlContent> value))
+            {
+                content = value;
+            }
+            else
+            {
+                content = [];
+                sections.Add(section, content);
+            }
+
+            content.TryAdd(templateKey, html);
         }
 
         /// <summary>
@@ -112,11 +143,7 @@ namespace ChilliSource.Cloud.Web.MVC
         /// <param name="html"></param>
         /// <param name="section">section to output for example "scripts"</param>
         /// <returns></returns>
-#if NET_4X
-        public static IHtmlContent RenderCustomSection(this HtmlHelper html, string section)
-#else
         public static IHtmlContent RenderCustomSection(this IHtmlHelper html, string section)
-#endif        
         {
             var result = MvcHtmlStringCompatibility.Empty();
 
