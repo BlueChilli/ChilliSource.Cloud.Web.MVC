@@ -1,17 +1,11 @@
 ﻿#if !NET_4X
-using ChilliSource.Cloud.Core;
-using System;
-using System.IO;
 using ChilliSource.Core.Extensions;
-using System.Web;
-using SixLabors.ImageSharp.Processing;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using SixLabors.ImageSharp.Processing;
 
 namespace ChilliSource.Cloud.Web.MVC
 {
