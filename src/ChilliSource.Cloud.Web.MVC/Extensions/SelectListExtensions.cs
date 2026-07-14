@@ -83,6 +83,43 @@ namespace ChilliSource.Cloud.Web.MVC
         }
 
         /// <summary>
+        /// Converts a collection into a SelectList object with disabled items
+        /// </summary>
+        /// <typeparam name="T">Collection element type</typeparam>
+        /// <typeparam name="TValue">Value type. Must be convertible to String.</typeparam>
+        /// <typeparam name="TText">Text type. Must be convertible to String.</typeparam>
+        /// <param name="collection">List of elements</param>
+        /// <param name="valueFunc">Anonymous function to get the item value</param>
+        /// <param name="textFunc">Anonymous function to get the display value</param>
+        /// <param name="disabledFunc">Anonymous function to determine if the item should be disabled</param>
+        /// <param name="value">Current selected value</param>
+        /// <returns>Converted SelectList object</returns>
+        public static SelectList ToSelectList<T, TValue, TText>(this IEnumerable<T> collection, Func<T, TValue> valueFunc, Func<T, TText> textFunc, Func<T, bool> disabledFunc, TValue value = default)
+        {
+            var list = new SelectList(
+               collection.Select(item => new SelectListItem
+               {
+                   Value = valueFunc(item).ToString(),
+                   Text = textFunc(item) == null ? String.Empty : textFunc(item).ToString(),
+                   Selected = valueFunc(item).Equals(value),
+                   Disabled = disabledFunc(item),
+               }),
+               "Value",
+               "Text",
+               value);
+
+            for (var i = 0; i < list.Count(); i++)
+            {
+                if (disabledFunc(collection.ElementAt(i)))
+                {
+                    list.ElementAt(i).Disabled = true;
+                }
+            }
+
+            return list;
+        }
+
+        /// <summary>
         /// Converts a collection into a MultiSelectList object
         /// </summary>
         /// <typeparam name="T">Collection element type</typeparam>
